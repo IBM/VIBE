@@ -262,7 +262,7 @@ export default function Home() {
 											{run.status}
 										</Tag>
 										<span className={styles.runLabel}>
-											<Link href={`/suite-runs/${run.id}`}>Run #{run.id}</Link>: Suite #{run.suite_id} with Agent #{run.agent_id} - {run.successful_tests}/{run.total_tests} tests passed
+											<Link href={`/suite-runs/${run.id}`}>Run #{run.id}</Link>: <Link href={`/test-suites/${run.suite_id}`}>Suite #{run.suite_id}</Link> with Agent #{run.agent_id} - {run.successful_tests}/{run.total_tests} tests passed
 										</span>
 									</div>
 								))}
