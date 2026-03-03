@@ -7,6 +7,7 @@ import { useResultOperations } from '../lib/AppDataContext';
 import { api, SuiteRun, Job, TestResult } from '../lib/api';
 import type { StatsResponse } from '@ibm-vibe/types';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import styles from './page.module.scss';
 import TileWrapper from './components/TileWrapper';
 import { calculateOverallAverageSimilarityScore, filterScoredResults } from '@/lib/similarityScoreUtils';
@@ -261,8 +262,7 @@ export default function Home() {
 											{run.status}
 										</Tag>
 										<span className={styles.runLabel}>
-											Suite #{run.suite_id} with Agent #{run.agent_id} -
-											{run.successful_tests}/{run.total_tests} tests passed
+											<Link href={`/suite-runs/${run.id}`}>Run #{run.id}</Link>: Suite #{run.suite_id} with Agent #{run.agent_id} - {run.successful_tests}/{run.total_tests} tests passed
 										</span>
 									</div>
 								))}
