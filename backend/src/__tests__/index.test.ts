@@ -38,6 +38,7 @@ describe('backend bootstrap', () => {
 		jest.doMock('../routes/conversation-turn-targets', () => 'conversation-turn-targets-route');
 		jest.doMock('../routes/templates', () => 'templates-route');
 		jest.doMock('../routes/response-maps', () => 'response-maps-route');
+		jest.doMock('../routes/data-transfer', () => 'data-transfer-route');
 		jest.doMock('../config', () => ({ serverConfig: { port: 4321 } }));
 
 		const logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -48,7 +49,8 @@ describe('backend bootstrap', () => {
 		});
 
 		expect(cors).toHaveBeenCalled();
-		expect(json).toHaveBeenCalled();
+		expect(json).toHaveBeenCalledWith({ limit: '150mb' });
+		expect(json).toHaveBeenCalledWith();
 		expect(use).toHaveBeenCalledWith('/api/agents', 'agents-route');
 		expect(use).toHaveBeenCalledWith('/api/tests', 'tests-route');
 		expect(use).toHaveBeenCalledWith('/api/results', 'results-route');
@@ -65,6 +67,7 @@ describe('backend bootstrap', () => {
 		expect(use).toHaveBeenCalledWith('/api/conversation-turn-targets', 'conversation-turn-targets-route');
 		expect(use).toHaveBeenCalledWith('/api/templates', 'templates-route');
 		expect(use).toHaveBeenCalledWith('/api/response-maps', 'response-maps-route');
+		expect(use).toHaveBeenCalledWith('/api/data-transfer', 'json-mw', 'data-transfer-route');
 
 		const healthHandler = get.mock.calls.find(call => call[0] === '/api/health')?.[1] as Function;
 		const res = { json: jest.fn() };

@@ -16,14 +16,17 @@ import sessionMessageRoutes from './routes/session-messages';
 import conversationTurnTargetsRoutes from './routes/conversation-turn-targets';
 import templateRoutes from './routes/templates';
 import responseMapRoutes from './routes/response-maps';
+import dataTransferRoutes from './routes/data-transfer';
 import { serverConfig } from './config';
 
 const app = express();
 const port = serverConfig.port;
 const shouldLog = process.env.NODE_ENV !== 'test';
+const dataTransferJsonParser = express.json({ limit: '150mb' });
 
 // Middleware
 app.use(cors());
+app.use('/api/data-transfer', dataTransferJsonParser, dataTransferRoutes);
 app.use(express.json());
 
 // Routes

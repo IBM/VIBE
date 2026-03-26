@@ -476,3 +476,171 @@ export interface ResponseMapping {
 		value: any;
 	};
 }
+
+export enum ExportableDataType {
+	AGENTS = 'agents',
+	CONVERSATIONS = 'conversations',
+	TEST_SUITES = 'test_suites',
+	LLM_CONFIGS = 'llm_configs',
+	REQUEST_TEMPLATES = 'request_templates',
+	RESPONSE_MAPS = 'response_maps'
+}
+
+export interface ExportedAgentTemplateLink {
+	template_name: string;
+	is_default?: boolean;
+}
+
+export interface ExportedAgentResponseMapLink {
+	response_map_name: string;
+	is_default?: boolean;
+}
+
+export interface ExportedAgent {
+	name: string;
+	version: string;
+	prompt: string;
+	settings: string;
+	linked_templates?: ExportedAgentTemplateLink[];
+	linked_response_maps?: ExportedAgentResponseMapLink[];
+}
+
+export interface ExportedConversationMessage {
+	sequence: number;
+	role: 'user' | 'system';
+	content: string;
+	metadata?: string;
+	request_template_name?: string;
+	response_map_name?: string;
+	set_variables?: string;
+}
+
+export interface ExportedConversationTurnTarget {
+	user_sequence: number;
+	target_reply: string;
+	threshold?: number | null;
+	weight?: number | null;
+}
+
+export interface ExportedConversation {
+	name: string;
+	reference_key?: string;
+	description?: string;
+	tags?: string;
+	variables?: string;
+	required_request_template_capabilities?: string;
+	required_response_map_capabilities?: string;
+	stop_on_failure?: boolean;
+	messages?: ExportedConversationMessage[];
+	turn_targets?: ExportedConversationTurnTarget[];
+}
+
+export interface ExportedSuiteEntry {
+	sequence: number;
+	conversation_name?: string;
+	conversation_reference_key?: string;
+	child_suite_name?: string;
+	child_suite_reference_key?: string;
+	agent_override_name?: string;
+	agent_override_version?: string;
+}
+
+export interface ExportedTestSuite {
+	name: string;
+	reference_key?: string;
+	description?: string;
+	tags?: string;
+	entries?: ExportedSuiteEntry[];
+}
+
+export interface ExportedLLMConfig {
+	name: string;
+	provider: string;
+	config: string;
+	priority: number;
+}
+
+export interface ExportedRequestTemplate {
+	name: string;
+	description?: string;
+	capability?: string;
+	body: string;
+}
+
+export interface ExportedResponseMap {
+	name: string;
+	description?: string;
+	capability?: string;
+	spec: string;
+}
+
+export interface ExportBundleData {
+	agents?: ExportedAgent[];
+	conversations?: ExportedConversation[];
+	test_suites?: ExportedTestSuite[];
+	llm_configs?: ExportedLLMConfig[];
+	request_templates?: ExportedRequestTemplate[];
+	response_maps?: ExportedResponseMap[];
+}
+
+export interface ExportBundle {
+	version: number;
+	exported_at: string;
+	instance_name?: string;
+	data: ExportBundleData;
+}
+
+export type AnalysisStatus = 'new' | 'conflict' | 'dependency_missing';
+
+export interface AnalysisItem {
+	item_key: string;
+	entity_type: ExportableDataType;
+	entity_name: string;
+	status: AnalysisStatus;
+	existing_id?: number;
+	issues?: string[];
+	allowed_decisions?: ImportResolutionDecision[];
+}
+
+export interface AnalysisTotals {
+	new: number;
+	conflict: number;
+	dependency_missing: number;
+}
+
+export interface AnalysisReport {
+	items: AnalysisItem[];
+	totals: AnalysisTotals;
+	has_issues: boolean;
+}
+
+export type ImportResolutionDecision = 'skip' | 'overwrite' | 'create_new';
+
+export interface ImportResolution {
+	item_key: string;
+	decision: ImportResolutionDecision;
+	new_name?: string;
+	new_version?: string;
+}
+
+export interface ImportRequest {
+	bundle: ExportBundle;
+	resolutions: Record<string, ImportResolution>;
+}
+
+export type ImportResultAction = 'created' | 'updated' | 'skipped';
+
+export interface ImportResultItem {
+	item_key: string;
+	entity_type: ExportableDataType;
+	entity_name: string;
+	action: ImportResultAction;
+	message?: string;
+}
+
+export interface ImportResultSummary {
+	created: number;
+	updated: number;
+	skipped: number;
+	items: ImportResultItem[];
+}

@@ -2,6 +2,7 @@ import agentsRouter from '../agents';
 import testSuitesRouter from '../test-suites';
 import resultsRouter from '../results';
 import sessionsRouter from '../sessions';
+import dataTransferRouter from '../data-transfer';
 
 type SupportedMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
@@ -82,6 +83,16 @@ describe('Route surface characterization for hotspot routers', () => {
 			'PUT /:id',
 			'POST /',
 			'DELETE /:id'
+		]));
+	});
+
+	it('keeps the critical data-transfer route surface intact', () => {
+		const signatures = listRouteSignatures(dataTransferRouter);
+
+		expect(signatures).toEqual(expect.arrayContaining([
+			'GET /export',
+			'POST /analyze',
+			'POST /import'
 		]));
 	});
 });
