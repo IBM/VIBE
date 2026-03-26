@@ -1,25 +1,24 @@
 import type { Migration } from './types';
 
-const shouldLog = process.env.NODE_ENV !== 'test';
-const logError = (...args: unknown[]) => {
-	/* istanbul ignore next */
-	if (shouldLog) console.error(...args);
-};
-
 const migration: Migration = {
 	version: 11,
 	name: 'Ensure suite_entries conversation foreign key uses cascade',
 	up: (db) => {
-		try {
-			const suiteEntriesForeignKeys = db.prepare("PRAGMA foreign_key_list('suite_entries')").all() as Array<{
-				id: number; seq: number; table: string; from: string; to: string; on_update?: string; on_delete?: string;
-			}>;
-			const conversationForeignKey = suiteEntriesForeignKeys.find(fk => fk.table === 'conversations' && fk.from === 'conversation_id');
-			const hasCascade = conversationForeignKey && String(conversationForeignKey.on_delete || '').toUpperCase() === 'CASCADE';
+		const tableExists = db.prepare(
+			"SELECT 1 FROM sqlite_master WHERE type='table' AND name='suite_entries'"
+		).get();
+		if (!tableExists) {
+			return;
+		}
+		const suiteEntriesForeignKeys = db.prepare("PRAGMA foreign_key_list('suite_entries')").all() as Array<{
+			id: number; seq: number; table: string; from: string; to: string; on_update?: string; on_delete?: string;
+		}>;
+		const conversationForeignKey = suiteEntriesForeignKeys.find(fk => fk.table === 'conversations' && fk.from === 'conversation_id');
+		const hasCascade = conversationForeignKey && String(conversationForeignKey.on_delete || '').toUpperCase() === 'CASCADE';
 
-			if (!hasCascade) {
-				db.transaction(() => {
-					db.exec(`
+		if (!hasCascade) {
+			db.transaction(() => {
+				db.exec(`
         CREATE TABLE suite_entries_new (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           parent_suite_id INTEGER NOT NULL,
@@ -47,11 +46,7 @@ const migration: Migration = {
         CREATE INDEX IF NOT EXISTS idx_suite_entries_child ON suite_entries(child_suite_id);
         CREATE INDEX IF NOT EXISTS idx_suite_entries_conversation ON suite_entries(conversation_id);
       `);
-				})();
-			}
-		} catch (e) {
-			// Best-effort migration; ignore if PRAGMA not available
-			logError('Ensure suite_entries cascade migration failed', e);
+			})();
 		}
 	}
 };
