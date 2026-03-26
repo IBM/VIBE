@@ -1,0 +1,95 @@
+.page {
+	padding: 2rem;
+}
+
+.panelHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+
+	h2 {
+		margin: 0;
+		font-size: 1.5rem;
+		font-weight: 400;
+	}
+}
+
+.section {
+	padding: 1rem 0;
+}
+
+.tabButtons {
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.tabButton {
+	padding: 0.5rem 0.9rem;
+	border: 1px solid var(--cds-border-subtle);
+	background: transparent;
+	color: var(--cds-text-primary);
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid var(--cds-focus, var(--cds-link-primary));
+		outline-offset: 2px;
+	}
+}
+
+.activeTabButton {
+	@extend .tabButton;
+	border-color: var(--cds-link-primary);
+	color: var(--cds-link-primary);
+}
+
+.helpText {
+	color: var(--cds-text-secondary);
+	margin: 0.5rem 0 1rem;
+}
+
+.checkboxGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.fileLabel {
+	display: inline-block;
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+}
+
+.reviewTableContainer {
+	overflow-x: auto;
+}
+
+.reviewTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 0.75rem;
+
+	th,
+	td {
+		text-align: left;
+		padding: 0.5rem;
+		border-bottom: 1px solid var(--cds-border-subtle);
+		vertical-align: top;
+	}
+}
+
+.tableCaption {
+	text-align: left;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+}
+

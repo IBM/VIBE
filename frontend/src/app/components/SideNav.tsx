@@ -103,6 +103,13 @@ export default function AppSideNav() {
 				>
                     LLM configs
 				</SideNavLink>
+				<SideNavLink
+					renderIcon={DocumentMultiple_01}
+					isActive={activeItem === 'data-transfer'}
+					onClick={() => handleNavChange('data-transfer')}
+				>
+                    Data transfer
+				</SideNavLink>
 
 				{/* Legacy (Deprecated) Section */}
 				<SideNavMenu renderIcon={Warning} title="Legacy (Deprecated)">

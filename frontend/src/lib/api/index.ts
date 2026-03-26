@@ -1,5 +1,6 @@
 import { agentsApi } from './agents';
 import { conversationsApi } from './conversations';
+import { dataTransferApi } from './data-transfer';
 import { jobsApi } from './jobs';
 import { llmApi } from './llm';
 import { resultsApi } from './results';
@@ -46,5 +47,6 @@ export const api = {
 	...suitesApi,
 	...llmApi,
 	...conversationsApi,
-	...sessionsApi
+	...sessionsApi,
+	...dataTransferApi
 };
