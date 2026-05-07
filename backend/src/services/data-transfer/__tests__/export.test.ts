@@ -8,6 +8,12 @@ import * as configRepo from '../../../db/repositories/configRepo';
 import * as templateRepo from '../../../db/repositories/templateRepo';
 import { buildConversationReferenceKey, buildSuiteReferenceKey } from '../identity';
 
+jest.mock('../../../db/database', () => ({
+	__esModule: true,
+	default: {
+		transaction: jest.fn((callback: () => void) => callback)
+	}
+}));
 jest.mock('../../../db/repositories/agentRepo');
 jest.mock('../../../db/repositories/conversationRepo');
 jest.mock('../../../db/repositories/conversationTurnTargetsRepo');
@@ -17,7 +23,9 @@ jest.mock('../../../db/repositories/templateRepo');
 
 const mockedAgentRepo = agentRepo as jest.Mocked<typeof agentRepo>;
 const mockedConversationRepo = conversationRepo as jest.Mocked<typeof conversationRepo>;
-const mockedConversationTurnTargetsRepo = conversationTurnTargetsRepo as jest.Mocked<typeof conversationTurnTargetsRepo>;
+const mockedConversationTurnTargetsRepo = conversationTurnTargetsRepo as jest.Mocked<
+	typeof conversationTurnTargetsRepo
+>;
 const mockedSuiteRepo = suiteRepo as jest.Mocked<typeof suiteRepo>;
 const mockedConfigRepo = configRepo as jest.Mocked<typeof configRepo>;
 const mockedTemplateRepo = templateRepo as jest.Mocked<typeof templateRepo>;
@@ -112,12 +120,12 @@ describe('buildExportBundle', () => {
 				created_at: '2026-03-01T10:00:00.000Z'
 			}
 		] as any);
-		mockedTemplateRepo.getRequestTemplateById.mockImplementation((id: number) => (
-			id === 12 ? { id: 12, name: 'req-template', body: '{}' } as any : undefined
-		));
-		mockedTemplateRepo.getResponseMapById.mockImplementation((id: number) => (
-			id === 22 ? { id: 22, name: 'resp-map', spec: '{}' } as any : undefined
-		));
+		mockedTemplateRepo.getRequestTemplateById.mockImplementation((id: number) =>
+			id === 12 ? ({ id: 12, name: 'req-template', body: '{}' } as any) : undefined
+		);
+		mockedTemplateRepo.getResponseMapById.mockImplementation((id: number) =>
+			id === 22 ? ({ id: 22, name: 'resp-map', spec: '{}' } as any) : undefined
+		);
 		mockedConversationTurnTargetsRepo.listByConversationId.mockReturnValue([
 			{
 				id: 1,
@@ -190,19 +198,19 @@ describe('buildExportBundle', () => {
 			id: 200,
 			name: 'Checkout conversation'
 		} as any);
-		mockedConversationRepo.getConversationMessages.mockImplementation((conversationId: number) => (
-			conversationId === 200 ? [] : []
-		) as any);
-		mockedConversationTurnTargetsRepo.listByConversationId.mockImplementation((conversationId: number) => (
-			conversationId === 200 ? [] : []
-		) as any);
-		mockedSuiteRepo.getTestSuiteById.mockImplementation((id: number) => (
+		mockedConversationRepo.getConversationMessages.mockImplementation(
+			(conversationId: number) => (conversationId === 200 ? [] : []) as any
+		);
+		mockedConversationTurnTargetsRepo.listByConversationId.mockImplementation(
+			(conversationId: number) => (conversationId === 200 ? [] : []) as any
+		);
+		mockedSuiteRepo.getTestSuiteById.mockImplementation((id: number) =>
 			id === 100
-				? { id: 100, name: 'Top suite', description: 'top', tags: '' } as any
+				? ({ id: 100, name: 'Top suite', description: 'top', tags: '' } as any)
 				: id === 101
-					? { id: 101, name: 'Child suite', description: 'child', tags: '' } as any
+					? ({ id: 101, name: 'Child suite', description: 'child', tags: '' } as any)
 					: undefined
-		));
+		);
 		mockedAgentRepo.getAgentById.mockReturnValue({
 			id: 300,
 			name: 'Routing agent',
@@ -281,11 +289,7 @@ describe('buildExportBundle', () => {
 		] as any);
 
 		const bundle = buildExportBundle(
-			[
-				ExportableDataType.REQUEST_TEMPLATES,
-				ExportableDataType.RESPONSE_MAPS,
-				ExportableDataType.LLM_CONFIGS
-			],
+			[ExportableDataType.REQUEST_TEMPLATES, ExportableDataType.RESPONSE_MAPS, ExportableDataType.LLM_CONFIGS],
 			'test-instance'
 		);
 
@@ -333,11 +337,12 @@ describe('buildExportBundle', () => {
 			{ id: 10, name: 'Duplicate flow', description: 'First variant' },
 			{ id: 11, name: 'Duplicate flow', description: 'Second variant' }
 		] as any);
-		mockedConversationRepo.getConversationMessages.mockImplementation((conversationId: number) => (
-			conversationId === 10
-				? [{ id: 100, conversation_id: 10, sequence: 1, role: 'user', content: 'first prompt' }]
-				: [{ id: 101, conversation_id: 11, sequence: 1, role: 'user', content: 'second prompt' }]
-		) as any);
+		mockedConversationRepo.getConversationMessages.mockImplementation(
+			(conversationId: number) =>
+				(conversationId === 10
+					? [{ id: 100, conversation_id: 10, sequence: 1, role: 'user', content: 'first prompt' }]
+					: [{ id: 101, conversation_id: 11, sequence: 1, role: 'user', content: 'second prompt' }]) as any
+		);
 		mockedConversationTurnTargetsRepo.listByConversationId.mockReturnValue([]);
 		mockedSuiteRepo.getTestSuites.mockReturnValue([
 			{ id: 200, name: 'Suite with duplicate conversation', description: '', tags: '' }
@@ -345,14 +350,17 @@ describe('buildExportBundle', () => {
 		mockedSuiteRepo.getEntriesInSuite.mockReturnValue([
 			{ id: 300, parent_suite_id: 200, sequence: 1, conversation_id: 11 }
 		] as any);
-		mockedConversationRepo.getConversationById.mockImplementation((conversationId: number) => (
-			conversationId === 10
-				? { id: 10, name: 'Duplicate flow', description: 'First variant' }
-				: { id: 11, name: 'Duplicate flow', description: 'Second variant' }
-		) as any);
-		mockedSuiteRepo.getTestSuiteById.mockImplementation((id: number) => (
-			id === 200 ? { id: 200, name: 'Suite with duplicate conversation', description: '', tags: '' } as any : undefined
-		));
+		mockedConversationRepo.getConversationById.mockImplementation(
+			(conversationId: number) =>
+				(conversationId === 10
+					? { id: 10, name: 'Duplicate flow', description: 'First variant' }
+					: { id: 11, name: 'Duplicate flow', description: 'Second variant' }) as any
+		);
+		mockedSuiteRepo.getTestSuiteById.mockImplementation((id: number) =>
+			id === 200
+				? ({ id: 200, name: 'Suite with duplicate conversation', description: '', tags: '' } as any)
+				: undefined
+		);
 
 		const bundle = buildExportBundle(
 			[ExportableDataType.CONVERSATIONS, ExportableDataType.TEST_SUITES],
@@ -373,13 +381,13 @@ describe('buildExportBundle', () => {
 			{ id: 301, name: 'Suite A', description: 'first', tags: '' },
 			{ id: 302, name: 'Suite B', description: 'second', tags: '' }
 		] as any);
-		mockedSuiteRepo.getTestSuiteById.mockImplementation((id: number) => (
+		mockedSuiteRepo.getTestSuiteById.mockImplementation((id: number) =>
 			id === 301
-				? { id: 301, name: 'Suite A', description: 'first', tags: '' } as any
+				? ({ id: 301, name: 'Suite A', description: 'first', tags: '' } as any)
 				: id === 302
-					? { id: 302, name: 'Suite B', description: 'second', tags: '' } as any
+					? ({ id: 302, name: 'Suite B', description: 'second', tags: '' } as any)
 					: undefined
-		));
+		);
 		mockedSuiteRepo.getEntriesInSuite.mockImplementation((suiteId: number) => {
 			if (suiteId === 301) {
 				return [{ id: 1, parent_suite_id: 301, sequence: 1, child_suite_id: 302 }] as any;

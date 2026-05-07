@@ -32,7 +32,9 @@ jest.mock('../../../db/repositories/templateRepo');
 const mockedDb = db as jest.Mocked<typeof db>;
 const mockedAgentRepo = agentRepo as jest.Mocked<typeof agentRepo>;
 const mockedConversationRepo = conversationRepo as jest.Mocked<typeof conversationRepo>;
-const mockedConversationTurnTargetsRepo = conversationTurnTargetsRepo as jest.Mocked<typeof conversationTurnTargetsRepo>;
+const mockedConversationTurnTargetsRepo = conversationTurnTargetsRepo as jest.Mocked<
+	typeof conversationTurnTargetsRepo
+>;
 const mockedSuiteRepo = suiteRepo as jest.Mocked<typeof suiteRepo>;
 const mockedConfigRepo = configRepo as jest.Mocked<typeof configRepo>;
 const mockedTemplateRepo = templateRepo as jest.Mocked<typeof templateRepo>;
@@ -47,7 +49,10 @@ const createImportRequest = (overrides: Partial<ImportRequest>): ImportRequest =
 	...overrides
 });
 
-const createTemplateResolution = (template: { name: string; body: string }, decision: 'skip' | 'overwrite' | 'create_new') => ({
+const createTemplateResolution = (
+	template: { name: string; body: string },
+	decision: 'skip' | 'overwrite' | 'create_new'
+) => ({
 	[buildRequestTemplateItemKey(template as any)]: {
 		item_key: buildRequestTemplateItemKey(template as any),
 		decision
@@ -77,7 +82,10 @@ describe('executeImportBundle', () => {
 		mockedAgentRepo.createAgent.mockImplementation((payload: any) => ({ id: 4, ...payload }));
 		mockedAgentRepo.updateAgent.mockImplementation((id: number, payload: any) => ({ id, ...payload }));
 		mockedConversationRepo.createConversation.mockImplementation((payload: any) => ({ id: 5, ...payload }));
-		mockedConversationRepo.updateConversation.mockImplementation((id: number, payload: any) => ({ id, ...payload }));
+		mockedConversationRepo.updateConversation.mockImplementation((id: number, payload: any) => ({
+			id,
+			...payload
+		}));
 		mockedSuiteRepo.createTestSuite.mockImplementation((payload: any) => ({ id: 6, ...payload }));
 		mockedSuiteRepo.updateTestSuite.mockImplementation((id: number, payload: any) => ({ id, ...payload }));
 		mockedConversationRepo.getConversationMessages.mockReturnValue([]);
@@ -220,12 +228,14 @@ describe('executeImportBundle', () => {
 				version: 1,
 				exported_at: '2026-03-03T12:00:00.000Z',
 				data: {
-					agents: [{
-						name: 'Agent A',
-						version: '1.0.0',
-						prompt: 'Prompt',
-						settings: '{}'
-					}]
+					agents: [
+						{
+							name: 'Agent A',
+							version: '1.0.0',
+							prompt: 'Prompt',
+							settings: '{}'
+						}
+					]
 				}
 			},
 			resolutions: {
@@ -288,35 +298,27 @@ describe('executeImportBundle', () => {
 	});
 
 	it('overwrites agents by replacing stale template and response map links', () => {
-		mockedAgentRepo.getAgents.mockReturnValue([
-			{ id: 200, name: 'Agent A', version: '1.0.0' }
-		] as any);
-		mockedTemplateRepo.listRequestTemplates.mockReturnValue([
-			{ id: 100, name: 'template-new', body: '{}' }
-		] as any);
-		mockedTemplateRepo.listResponseMaps.mockReturnValue([
-			{ id: 110, name: 'map-new', spec: '{}' }
-		] as any);
-		mockedTemplateRepo.getAgentTemplates.mockReturnValue([
-			{ id: 300, name: 'template-old', is_default: 1 }
-		] as any);
-		mockedTemplateRepo.getAgentResponseMaps.mockReturnValue([
-			{ id: 400, name: 'map-old', is_default: 1 }
-		] as any);
+		mockedAgentRepo.getAgents.mockReturnValue([{ id: 200, name: 'Agent A', version: '1.0.0' }] as any);
+		mockedTemplateRepo.listRequestTemplates.mockReturnValue([{ id: 100, name: 'template-new', body: '{}' }] as any);
+		mockedTemplateRepo.listResponseMaps.mockReturnValue([{ id: 110, name: 'map-new', spec: '{}' }] as any);
+		mockedTemplateRepo.getAgentTemplates.mockReturnValue([{ id: 300, name: 'template-old', is_default: 1 }] as any);
+		mockedTemplateRepo.getAgentResponseMaps.mockReturnValue([{ id: 400, name: 'map-old', is_default: 1 }] as any);
 
 		const request = createImportRequest({
 			bundle: {
 				version: 1,
 				exported_at: '2026-03-03T12:00:00.000Z',
 				data: {
-					agents: [{
-						name: 'Agent A',
-						version: '1.0.0',
-						prompt: 'Updated prompt',
-						settings: '{}',
-						linked_templates: [{ template_name: 'template-new', is_default: true }],
-						linked_response_maps: [{ response_map_name: 'map-new', is_default: true }]
-					}]
+					agents: [
+						{
+							name: 'Agent A',
+							version: '1.0.0',
+							prompt: 'Updated prompt',
+							settings: '{}',
+							linked_templates: [{ template_name: 'template-new', is_default: true }],
+							linked_response_maps: [{ response_map_name: 'map-new', is_default: true }]
+						}
+					]
 				}
 			},
 			resolutions: {
@@ -375,9 +377,7 @@ describe('executeImportBundle', () => {
 	});
 
 	it('overwrites a conversation by replacing existing messages and turn targets before adding imported children', () => {
-		mockedConversationRepo.getConversations.mockReturnValue([
-			{ id: 501, name: 'Conversation A' }
-		] as any);
+		mockedConversationRepo.getConversations.mockReturnValue([{ id: 501, name: 'Conversation A' }] as any);
 		mockedConversationRepo.getConversationMessages.mockReturnValue([
 			{ id: 91, conversation_id: 501, sequence: 1 },
 			{ id: 92, conversation_id: 501, sequence: 2 }
@@ -412,19 +412,28 @@ describe('executeImportBundle', () => {
 		expect(mockedConversationTurnTargetsRepo.deleteById).toHaveBeenCalledWith(81);
 		expect(mockedConversationRepo.deleteConversationMessage).toHaveBeenCalledWith(91);
 		expect(mockedConversationRepo.deleteConversationMessage).toHaveBeenCalledWith(92);
-		expect(mockedConversationRepo.updateConversation).toHaveBeenCalledWith(501, expect.objectContaining({ name: 'Conversation A' }));
-		expect(mockedConversationRepo.addMessageToConversation).toHaveBeenCalledWith(expect.objectContaining({
-			conversation_id: 501,
-			sequence: 1,
-			content: 'replacement'
-		}));
-		expect(mockedConversationTurnTargetsRepo.create).toHaveBeenCalledWith(501, 1, 'new target', undefined, undefined);
+		expect(mockedConversationRepo.updateConversation).toHaveBeenCalledWith(
+			501,
+			expect.objectContaining({ name: 'Conversation A' })
+		);
+		expect(mockedConversationRepo.addMessageToConversation).toHaveBeenCalledWith(
+			expect.objectContaining({
+				conversation_id: 501,
+				sequence: 1,
+				content: 'replacement'
+			})
+		);
+		expect(mockedConversationTurnTargetsRepo.create).toHaveBeenCalledWith(
+			501,
+			1,
+			'new target',
+			undefined,
+			undefined
+		);
 	});
 
 	it('resolves legacy name-only suite entries after overwriting a conversation', () => {
-		mockedConversationRepo.getConversations.mockReturnValue([
-			{ id: 501, name: 'Conversation A' }
-		] as any);
+		mockedConversationRepo.getConversations.mockReturnValue([{ id: 501, name: 'Conversation A' }] as any);
 		mockedSuiteRepo.createTestSuite.mockReturnValue({ id: 700, name: 'Suite A' } as any);
 
 		const conversation = {
@@ -471,11 +480,13 @@ describe('executeImportBundle', () => {
 		const conversation = { name: 'Conversation A', messages: [], turn_targets: [] };
 		const suite = {
 			name: 'Suite A',
-			entries: [{
-				sequence: 1,
-				conversation_name: 'Conversation A',
-				conversation_reference_key: buildConversationReferenceKey(conversation as any)
-			}]
+			entries: [
+				{
+					sequence: 1,
+					conversation_name: 'Conversation A',
+					conversation_reference_key: buildConversationReferenceKey(conversation as any)
+				}
+			]
 		};
 		mockedConversationRepo.createConversation.mockReturnValue({ id: 600, name: 'Conversation A' } as any);
 		mockedSuiteRepo.createTestSuite.mockReturnValue({ id: 700, name: 'Suite A' } as any);
@@ -527,11 +538,13 @@ describe('executeImportBundle', () => {
 			.mockReturnValueOnce({ id: 602, name: 'Duplicate flow' } as any);
 		const suite = {
 			name: 'Suite A',
-			entries: [{
-				sequence: 1,
-				conversation_name: 'Duplicate flow',
-				conversation_reference_key: buildConversationReferenceKey(secondConversation as any)
-			}]
+			entries: [
+				{
+					sequence: 1,
+					conversation_name: 'Duplicate flow',
+					conversation_reference_key: buildConversationReferenceKey(secondConversation as any)
+				}
+			]
 		};
 		mockedSuiteRepo.createTestSuite.mockReturnValue({ id: 700, name: 'Suite A' } as any);
 
@@ -594,10 +607,12 @@ describe('executeImportBundle', () => {
 		expect(mockedSuiteRepo.deleteSuiteEntry).toHaveBeenCalledWith(801);
 		expect(mockedSuiteRepo.deleteSuiteEntry).toHaveBeenCalledWith(802);
 		expect(mockedSuiteRepo.updateTestSuite).toHaveBeenCalledWith(700, expect.objectContaining({ name: 'Suite A' }));
-		expect(mockedSuiteRepo.addSuiteEntry).toHaveBeenCalledWith(expect.objectContaining({
-			parent_suite_id: 700,
-			sequence: 1
-		}));
+		expect(mockedSuiteRepo.addSuiteEntry).toHaveBeenCalledWith(
+			expect.objectContaining({
+				parent_suite_id: 700,
+				sequence: 1
+			})
+		);
 	});
 
 	it('throws and rolls back when a forced conversation import has unresolved dependencies', () => {
@@ -623,7 +638,7 @@ describe('executeImportBundle', () => {
 		});
 
 		expect(() => executeImportBundle(request)).toThrow(
-			'Invalid decision "create_new" for conversations "Conversation A" with status dependency_missing'
+			'Missing request template dependency in message #1: missing-template'
 		);
 		expect(mockedConversationRepo.createConversation).not.toHaveBeenCalled();
 	});
@@ -636,13 +651,15 @@ describe('executeImportBundle', () => {
 				exported_at: '2026-03-03T12:00:00.000Z',
 				data: {
 					request_templates: [template],
-					agents: [{
-						name: 'Bot',
-						version: '1.0.0',
-						prompt: 'Prompt',
-						settings: '{}',
-						linked_templates: [{ template_name: 'shared-template' }]
-					}]
+					agents: [
+						{
+							name: 'Bot',
+							version: '1.0.0',
+							prompt: 'Prompt',
+							settings: '{}',
+							linked_templates: [{ template_name: 'shared-template' }]
+						}
+					]
 				}
 			},
 			resolutions: {
@@ -657,9 +674,7 @@ describe('executeImportBundle', () => {
 			}
 		});
 
-		expect(() => executeImportBundle(request)).toThrow(
-			'Invalid decision "create_new" for agents "Bot@1.0.0" with status dependency_missing'
-		);
+		expect(() => executeImportBundle(request)).toThrow('Missing request template dependency: shared-template');
 		expect(mockedAgentRepo.createAgent).not.toHaveBeenCalled();
 	});
 
@@ -681,16 +696,12 @@ describe('executeImportBundle', () => {
 			}
 		});
 
-		expect(() => executeImportBundle(request)).toThrow(
-			'Invalid decision "create_new" for test_suites "Suite A" with status dependency_missing'
-		);
+		expect(() => executeImportBundle(request)).toThrow('Missing conversation dependency: Missing conversation');
 		expect(mockedSuiteRepo.createTestSuite).not.toHaveBeenCalled();
 	});
 
 	it('disallows overwrite for duplicate imported conversations when one existing same-name conversation exists', () => {
-		mockedConversationRepo.getConversations.mockReturnValue([
-			{ id: 501, name: 'Duplicate flow' }
-		] as any);
+		mockedConversationRepo.getConversations.mockReturnValue([{ id: 501, name: 'Duplicate flow' }] as any);
 		const firstConversation = {
 			name: 'Duplicate flow',
 			description: 'First',
@@ -776,11 +787,13 @@ describe('executeImportBundle', () => {
 		};
 		const parentSuite = {
 			name: 'Parent suite',
-			entries: [{
-				sequence: 1,
-				child_suite_name: 'Shared suite',
-				child_suite_reference_key: buildSuiteReferenceKey(secondSuite as any)
-			}]
+			entries: [
+				{
+					sequence: 1,
+					child_suite_name: 'Shared suite',
+					child_suite_reference_key: buildSuiteReferenceKey(secondSuite as any)
+				}
+			]
 		};
 
 		mockedSuiteRepo.createTestSuite
@@ -797,9 +810,18 @@ describe('executeImportBundle', () => {
 				}
 			},
 			resolutions: {
-				[buildSuiteItemKey(firstSuite as any)]: { item_key: buildSuiteItemKey(firstSuite as any), decision: 'create_new' },
-				[buildSuiteItemKey(secondSuite as any)]: { item_key: buildSuiteItemKey(secondSuite as any), decision: 'create_new' },
-				[buildSuiteItemKey(parentSuite as any)]: { item_key: buildSuiteItemKey(parentSuite as any), decision: 'create_new' }
+				[buildSuiteItemKey(firstSuite as any)]: {
+					item_key: buildSuiteItemKey(firstSuite as any),
+					decision: 'create_new'
+				},
+				[buildSuiteItemKey(secondSuite as any)]: {
+					item_key: buildSuiteItemKey(secondSuite as any),
+					decision: 'create_new'
+				},
+				[buildSuiteItemKey(parentSuite as any)]: {
+					item_key: buildSuiteItemKey(parentSuite as any),
+					decision: 'create_new'
+				}
 			}
 		});
 

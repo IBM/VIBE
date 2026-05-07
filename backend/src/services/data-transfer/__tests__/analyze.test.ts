@@ -13,6 +13,12 @@ import {
 	buildSuiteReferenceKey
 } from '../identity';
 
+jest.mock('../../../db/database', () => ({
+	__esModule: true,
+	default: {
+		transaction: jest.fn((callback: () => void) => callback)
+	}
+}));
 jest.mock('../../../db/repositories/agentRepo');
 jest.mock('../../../db/repositories/conversationRepo');
 jest.mock('../../../db/repositories/suiteRepo');
@@ -95,9 +101,7 @@ describe('analyzeImportBundle', () => {
 	});
 
 	it('marks existing conversation name as conflict', () => {
-		mockedConversationRepo.getConversations.mockReturnValue([
-			{ id: 3, name: 'Greeting flow' }
-		] as any);
+		mockedConversationRepo.getConversations.mockReturnValue([{ id: 3, name: 'Greeting flow' }] as any);
 
 		const bundle = createBundle({
 			data: {
@@ -179,9 +183,7 @@ describe('analyzeImportBundle', () => {
 	});
 
 	it('disallows overwrite when duplicate imported conversations share a name with an existing conversation', () => {
-		mockedConversationRepo.getConversations.mockReturnValue([
-			{ id: 3, name: 'Duplicate flow' }
-		] as any);
+		mockedConversationRepo.getConversations.mockReturnValue([{ id: 3, name: 'Duplicate flow' }] as any);
 		const firstConversation = {
 			name: 'Duplicate flow',
 			description: 'First variant',
@@ -195,11 +197,13 @@ describe('analyzeImportBundle', () => {
 			turn_targets: []
 		};
 
-		const report = analyzeImportBundle(createBundle({
-			data: {
-				conversations: [firstConversation as any, secondConversation as any]
-			}
-		}));
+		const report = analyzeImportBundle(
+			createBundle({
+				data: {
+					conversations: [firstConversation as any, secondConversation as any]
+				}
+			})
+		);
 
 		const items = report.items.filter((item) => item.entity_type === ExportableDataType.CONVERSATIONS);
 		expect(items).toHaveLength(2);
@@ -223,9 +227,7 @@ describe('analyzeImportBundle', () => {
 		const suiteItem = report.items[0];
 
 		expect(suiteItem.status).toBe('dependency_missing');
-		expect(suiteItem.issues).toEqual(
-			expect.arrayContaining(['Missing conversation dependency: Missing convo'])
-		);
+		expect(suiteItem.issues).toEqual(expect.arrayContaining(['Missing conversation dependency: Missing convo']));
 		expect(report.totals).toEqual({ new: 0, conflict: 0, dependency_missing: 1 });
 		expect(report.has_issues).toBe(true);
 	});
@@ -242,11 +244,13 @@ describe('analyzeImportBundle', () => {
 				test_suites: [
 					{
 						name: 'Suite A',
-						entries: [{
-							sequence: 1,
-							conversation_name: 'New convo',
-							conversation_reference_key: buildConversationReferenceKey(conversation as any)
-						}]
+						entries: [
+							{
+								sequence: 1,
+								conversation_name: 'New convo',
+								conversation_reference_key: buildConversationReferenceKey(conversation as any)
+							}
+						]
 					}
 				]
 			}
@@ -306,19 +310,23 @@ describe('analyzeImportBundle', () => {
 			entries: [{ sequence: 1 }]
 		};
 
-		const report = analyzeImportBundle(createBundle({
-			data: {
-				test_suites: [firstSuite as any, secondSuite as any]
-			}
-		}));
+		const report = analyzeImportBundle(
+			createBundle({
+				data: {
+					test_suites: [firstSuite as any, secondSuite as any]
+				}
+			})
+		);
 
 		const items = report.items.filter((item) => item.entity_type === ExportableDataType.TEST_SUITES);
 		expect(items).toHaveLength(2);
 		expect(items[0].item_key).not.toEqual(items[1].item_key);
-		expect(items.map((item) => item.entity_name)).toEqual(expect.arrayContaining([
-			expect.stringContaining(buildSuiteReferenceKey(firstSuite as any).slice(-6)),
-			expect.stringContaining(buildSuiteReferenceKey(secondSuite as any).slice(-6))
-		]));
+		expect(items.map((item) => item.entity_name)).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining(buildSuiteReferenceKey(firstSuite as any).slice(-6)),
+				expect.stringContaining(buildSuiteReferenceKey(secondSuite as any).slice(-6))
+			])
+		);
 	});
 
 	it('uses child suite reference keys to avoid ambiguity for duplicate suite names in the bundle', () => {
@@ -334,18 +342,22 @@ describe('analyzeImportBundle', () => {
 		};
 		const parentSuite = {
 			name: 'Parent suite',
-			entries: [{
-				sequence: 1,
-				child_suite_name: 'Shared name',
-				child_suite_reference_key: buildSuiteReferenceKey(childTwo as any)
-			}]
+			entries: [
+				{
+					sequence: 1,
+					child_suite_name: 'Shared name',
+					child_suite_reference_key: buildSuiteReferenceKey(childTwo as any)
+				}
+			]
 		};
 
-		const report = analyzeImportBundle(createBundle({
-			data: {
-				test_suites: [childOne as any, childTwo as any, parentSuite as any]
-			}
-		}));
+		const report = analyzeImportBundle(
+			createBundle({
+				data: {
+					test_suites: [childOne as any, childTwo as any, parentSuite as any]
+				}
+			})
+		);
 
 		const suiteItem = report.items.find((item) => item.entity_name === 'Parent suite');
 		expect(suiteItem?.status).toBe('new');
@@ -357,11 +369,13 @@ describe('analyzeImportBundle', () => {
 			{ id: 11, name: 'Shared suite' }
 		] as any);
 
-		const report = analyzeImportBundle(createBundle({
-			data: {
-				test_suites: [{ name: 'Shared suite', entries: [] } as any]
-			}
-		}));
+		const report = analyzeImportBundle(
+			createBundle({
+				data: {
+					test_suites: [{ name: 'Shared suite', entries: [] } as any]
+				}
+			})
+		);
 
 		expect(report.items[0]).toMatchObject({
 			entity_type: ExportableDataType.TEST_SUITES,
@@ -374,22 +388,26 @@ describe('analyzeImportBundle', () => {
 	it('marks dependent items as missing when selected bundle dependencies are skipped', () => {
 		const suite = {
 			name: 'Suite A',
-			entries: [{
-				sequence: 1,
-				agent_override_name: 'Bot',
-				agent_override_version: '1.0.0'
-			}]
+			entries: [
+				{
+					sequence: 1,
+					agent_override_name: 'Bot',
+					agent_override_version: '1.0.0'
+				}
+			]
 		};
 		const bundle = createBundle({
 			data: {
 				request_templates: [{ name: 'shared-template', body: '{}' }],
-				agents: [{
-					name: 'Bot',
-					version: '1.0.0',
-					prompt: 'Prompt',
-					settings: '{}',
-					linked_templates: [{ template_name: 'shared-template' }]
-				}],
+				agents: [
+					{
+						name: 'Bot',
+						version: '1.0.0',
+						prompt: 'Prompt',
+						settings: '{}',
+						linked_templates: [{ template_name: 'shared-template' }]
+					}
+				],
 				test_suites: [suite as any]
 			}
 		});
@@ -444,18 +462,18 @@ describe('analyzeImportBundle', () => {
 	});
 
 	it('creates unique analysis item keys for duplicate llm config names in the bundle', () => {
-		mockedConfigRepo.getLLMConfigs.mockReturnValue([
-			{ id: 91, name: 'Primary' }
-		] as any);
+		mockedConfigRepo.getLLMConfigs.mockReturnValue([{ id: 91, name: 'Primary' }] as any);
 
-		const report = analyzeImportBundle(createBundle({
-			data: {
-				llm_configs: [
-					{ name: 'Primary', provider: 'openai', config: '{"model":"a"}', priority: 1 },
-					{ name: 'Primary', provider: 'anthropic', config: '{"model":"b"}', priority: 2 }
-				]
-			}
-		}));
+		const report = analyzeImportBundle(
+			createBundle({
+				data: {
+					llm_configs: [
+						{ name: 'Primary', provider: 'openai', config: '{"model":"a"}', priority: 1 },
+						{ name: 'Primary', provider: 'anthropic', config: '{"model":"b"}', priority: 2 }
+					]
+				}
+			})
+		);
 
 		const items = report.items.filter((item) => item.entity_type === ExportableDataType.LLM_CONFIGS);
 		expect(items).toHaveLength(2);
@@ -469,11 +487,13 @@ describe('analyzeImportBundle', () => {
 			{ id: 92, name: 'Primary', provider: 'anthropic', config: '{"model":"b"}', priority: 2 }
 		] as any);
 
-		const report = analyzeImportBundle(createBundle({
-			data: {
-				llm_configs: [{ name: 'Primary', provider: 'openai', config: '{"model":"c"}', priority: 3 }]
-			}
-		}));
+		const report = analyzeImportBundle(
+			createBundle({
+				data: {
+					llm_configs: [{ name: 'Primary', provider: 'openai', config: '{"model":"c"}', priority: 3 }]
+				}
+			})
+		);
 
 		expect(report.items[0]).toMatchObject({
 			entity_type: ExportableDataType.LLM_CONFIGS,
@@ -531,9 +551,11 @@ describe('analyzeImportBundle', () => {
 
 		expect(items).toHaveLength(2);
 		expect(items[0].item_key).not.toEqual(items[1].item_key);
-		expect(items.map((item) => item.entity_name)).toEqual(expect.arrayContaining([
-			expect.stringContaining(items[0].item_key.slice(-6)),
-			expect.stringContaining(items[1].item_key.slice(-6))
-		]));
+		expect(items.map((item) => item.entity_name)).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining(items[0].item_key.slice(-6)),
+				expect.stringContaining(items[1].item_key.slice(-6))
+			])
+		);
 	});
 });
