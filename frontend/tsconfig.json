@@ -24,6 +24,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ibm-vibe/types": ["../packages/types/index"],
+      "@ibm-vibe/types/data-transfer": ["../packages/types/data-transfer"],
       "@ibm-vibe/config": ["../packages/config/src/index"]
     }
   },

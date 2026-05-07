@@ -10,7 +10,7 @@ import type {
 	Conversation,
 	ConversationMessage
 } from '@ibm-vibe/types';
-import { ExportableDataType } from '@ibm-vibe/types';
+import { EXPORT_BUNDLE_VERSION, ExportableDataType } from '@ibm-vibe/types';
 import { getAgents, getAgentById } from '../../db/repositories/agentRepo';
 import {
 	getConversations,
@@ -29,8 +29,6 @@ import {
 	listResponseMaps
 } from '../../db/repositories/templateRepo';
 import { buildConversationReferenceKey, buildSuiteReferenceKey } from './identity';
-
-const EXPORT_BUNDLE_VERSION = 1;
 
 const toBoolean = (value: unknown): boolean => {
 	if (typeof value === 'boolean') return value;

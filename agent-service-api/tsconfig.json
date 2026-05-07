@@ -10,21 +10,17 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "outDir": "dist",
-		"rootDir": "./src",
-		"resolveJsonModule": true,
-		"baseUrl": ".",
-		"paths": {
-			"@ibm-vibe/types": ["../packages/types/index"],
-			"@ibm-vibe/config": ["../packages/config/src/index"]
-		},
-		"composite": true
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ibm-vibe/types": ["../packages/types/index"],
+      "@ibm-vibe/types/data-transfer": ["../packages/types/data-transfer"],
+      "@ibm-vibe/config": ["../packages/config/src/index"]
+    },
+    "composite": true
   },
-  "include": [
-		"src"
-  ],
-	"exclude": ["node_modules", "**/*.test.ts"],
-	"references": [
-		{ "path": "../packages/types" },
-		{ "path": "../packages/config" }
-	]
+  "include": ["src"],
+  "exclude": ["node_modules", "**/*.test.ts"],
+  "references": [{ "path": "../packages/types" }, { "path": "../packages/config" }]
 }

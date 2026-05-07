@@ -1,33 +1,27 @@
 {
-    "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "lib": [
-            "es2020"
-        ],
-        "strict": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "outDir": "./dist",
-		"rootDir": "./src",
-        "moduleResolution": "node",
-		"resolveJsonModule": true,
-		"baseUrl": ".",
-		"paths": {
-			"@ibm-vibe/types": ["../packages/types/index"],
-			"@ibm-vibe/config": ["../packages/config/src/index"]
-		},
-		"composite": true
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020"],
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ibm-vibe/types": ["../packages/types/index"],
+      "@ibm-vibe/types/data-transfer": ["../packages/types/data-transfer"],
+      "@ibm-vibe/config": ["../packages/config/src/index"]
     },
-    "include": [
-		"src"
-    ],
-	"references": [
-		{ "path": "../packages/types" },
-		{ "path": "../packages/config" }
-    ]
+    "composite": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "../packages/types" }, { "path": "../packages/config" }]
 }
