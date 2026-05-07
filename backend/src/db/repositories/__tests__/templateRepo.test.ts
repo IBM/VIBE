@@ -668,378 +668,376 @@ describe('templateRepo', () => {
 			expect(unique).toBe('Default Map (Agent A)');
 		});
 
-	describe('error and constraint handling', () => {
-		it('handles update with no changes gracefully', () => {
-			const { templateRepo } = bootstrapRepos();
+		describe('error and constraint handling', () => {
+			it('handles update with no changes gracefully', () => {
+				const { templateRepo } = bootstrapRepos();
 
-			const created = templateRepo.createRequestTemplate({
-				name: 'No Change',
-				body: '{}'
+				const created = templateRepo.createRequestTemplate({
+					name: 'No Change',
+					body: '{}'
+				});
+
+				const updated = templateRepo.updateRequestTemplate(created.id!, {});
+				expect(updated).toEqual(created);
 			});
 
-			const updated = templateRepo.updateRequestTemplate(created.id!, {});
-			expect(updated).toEqual(created);
-		});
+			it('returns undefined when updating non-existent template', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('returns undefined when updating non-existent template', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			const result = templateRepo.updateRequestTemplate(99999, { name: 'New Name' });
-			expect(result).toBeUndefined();
-		});
-
-		it('returns undefined when updating non-existent response map', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			const result = templateRepo.updateResponseMap(99999, { name: 'New Name' });
-			expect(result).toBeUndefined();
-		});
-
-		it('handles deleting non-existent template gracefully', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			expect(() => {
-				templateRepo.deleteRequestTemplate(99999);
-			}).not.toThrow();
-		});
-
-		it('handles deleting non-existent response map gracefully', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			expect(() => {
-				templateRepo.deleteResponseMap(99999);
-			}).not.toThrow();
-		});
-
-		it('throws on linking template to non-existent agent', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			const template = templateRepo.createRequestTemplate({ name: 'Test', body: '{}' });
-
-			// Foreign key constraint should be enforced
-			expect(() => {
-				templateRepo.linkTemplateToAgent(99999, template.id!);
-			}).toThrow('FOREIGN KEY constraint failed');
-		});
-
-		it('throws on linking non-existent template to agent', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const result = templateRepo.updateRequestTemplate(99999, { name: 'New Name' });
+				expect(result).toBeUndefined();
 			});
 
-			// Foreign key constraint should be enforced
-			expect(() => {
-				templateRepo.linkTemplateToAgent(agent.id!, 99999);
-			}).toThrow('FOREIGN KEY constraint failed');
-		});
+			it('returns undefined when updating non-existent response map', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('handles unlinking non-existent template from agent', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const result = templateRepo.updateResponseMap(99999, { name: 'New Name' });
+				expect(result).toBeUndefined();
 			});
 
-			expect(() => {
-				templateRepo.unlinkTemplateFromAgent(agent.id!, 99999);
-			}).not.toThrow();
-		});
+			it('handles deleting non-existent template gracefully', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('handles setting default for non-existent template', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				expect(() => {
+					templateRepo.deleteRequestTemplate(99999);
+				}).not.toThrow();
 			});
 
-			expect(() => {
-				templateRepo.setAgentDefaultTemplate(agent.id!, 99999);
-			}).not.toThrow();
-		});
+			it('handles deleting non-existent response map gracefully', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('handles setting default for non-existent response map', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				expect(() => {
+					templateRepo.deleteResponseMap(99999);
+				}).not.toThrow();
 			});
 
-			expect(() => {
-				templateRepo.setAgentDefaultResponseMap(agent.id!, 99999);
-			}).not.toThrow();
-		});
+			it('throws on linking template to non-existent agent', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('handles capability extraction with invalid JSON', () => {
-			const { templateRepo } = bootstrapRepos();
+				const template = templateRepo.createRequestTemplate({ name: 'Test', body: '{}' });
 
-			// Create template with invalid JSON capability (should be stored as-is)
-			const template = templateRepo.createRequestTemplate({
-				name: 'Invalid Cap',
-				capability: 'not-json',
-				body: '{}'
+				// Foreign key constraint should be enforced
+				expect(() => {
+					templateRepo.linkTemplateToAgent(99999, template.id!);
+				}).toThrow('FOREIGN KEY constraint failed');
 			});
 
-			expect(template.capability).toBe('not-json');
+			it('throws on linking non-existent template to agent', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
 
-			// Listing should handle invalid JSON gracefully
-			const names = templateRepo.listRequestTemplateCapabilityNames();
-			expect(names).toContain('not-json'); // Treats as plain string
-		});
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
 
-		it('handles empty capability string', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			templateRepo.createRequestTemplate({
-				name: 'Empty Cap',
-				capability: '',
-				body: '{}'
+				// Foreign key constraint should be enforced
+				expect(() => {
+					templateRepo.linkTemplateToAgent(agent.id!, 99999);
+				}).toThrow('FOREIGN KEY constraint failed');
 			});
 
-			const names = templateRepo.listRequestTemplateCapabilityNames();
-			expect(names).not.toContain('');
-		});
+			it('handles unlinking non-existent template from agent', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
 
-		it('handles null capability', () => {
-			const { templateRepo } = bootstrapRepos();
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
 
-			const template = templateRepo.createRequestTemplate({
-				name: 'Null Cap',
-				body: '{}'
+				expect(() => {
+					templateRepo.unlinkTemplateFromAgent(agent.id!, 99999);
+				}).not.toThrow();
 			});
 
-			expect(template.capability).toBeNull();
-		});
+			it('handles setting default for non-existent template', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
 
-		it('handles legacy schema field in capability', () => {
-			const { templateRepo } = bootstrapRepos();
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
 
-			templateRepo.createRequestTemplate({
-				name: 'Legacy',
-				capability: JSON.stringify({ schema: 'legacy-cap' }),
-				body: '{}'
+				expect(() => {
+					templateRepo.setAgentDefaultTemplate(agent.id!, 99999);
+				}).not.toThrow();
 			});
 
-			const names = templateRepo.listRequestTemplateCapabilityNames();
-			expect(names).toContain('legacy-cap');
-		});
+			it('handles setting default for non-existent response map', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
 
-		it('filters templates by capability with no matches', () => {
-			const { templateRepo } = bootstrapRepos();
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
 
-			templateRepo.createRequestTemplate({
-				name: 'Test',
-				capability: JSON.stringify({ name: 'openai-chat' }),
-				body: '{}'
+				expect(() => {
+					templateRepo.setAgentDefaultResponseMap(agent.id!, 99999);
+				}).not.toThrow();
 			});
 
-			const filtered = templateRepo.listRequestTemplates({ capability: 'non-existent' });
-			expect(filtered).toHaveLength(0);
-		});
+			it('handles capability extraction with invalid JSON', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('filters response maps by capability with no matches', () => {
-			const { templateRepo } = bootstrapRepos();
+				// Create template with invalid JSON capability (should be stored as-is)
+				const template = templateRepo.createRequestTemplate({
+					name: 'Invalid Cap',
+					capability: 'not-json',
+					body: '{}'
+				});
 
-			templateRepo.createResponseMap({
-				name: 'Test',
-				capability: JSON.stringify({ name: 'openai-chat' }),
-				spec: '{}'
+				expect(template.capability).toBe('not-json');
+
+				// Listing should handle invalid JSON gracefully
+				const names = templateRepo.listRequestTemplateCapabilityNames();
+				expect(names).toContain('not-json'); // Treats as plain string
 			});
 
-			const filtered = templateRepo.listResponseMaps({ capability: 'non-existent' });
-			expect(filtered).toHaveLength(0);
-		});
+			it('handles empty capability string', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('handles multiple templates with same capability', () => {
-			const { templateRepo } = bootstrapRepos();
+				templateRepo.createRequestTemplate({
+					name: 'Empty Cap',
+					capability: '',
+					body: '{}'
+				});
 
-			templateRepo.createRequestTemplate({
-				name: 'T1',
-				capability: JSON.stringify({ name: 'openai-chat' }),
-				body: '{}'
-			});
-			templateRepo.createRequestTemplate({
-				name: 'T2',
-				capability: JSON.stringify({ name: 'openai-chat' }),
-				body: '{}'
+				const names = templateRepo.listRequestTemplateCapabilityNames();
+				expect(names).not.toContain('');
 			});
 
-			const filtered = templateRepo.listRequestTemplates({ capability: 'openai-chat' });
-			expect(filtered).toHaveLength(2);
-		});
+			it('handles null capability', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('generates unique names with multiple collisions', () => {
-			const { templateRepo } = bootstrapRepos();
+				const template = templateRepo.createRequestTemplate({
+					name: 'Null Cap',
+					body: '{}'
+				});
 
-			templateRepo.createRequestTemplate({ name: 'Collision', body: '{}' });
-			templateRepo.createRequestTemplate({ name: 'Collision (Agent A)', body: '{}' });
-			templateRepo.createRequestTemplate({ name: 'Collision (Agent A 2)', body: '{}' });
-
-			const unique = templateRepo.getUniqueRequestTemplateName('Collision', 'Agent A');
-			expect(unique).toBe('Collision (Agent A 3)');
-		});
-
-		it('handles unique name generation without agent name', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			templateRepo.createRequestTemplate({ name: 'Test', body: '{}' });
-
-			const unique = templateRepo.getUniqueRequestTemplateName('Test');
-			expect(unique).toBe('Test (copy)');
-		});
-
-		it('gets template link info', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				expect(template.capability).toBeNull();
 			});
 
-			const template = templateRepo.createRequestTemplate({ name: 'Test', body: '{}' });
+			it('handles legacy schema field in capability', () => {
+				const { templateRepo } = bootstrapRepos();
 
-			templateRepo.linkTemplateToAgent(agent.id!, template.id!, true);
+				templateRepo.createRequestTemplate({
+					name: 'Legacy',
+					capability: JSON.stringify({ schema: 'legacy-cap' }),
+					body: '{}'
+				});
 
-			const link = templateRepo.getAgentTemplateLink(agent.id!, template.id!);
-			expect(link).toBeDefined();
-			expect(link?.is_default).toBe(1);
-			expect(link?.linked_at).toBeDefined();
-		});
-
-		it('returns undefined for non-existent template link', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const names = templateRepo.listRequestTemplateCapabilityNames();
+				expect(names).toContain('legacy-cap');
 			});
 
-			const link = templateRepo.getAgentTemplateLink(agent.id!, 99999);
-			expect(link).toBeUndefined();
-		});
+			it('filters templates by capability with no matches', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('gets response map link info', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
+				templateRepo.createRequestTemplate({
+					name: 'Test',
+					capability: JSON.stringify({ name: 'openai-chat' }),
+					body: '{}'
+				});
 
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const filtered = templateRepo.listRequestTemplates({ capability: 'non-existent' });
+				expect(filtered).toHaveLength(0);
 			});
 
-			const map = templateRepo.createResponseMap({ name: 'Test', spec: '{}' });
+			it('filters response maps by capability with no matches', () => {
+				const { templateRepo } = bootstrapRepos();
 
-			templateRepo.linkResponseMapToAgent(agent.id!, map.id!, true);
+				templateRepo.createResponseMap({
+					name: 'Test',
+					capability: JSON.stringify({ name: 'openai-chat' }),
+					spec: '{}'
+				});
 
-			const link = templateRepo.getAgentResponseMapLink(agent.id!, map.id!);
-			expect(link).toBeDefined();
-			expect(link?.is_default).toBe(1);
-			expect(link?.linked_at).toBeDefined();
-		});
-
-		it('returns undefined for non-existent response map link', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent = agentRepo.createAgent({
-				name: 'test',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const filtered = templateRepo.listResponseMaps({ capability: 'non-existent' });
+				expect(filtered).toHaveLength(0);
 			});
 
-			const link = templateRepo.getAgentResponseMapLink(agent.id!, 99999);
-			expect(link).toBeUndefined();
-		});
+			it('handles multiple templates with same capability', () => {
+				const { templateRepo } = bootstrapRepos();
 
-		it('counts template links', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
+				templateRepo.createRequestTemplate({
+					name: 'T1',
+					capability: JSON.stringify({ name: 'openai-chat' }),
+					body: '{}'
+				});
+				templateRepo.createRequestTemplate({
+					name: 'T2',
+					capability: JSON.stringify({ name: 'openai-chat' }),
+					body: '{}'
+				});
 
-			const agent1 = agentRepo.createAgent({
-				name: 'agent1',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const filtered = templateRepo.listRequestTemplates({ capability: 'openai-chat' });
+				expect(filtered).toHaveLength(2);
 			});
 
-			const agent2 = agentRepo.createAgent({
-				name: 'agent2',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+			it('generates unique names with multiple collisions', () => {
+				const { templateRepo } = bootstrapRepos();
+
+				templateRepo.createRequestTemplate({ name: 'Collision', body: '{}' });
+				templateRepo.createRequestTemplate({ name: 'Collision (Agent A)', body: '{}' });
+				templateRepo.createRequestTemplate({ name: 'Collision (Agent A 2)', body: '{}' });
+
+				const unique = templateRepo.getUniqueRequestTemplateName('Collision', 'Agent A');
+				expect(unique).toBe('Collision (Agent A 3)');
 			});
 
-			const template = templateRepo.createRequestTemplate({ name: 'Shared', body: '{}' });
+			it('handles unique name generation without agent name', () => {
+				const { templateRepo } = bootstrapRepos();
 
-			templateRepo.linkTemplateToAgent(agent1.id!, template.id!);
-			templateRepo.linkTemplateToAgent(agent2.id!, template.id!);
+				templateRepo.createRequestTemplate({ name: 'Test', body: '{}' });
 
-			const count = templateRepo.getTemplateLinkCount(template.id!);
-			expect(count).toBe(2);
-		});
-
-		it('counts response map links', () => {
-			const { templateRepo, agentRepo } = bootstrapRepos();
-
-			const agent1 = agentRepo.createAgent({
-				name: 'agent1',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+				const unique = templateRepo.getUniqueRequestTemplateName('Test');
+				expect(unique).toBe('Test (copy)');
 			});
 
-			const agent2 = agentRepo.createAgent({
-				name: 'agent2',
-				version: '1.0',
-				prompt: 'test',
-				settings: '{}'
+			it('gets template link info', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
+
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const template = templateRepo.createRequestTemplate({ name: 'Test', body: '{}' });
+
+				templateRepo.linkTemplateToAgent(agent.id!, template.id!, true);
+
+				const link = templateRepo.getAgentTemplateLink(agent.id!, template.id!);
+				expect(link).toBeDefined();
+				expect(link?.is_default).toBe(1);
+				expect(link?.linked_at).toBeDefined();
 			});
 
-			const map = templateRepo.createResponseMap({ name: 'Shared', spec: '{}' });
+			it('returns undefined for non-existent template link', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
 
-			templateRepo.linkResponseMapToAgent(agent1.id!, map.id!);
-			templateRepo.linkResponseMapToAgent(agent2.id!, map.id!);
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
 
-			const count = templateRepo.getResponseMapLinkCount(map.id!);
-			expect(count).toBe(2);
+				const link = templateRepo.getAgentTemplateLink(agent.id!, 99999);
+				expect(link).toBeUndefined();
+			});
+
+			it('gets response map link info', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
+
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const map = templateRepo.createResponseMap({ name: 'Test', spec: '{}' });
+
+				templateRepo.linkResponseMapToAgent(agent.id!, map.id!, true);
+
+				const link = templateRepo.getAgentResponseMapLink(agent.id!, map.id!);
+				expect(link).toBeDefined();
+				expect(link?.is_default).toBe(1);
+				expect(link?.linked_at).toBeDefined();
+			});
+
+			it('returns undefined for non-existent response map link', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
+
+				const agent = agentRepo.createAgent({
+					name: 'test',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const link = templateRepo.getAgentResponseMapLink(agent.id!, 99999);
+				expect(link).toBeUndefined();
+			});
+
+			it('counts template links', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
+
+				const agent1 = agentRepo.createAgent({
+					name: 'agent1',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const agent2 = agentRepo.createAgent({
+					name: 'agent2',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const template = templateRepo.createRequestTemplate({ name: 'Shared', body: '{}' });
+
+				templateRepo.linkTemplateToAgent(agent1.id!, template.id!);
+				templateRepo.linkTemplateToAgent(agent2.id!, template.id!);
+
+				const count = templateRepo.getTemplateLinkCount(template.id!);
+				expect(count).toBe(2);
+			});
+
+			it('counts response map links', () => {
+				const { templateRepo, agentRepo } = bootstrapRepos();
+
+				const agent1 = agentRepo.createAgent({
+					name: 'agent1',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const agent2 = agentRepo.createAgent({
+					name: 'agent2',
+					version: '1.0',
+					prompt: 'test',
+					settings: '{}'
+				});
+
+				const map = templateRepo.createResponseMap({ name: 'Shared', spec: '{}' });
+
+				templateRepo.linkResponseMapToAgent(agent1.id!, map.id!);
+				templateRepo.linkResponseMapToAgent(agent2.id!, map.id!);
+
+				const count = templateRepo.getResponseMapLinkCount(map.id!);
+				expect(count).toBe(2);
+			});
+
+			it('returns zero for template with no links', () => {
+				const { templateRepo } = bootstrapRepos();
+
+				const template = templateRepo.createRequestTemplate({ name: 'Unlinked', body: '{}' });
+
+				const count = templateRepo.getTemplateLinkCount(template.id!);
+				expect(count).toBe(0);
+			});
+
+			it('returns zero for response map with no links', () => {
+				const { templateRepo } = bootstrapRepos();
+
+				const map = templateRepo.createResponseMap({ name: 'Unlinked', spec: '{}' });
+
+				const count = templateRepo.getResponseMapLinkCount(map.id!);
+				expect(count).toBe(0);
+			});
 		});
-
-		it('returns zero for template with no links', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			const template = templateRepo.createRequestTemplate({ name: 'Unlinked', body: '{}' });
-
-			const count = templateRepo.getTemplateLinkCount(template.id!);
-			expect(count).toBe(0);
-		});
-
-		it('returns zero for response map with no links', () => {
-			const { templateRepo } = bootstrapRepos();
-
-			const map = templateRepo.createResponseMap({ name: 'Unlinked', spec: '{}' });
-
-			const count = templateRepo.getResponseMapLinkCount(map.id!);
-			expect(count).toBe(0);
-		});
-	});
 	});
 });
-
-

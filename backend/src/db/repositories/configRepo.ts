@@ -30,9 +30,7 @@ export const getLLMConfigById = (id: number) => {
 
 export const updateLLMConfig = (id: number, config: Partial<LLMConfig>) => {
 	// Filter out undefined values to avoid SQL errors
-	const filteredConfig = Object.fromEntries(
-		Object.entries(config).filter(([_, value]) => value !== undefined)
-	);
+	const filteredConfig = Object.fromEntries(Object.entries(config).filter(([_, value]) => value !== undefined));
 
 	// If there are no fields to update, return the existing config
 	if (Object.keys(filteredConfig).length === 0) {
@@ -40,8 +38,8 @@ export const updateLLMConfig = (id: number, config: Partial<LLMConfig>) => {
 	}
 
 	const updates = Object.keys(filteredConfig)
-		.filter(key => key !== 'id' && key !== 'created_at')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id' && key !== 'created_at')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -59,7 +57,9 @@ export const deleteLLMConfig = (id: number) => {
 	return statement.run(id);
 };
 
-export const getLLMConfigsWithCount = (params: { limit?: number; offset?: number } = {}): { data: LLMConfig[]; total: number } => {
+export const getLLMConfigsWithCount = (
+	params: { limit?: number; offset?: number } = {}
+): { data: LLMConfig[]; total: number } => {
 	const { limit, offset } = params;
 	let query = 'SELECT * FROM llm_configs ORDER BY priority ASC';
 	const queryParams: any[] = [];

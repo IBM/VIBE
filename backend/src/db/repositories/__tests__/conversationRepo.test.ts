@@ -45,15 +45,17 @@ describe('conversationRepo', () => {
 			const result = conversationRepo.createConversation(mockConversation);
 
 			expect(mockDb.prepare).toHaveBeenCalled();
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				name: 'Test Conversation',
-				description: 'Test description',
-				tags: '["tag1","tag2"]',
-				variables: '{"var1":"value1"}',
-				required_request_template_capabilities: '["cap1"]',
-				required_response_map_capabilities: '["cap2"]',
-				stop_on_failure: 1
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					name: 'Test Conversation',
+					description: 'Test description',
+					tags: '["tag1","tag2"]',
+					variables: '{"var1":"value1"}',
+					required_request_template_capabilities: '["cap1"]',
+					required_response_map_capabilities: '["cap2"]',
+					stop_on_failure: 1
+				})
+			);
 			expect(result).toEqual(mockConversation);
 		});
 
@@ -78,15 +80,17 @@ describe('conversationRepo', () => {
 
 			const result = conversationRepo.createConversation({} as Conversation);
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				name: '',
-				description: '',
-				tags: '[]',
-				variables: null,
-				required_request_template_capabilities: null,
-				required_response_map_capabilities: null,
-				stop_on_failure: 0
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					name: '',
+					description: '',
+					tags: '[]',
+					variables: null,
+					required_request_template_capabilities: null,
+					required_response_map_capabilities: null,
+					stop_on_failure: 0
+				})
+			);
 			expect(result).toEqual(mockConversation);
 		});
 
@@ -106,9 +110,11 @@ describe('conversationRepo', () => {
 
 			conversationRepo.createConversation({ stop_on_failure: true } as Conversation);
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				stop_on_failure: 1
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					stop_on_failure: 1
+				})
+			);
 		});
 	});
 
@@ -189,9 +195,7 @@ describe('conversationRepo', () => {
 			const mockCountStmt = {
 				get: jest.fn().mockReturnValue({ count: 10 })
 			};
-			(mockDb.prepare as any)
-				.mockReturnValueOnce(mockDataStmt)
-				.mockReturnValueOnce(mockCountStmt);
+			(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 			const result = conversationRepo.getConversationsWithCount();
 
@@ -210,9 +214,7 @@ describe('conversationRepo', () => {
 			const mockCountStmt = {
 				get: jest.fn().mockReturnValue({ count: 10 })
 			};
-			(mockDb.prepare as any)
-				.mockReturnValueOnce(mockDataStmt)
-				.mockReturnValueOnce(mockCountStmt);
+			(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 			conversationRepo.getConversationsWithCount({ limit: 5, offset: 10 });
 
@@ -226,9 +228,7 @@ describe('conversationRepo', () => {
 			const mockCountStmt = {
 				get: jest.fn().mockReturnValue({ count: 0 })
 			};
-			(mockDb.prepare as any)
-				.mockReturnValueOnce(mockDataStmt)
-				.mockReturnValueOnce(mockCountStmt);
+			(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 			conversationRepo.getConversationsWithCount({ limit: 5 });
 
@@ -242,9 +242,7 @@ describe('conversationRepo', () => {
 			const mockCountStmt = {
 				get: jest.fn().mockReturnValue({ count: 0 })
 			};
-			(mockDb.prepare as any)
-				.mockReturnValueOnce(mockDataStmt)
-				.mockReturnValueOnce(mockCountStmt);
+			(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 			conversationRepo.getConversationsWithCount({ offset: 10 });
 
@@ -272,11 +270,13 @@ describe('conversationRepo', () => {
 				description: 'Updated description'
 			});
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				id: 1,
-				name: 'Updated Name',
-				description: 'Updated description'
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 1,
+					name: 'Updated Name',
+					description: 'Updated description'
+				})
+			);
 			expect(result).toEqual(mockUpdated);
 		});
 
@@ -296,9 +296,11 @@ describe('conversationRepo', () => {
 
 			conversationRepo.updateConversation(1, { stop_on_failure: true as any });
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				stop_on_failure: 1
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					stop_on_failure: 1
+				})
+			);
 		});
 
 		it('removes deprecated fields', () => {
@@ -320,13 +322,17 @@ describe('conversationRepo', () => {
 				default_response_map_id: 10 as any
 			});
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				name: 'Test'
-			}));
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.not.objectContaining({
-				default_request_template_id: expect.anything(),
-				default_response_map_id: expect.anything()
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					name: 'Test'
+				})
+			);
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.not.objectContaining({
+					default_request_template_id: expect.anything(),
+					default_response_map_id: expect.anything()
+				})
+			);
 		});
 
 		it('returns existing conversation when no fields to update', () => {
@@ -366,12 +372,16 @@ describe('conversationRepo', () => {
 				description: undefined
 			});
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				name: 'Test'
-			}));
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.not.objectContaining({
-				description: expect.anything()
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					name: 'Test'
+				})
+			);
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.not.objectContaining({
+					description: expect.anything()
+				})
+			);
 		});
 
 		it('excludes id and created_at from updates', () => {
@@ -495,7 +505,9 @@ describe('conversationRepo', () => {
 
 			const result = conversationRepo.getConversationMessages(1);
 
-			expect(mockDb.prepare).toHaveBeenCalledWith('SELECT * FROM conversation_messages WHERE conversation_id = ? ORDER BY sequence');
+			expect(mockDb.prepare).toHaveBeenCalledWith(
+				'SELECT * FROM conversation_messages WHERE conversation_id = ? ORDER BY sequence'
+			);
 			expect(mockStmt.all).toHaveBeenCalledWith(1);
 			expect(result).toEqual(mockMessages);
 		});
@@ -532,10 +544,12 @@ describe('conversationRepo', () => {
 				content: 'Updated content'
 			});
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				id: 1,
-				content: 'Updated content'
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 1,
+					content: 'Updated content'
+				})
+			);
 			expect(result).toEqual(mockUpdated);
 		});
 
@@ -580,12 +594,16 @@ describe('conversationRepo', () => {
 				metadata: undefined
 			});
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				content: 'Test'
-			}));
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.not.objectContaining({
-				metadata: expect.anything()
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					content: 'Test'
+				})
+			);
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.not.objectContaining({
+					metadata: expect.anything()
+				})
+			);
 		});
 	});
 

@@ -1,9 +1,9 @@
 {
-	"files": [],
-	"references": [
-		{ "path": "packages/types" },
-		{ "path": "packages/config" },
-		{ "path": "backend" },
-		{ "path": "agent-service-api" }
-	]
+  "files": [],
+  "references": [
+    { "path": "packages/types" },
+    { "path": "packages/config" },
+    { "path": "backend" },
+    { "path": "agent-service-api" }
+  ]
 }

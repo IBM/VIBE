@@ -651,9 +651,7 @@ describe('agentRepo', () => {
 			});
 
 			it('handles legacy schema field', () => {
-				const rows = [
-					{ capabilities: '{"schema":"legacy-cap"}' }
-				];
+				const rows = [{ capabilities: '{"schema":"legacy-cap"}' }];
 
 				mockAll.mockReturnValue(rows);
 
@@ -663,11 +661,7 @@ describe('agentRepo', () => {
 			});
 
 			it('filters out null and empty capabilities', () => {
-				const rows = [
-					{ capabilities: '{"name":"valid"}' },
-					{ capabilities: null },
-					{ capabilities: '{}' }
-				];
+				const rows = [{ capabilities: '{"name":"valid"}' }, { capabilities: null }, { capabilities: '{}' }];
 
 				mockAll.mockReturnValue(rows);
 
@@ -677,10 +671,7 @@ describe('agentRepo', () => {
 			});
 
 			it('handles invalid JSON gracefully', () => {
-				const rows = [
-					{ capabilities: '{"name":"valid"}' },
-					{ capabilities: 'invalid-json' }
-				];
+				const rows = [{ capabilities: '{"name":"valid"}' }, { capabilities: 'invalid-json' }];
 
 				mockAll.mockReturnValue(rows);
 
@@ -714,9 +705,7 @@ describe('agentRepo', () => {
 			});
 
 			it('handles legacy schema field', () => {
-				const rows = [
-					{ capabilities: '{"schema":"legacy-cap"}' }
-				];
+				const rows = [{ capabilities: '{"schema":"legacy-cap"}' }];
 
 				mockAll.mockReturnValue(rows);
 
@@ -726,11 +715,7 @@ describe('agentRepo', () => {
 			});
 
 			it('filters out null and empty capabilities', () => {
-				const rows = [
-					{ capabilities: '{"name":"valid"}' },
-					{ capabilities: null },
-					{ capabilities: '{}' }
-				];
+				const rows = [{ capabilities: '{"name":"valid"}' }, { capabilities: null }, { capabilities: '{}' }];
 
 				mockAll.mockReturnValue(rows);
 
@@ -740,10 +725,7 @@ describe('agentRepo', () => {
 			});
 
 			it('handles invalid JSON gracefully', () => {
-				const rows = [
-					{ capabilities: '{"name":"valid"}' },
-					{ capabilities: 'invalid-json' }
-				];
+				const rows = [{ capabilities: '{"name":"valid"}' }, { capabilities: 'invalid-json' }];
 
 				mockAll.mockReturnValue(rows);
 

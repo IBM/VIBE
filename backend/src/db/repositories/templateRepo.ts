@@ -68,7 +68,7 @@ export function listRequestTemplates(filters?: { capability?: string }): Request
 			ORDER BY created_at DESC, id DESC
 		`);
 		const all = stmt.all() as RequestTemplate[];
-		return all.filter(t => {
+		return all.filter((t) => {
 			const capName = extractCapabilityName(t.capability);
 			return capName === filters.capability;
 		});
@@ -91,7 +91,10 @@ export function getRequestTemplateById(id: number): RequestTemplate | undefined 
 /**
  * Update a request template.
  */
-export function updateRequestTemplate(id: number, updates: Partial<Omit<RequestTemplate, 'id' | 'created_at'>>): RequestTemplate | undefined {
+export function updateRequestTemplate(
+	id: number,
+	updates: Partial<Omit<RequestTemplate, 'id' | 'created_at'>>
+): RequestTemplate | undefined {
 	const current = getRequestTemplateById(id);
 	if (!current) return undefined;
 
@@ -154,7 +157,7 @@ export function listResponseMaps(filters?: { capability?: string }): ResponseMap
 			ORDER BY created_at DESC, id DESC
 		`);
 		const all = stmt.all() as ResponseMap[];
-		return all.filter(m => {
+		return all.filter((m) => {
 			const capName = extractCapabilityName(m.capability);
 			return capName === filters.capability;
 		});
@@ -177,7 +180,10 @@ export function getResponseMapById(id: number): ResponseMap | undefined {
 /**
  * Update a response map.
  */
-export function updateResponseMap(id: number, updates: Partial<Omit<ResponseMap, 'id' | 'created_at'>>): ResponseMap | undefined {
+export function updateResponseMap(
+	id: number,
+	updates: Partial<Omit<ResponseMap, 'id' | 'created_at'>>
+): ResponseMap | undefined {
 	const current = getResponseMapById(id);
 	if (!current) return undefined;
 
@@ -258,62 +264,75 @@ const RESPONSE_MAP_LINKS: LinkTableConfig = {
 	resourceColumn: 'response_map_id'
 };
 
-function linkResourceToAgent(
-	config: LinkTableConfig,
-	agentId: number,
-	resourceId: number,
-	isDefault?: boolean
-): void {
+function linkResourceToAgent(config: LinkTableConfig, agentId: number, resourceId: number, isDefault?: boolean): void {
 	const tx = db.transaction(() => {
-		const existingLink = db.prepare(`
+		const existingLink = db
+			.prepare(
+				`
 			SELECT is_default
 			FROM ${config.table}
 			WHERE agent_id = ? AND ${config.resourceColumn} = ?
-		`).get(agentId, resourceId) as { is_default?: number } | undefined;
+		`
+			)
+			.get(agentId, resourceId) as { is_default?: number } | undefined;
 
-		const hasDefault = !!db.prepare(`
+		const hasDefault = !!db
+			.prepare(
+				`
 			SELECT 1 FROM ${config.table}
 			WHERE agent_id = ? AND is_default = 1 LIMIT 1
-		`).get(agentId);
+		`
+			)
+			.get(agentId);
 
 		if (isDefault) {
 			db.prepare(`UPDATE ${config.table} SET is_default = 0 WHERE agent_id = ?`).run(agentId);
 			if (existingLink) {
-				db.prepare(`
+				db.prepare(
+					`
 					UPDATE ${config.table}
 					SET is_default = 1
 					WHERE agent_id = ? AND ${config.resourceColumn} = ?
-				`).run(agentId, resourceId);
+				`
+				).run(agentId, resourceId);
 			} else {
-				db.prepare(`
+				db.prepare(
+					`
 					INSERT INTO ${config.table} (agent_id, ${config.resourceColumn}, is_default, linked_at)
 					VALUES (?, ?, 1, CURRENT_TIMESTAMP)
-				`).run(agentId, resourceId);
+				`
+				).run(agentId, resourceId);
 			}
 			return;
 		}
 
 		if (!hasDefault) {
 			if (existingLink) {
-				db.prepare(`
+				db.prepare(
+					`
 					UPDATE ${config.table}
 					SET is_default = 1
 					WHERE agent_id = ? AND ${config.resourceColumn} = ?
-				`).run(agentId, resourceId);
+				`
+				).run(agentId, resourceId);
 			} else {
-				db.prepare(`
+				db.prepare(
+					`
 					INSERT INTO ${config.table} (agent_id, ${config.resourceColumn}, is_default, linked_at)
 					VALUES (?, ?, 1, CURRENT_TIMESTAMP)
-				`).run(agentId, resourceId);
+				`
+				).run(agentId, resourceId);
 			}
 			return;
 		}
 
 		if (!existingLink) {
-			db.prepare(`
+			db.prepare(
+				`
 				INSERT INTO ${config.table} (agent_id, ${config.resourceColumn}, is_default, linked_at)
 				VALUES (?, ?, 0, CURRENT_TIMESTAMP)
-			`).run(agentId, resourceId);
+			`
+			).run(agentId, resourceId);
 		}
 	});
 	tx();
@@ -321,32 +340,44 @@ function linkResourceToAgent(
 
 function unlinkResourceFromAgent(config: LinkTableConfig, agentId: number, resourceId: number): void {
 	const tx = db.transaction(() => {
-		const existing = db.prepare(`
+		const existing = db
+			.prepare(
+				`
 			SELECT is_default
 			FROM ${config.table}
 			WHERE agent_id = ? AND ${config.resourceColumn} = ?
-		`).get(agentId, resourceId) as { is_default?: number } | undefined;
+		`
+			)
+			.get(agentId, resourceId) as { is_default?: number } | undefined;
 
-		db.prepare(`
+		db.prepare(
+			`
 			DELETE FROM ${config.table}
 			WHERE agent_id = ? AND ${config.resourceColumn} = ?
-		`).run(agentId, resourceId);
+		`
+		).run(agentId, resourceId);
 
 		if (existing?.is_default) {
-			const replacement = db.prepare(`
+			const replacement = db
+				.prepare(
+					`
 				SELECT ${config.resourceColumn} as resource_id
 				FROM ${config.table}
 				WHERE agent_id = ?
 				ORDER BY linked_at DESC, ${config.resourceColumn} DESC
 				LIMIT 1
-			`).get(agentId) as { resource_id?: number } | undefined;
+			`
+				)
+				.get(agentId) as { resource_id?: number } | undefined;
 
 			if (replacement?.resource_id) {
-				db.prepare(`
+				db.prepare(
+					`
 					UPDATE ${config.table}
 					SET is_default = 1
 					WHERE agent_id = ? AND ${config.resourceColumn} = ?
-				`).run(agentId, replacement.resource_id);
+				`
+				).run(agentId, replacement.resource_id);
 			}
 		}
 	});
@@ -356,11 +387,13 @@ function unlinkResourceFromAgent(config: LinkTableConfig, agentId: number, resou
 function setAgentDefaultResource(config: LinkTableConfig, agentId: number, resourceId: number): void {
 	const tx = db.transaction(() => {
 		db.prepare(`UPDATE ${config.table} SET is_default = 0 WHERE agent_id = ?`).run(agentId);
-		db.prepare(`
+		db.prepare(
+			`
 			UPDATE ${config.table}
 			SET is_default = 1
 			WHERE agent_id = ? AND ${config.resourceColumn} = ?
-		`).run(agentId, resourceId);
+		`
+		).run(agentId, resourceId);
 	});
 	tx();
 }
@@ -379,11 +412,15 @@ function getAgentResourceLink(
 }
 
 function getResourceLinkCount(config: LinkTableConfig, resourceId: number): number {
-	const row = db.prepare(`
+	const row = db
+		.prepare(
+			`
 		SELECT COUNT(*) as count
 		FROM ${config.table}
 		WHERE ${config.resourceColumn} = ?
-	`).get(resourceId) as { count: number };
+	`
+		)
+		.get(resourceId) as { count: number };
 	return row.count;
 }
 
@@ -428,7 +465,10 @@ export function setAgentDefaultTemplate(agentId: number, templateId: number): vo
 	setAgentDefaultResource(TEMPLATE_LINKS, agentId, templateId);
 }
 
-export function getAgentTemplateLink(agentId: number, templateId: number): { is_default?: number; linked_at?: string } | undefined {
+export function getAgentTemplateLink(
+	agentId: number,
+	templateId: number
+): { is_default?: number; linked_at?: string } | undefined {
 	return getAgentResourceLink(TEMPLATE_LINKS, agentId, templateId);
 }
 
@@ -475,7 +515,10 @@ export function setAgentDefaultResponseMap(agentId: number, mapId: number): void
 	setAgentDefaultResource(RESPONSE_MAP_LINKS, agentId, mapId);
 }
 
-export function getAgentResponseMapLink(agentId: number, mapId: number): { is_default?: number; linked_at?: string } | undefined {
+export function getAgentResponseMapLink(
+	agentId: number,
+	mapId: number
+): { is_default?: number; linked_at?: string } | undefined {
 	return getAgentResourceLink(RESPONSE_MAP_LINKS, agentId, mapId);
 }
 
@@ -511,10 +554,14 @@ function extractCapabilityName(capability: string | null | undefined): string | 
  * List all distinct capability names from request templates.
  */
 export function listRequestTemplateCapabilityNames(): string[] {
-	const rows = db.prepare(`
+	const rows = db
+		.prepare(
+			`
 		SELECT DISTINCT capability FROM request_templates
 		WHERE capability IS NOT NULL AND capability != ''
-	`).all() as Array<{ capability: string }>;
+	`
+		)
+		.all() as Array<{ capability: string }>;
 
 	const names = new Set<string>();
 	for (const row of rows) {
@@ -531,10 +578,14 @@ export function listRequestTemplateCapabilityNames(): string[] {
  * List all distinct capability names from response maps.
  */
 export function listResponseMapCapabilityNames(): string[] {
-	const rows = db.prepare(`
+	const rows = db
+		.prepare(
+			`
 		SELECT DISTINCT capability FROM response_maps
 		WHERE capability IS NOT NULL AND capability != ''
-	`).all() as Array<{ capability: string }>;
+	`
+		)
+		.all() as Array<{ capability: string }>;
 
 	const names = new Set<string>();
 	for (const row of rows) {

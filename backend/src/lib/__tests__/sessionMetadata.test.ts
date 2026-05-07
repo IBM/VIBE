@@ -406,9 +406,7 @@ describe('sessionMetadata', () => {
 		});
 
 		it('returns undefined when no assistant messages exist', () => {
-			const messages: SessionMessage[] = [
-				{ id: 1, session_id: 1, sequence: 1, role: 'user', content: 'Hello' }
-			];
+			const messages: SessionMessage[] = [{ id: 1, session_id: 1, sequence: 1, role: 'user', content: 'Hello' }];
 
 			expect(getAssistantOutputFromMessages(messages)).toBeUndefined();
 		});

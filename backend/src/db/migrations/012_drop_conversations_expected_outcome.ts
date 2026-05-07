@@ -12,7 +12,7 @@ const migration: Migration = {
 	up: (db) => {
 		try {
 			const convInfo = db.prepare("PRAGMA table_info('conversations')").all() as Array<{ name: string }>;
-			const hasExpectedOutcome = convInfo.some(col => col.name === 'expected_outcome');
+			const hasExpectedOutcome = convInfo.some((col) => col.name === 'expected_outcome');
 			if (!hasExpectedOutcome) {
 				return;
 			}

@@ -1,9 +1,5 @@
 import type { Request, Response } from 'express';
-import {
-	parsePaginationParams,
-	hasPaginationParams,
-	validatePaginationOrError
-} from '../pagination';
+import { parsePaginationParams, hasPaginationParams, validatePaginationOrError } from '../pagination';
 
 describe('pagination utilities', () => {
 	describe('parsePaginationParams', () => {

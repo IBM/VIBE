@@ -133,7 +133,8 @@ describe('conversation-turn-targets routes', () => {
 				weight: 1.0
 			};
 
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined) // No existing target
 				} as any)
@@ -171,7 +172,8 @@ describe('conversation-turn-targets routes', () => {
 				threshold: 90
 			};
 
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(existingTarget) // Existing target found
 				} as any)
@@ -239,7 +241,8 @@ describe('conversation-turn-targets routes', () => {
 				weight: null
 			};
 
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)

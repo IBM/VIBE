@@ -62,7 +62,10 @@ export function computeSessionDurationMs(session: ExecutionSession): number {
 	return Math.max(0, end - start);
 }
 
-export function extractTokenUsageFromSession(session: ExecutionSession): { input_tokens?: number; output_tokens?: number } {
+export function extractTokenUsageFromSession(session: ExecutionSession): {
+	input_tokens?: number;
+	output_tokens?: number;
+} {
 	const meta = parseSessionMetadata(session.metadata);
 	const tokens: { input_tokens?: number; output_tokens?: number } = {};
 	if (typeof meta.input_tokens === 'number') {
@@ -75,27 +78,29 @@ export function extractTokenUsageFromSession(session: ExecutionSession): { input
 }
 
 export function getAssistantOutputFromMessages(messages: SessionMessage[]): string | undefined {
-	const assistant = messages.find(m => m.role === 'assistant');
+	const assistant = messages.find((m) => m.role === 'assistant');
 	return assistant?.content;
 }
 
-export async function getSessionOutputAndExpected(sessionId: number): Promise<{ output?: string; expected?: string } | undefined> {
+export async function getSessionOutputAndExpected(
+	sessionId: number
+): Promise<{ output?: string; expected?: string } | undefined> {
 	const session = await getExecutionSessionById(sessionId);
 	if (!session) {
 		return undefined;
 	}
-    const [conversation, messages] = await Promise.all([
-        getConversationById(session.conversation_id),
-        getSessionMessages(sessionId)
-    ]);
-    const output = getAssistantOutputFromMessages(messages);
-    // Determine the first assistant reply's matching user turn index (k)
-    const assistant = messages.find(m => m.role === 'assistant');
-    if (!assistant || !conversation) {
-        return { output, expected: undefined };
-    }
-    const k = countUserTurnsUpTo(sessionId, assistant.sequence);
-    const target = getConversationTurnTarget(conversation.id!, k);
-    const expected = target?.target_reply || undefined;
-    return { output, expected };
+	const [conversation, messages] = await Promise.all([
+		getConversationById(session.conversation_id),
+		getSessionMessages(sessionId)
+	]);
+	const output = getAssistantOutputFromMessages(messages);
+	// Determine the first assistant reply's matching user turn index (k)
+	const assistant = messages.find((m) => m.role === 'assistant');
+	if (!assistant || !conversation) {
+		return { output, expected: undefined };
+	}
+	const k = countUserTurnsUpTo(sessionId, assistant.sequence);
+	const target = getConversationTurnTarget(conversation.id!, k);
+	const expected = target?.target_reply || undefined;
+	return { output, expected };
 }

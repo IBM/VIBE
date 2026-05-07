@@ -91,13 +91,12 @@ describe('ScoringService', () => {
 				error: 'API error'
 			});
 
-			await expect(scoreSimilarityText('expected', 'actual'))
-				.rejects.toThrow('LLM call failed: API error');
+			await expect(scoreSimilarityText('expected', 'actual')).rejects.toThrow('LLM call failed: API error');
 		});
 
 		it('should include execution time in metadata', async () => {
 			mockLLMConfigService.callLLMWithFallback.mockImplementation(async () => {
-				await new Promise(resolve => setTimeout(resolve, 10));
+				await new Promise((resolve) => setTimeout(resolve, 10));
 				return {
 					text: 'Response',
 					provider: 'openai',
@@ -164,11 +163,14 @@ describe('ScoringService', () => {
 			expect(dbQueries.updateResult).toHaveBeenCalledWith(1, {
 				similarity_scoring_status: 'running'
 			});
-			expect(dbQueries.updateResult).toHaveBeenCalledWith(1, expect.objectContaining({
-				similarity_score: 85,
-				similarity_scoring_status: 'completed',
-				success: 1
-			}));
+			expect(dbQueries.updateResult).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					similarity_score: 85,
+					similarity_scoring_status: 'completed',
+					success: 1
+				})
+			);
 		});
 
 		it('should use specified LLM config when provided', async () => {
@@ -197,15 +199,17 @@ describe('ScoringService', () => {
 		it('should throw error when result has no ID', async () => {
 			const resultWithoutId = { ...mockResult, id: undefined };
 
-			await expect(service.scoreTestResult(resultWithoutId as any, mockTest))
-				.rejects.toThrow('Test result must have an ID');
+			await expect(service.scoreTestResult(resultWithoutId as any, mockTest)).rejects.toThrow(
+				'Test result must have an ID'
+			);
 		});
 
 		it('should throw error when test has no expected output', async () => {
 			const testWithoutExpected = { ...mockTest, expected_output: undefined };
 
-			await expect(service.scoreTestResult(mockResult, testWithoutExpected as any))
-				.rejects.toThrow('Test must have expected_output to enable scoring');
+			await expect(service.scoreTestResult(mockResult, testWithoutExpected as any)).rejects.toThrow(
+				'Test must have expected_output to enable scoring'
+			);
 		});
 
 		it('should update success based on score threshold for agents without explicit criteria', async () => {
@@ -228,9 +232,12 @@ describe('ScoringService', () => {
 
 			await service.scoreTestResult(mockResult, mockTest);
 
-			expect(dbQueries.updateResult).toHaveBeenCalledWith(1, expect.objectContaining({
-				success: 1 // Score 75 >= threshold 70
-			}));
+			expect(dbQueries.updateResult).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					success: 1 // Score 75 >= threshold 70
+				})
+			);
 		});
 
 		it('should set success to 0 when score is below threshold and response mapping is missing', async () => {
@@ -302,10 +309,13 @@ describe('ScoringService', () => {
 
 			await service.scoreTestResult(mockResult, mockTest);
 
-			expect(dbQueries.updateResult).toHaveBeenCalledWith(1, expect.objectContaining({
-				similarity_scoring_status: 'failed',
-				similarity_scoring_error: expect.stringContaining('API timeout')
-			}));
+			expect(dbQueries.updateResult).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					similarity_scoring_status: 'failed',
+					similarity_scoring_error: expect.stringContaining('API timeout')
+				})
+			);
 		});
 
 		it('should skip failure update when results table is missing on error', async () => {
@@ -344,10 +354,13 @@ describe('ScoringService', () => {
 
 			await service.scoreTestResult(mockResult, mockTest);
 
-			expect(dbQueries.updateResult).toHaveBeenCalledWith(1, expect.objectContaining({
-				similarity_scoring_status: 'failed',
-				similarity_scoring_error: expect.stringContaining('Parse error')
-			}));
+			expect(dbQueries.updateResult).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					similarity_scoring_status: 'failed',
+					similarity_scoring_error: expect.stringContaining('Parse error')
+				})
+			);
 		});
 
 		it('should handle missing results table gracefully', async () => {

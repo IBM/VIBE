@@ -43,32 +43,44 @@ runLegacyTransitionMigrations(db, logError);
 function dropLegacyTablesIfSafe() {
 	try {
 		// Check if legacy tables still exist
-		const legacyTables = db.prepare(`
+		const legacyTables = db
+			.prepare(
+				`
       SELECT name FROM sqlite_master
       WHERE type='table' AND name IN ('tests', 'results')
-    `).all() as { name: string }[];
+    `
+			)
+			.all() as { name: string }[];
 
 		if (legacyTables.length === 0) {
 			return;
 		}
 
 		// Check that no jobs depend exclusively on legacy fields
-		const legacyJobsResult = db.prepare(`
+		const legacyJobsResult = db
+			.prepare(
+				`
       SELECT COUNT(*) as count
       FROM jobs
       WHERE test_id IS NOT NULL AND conversation_id IS NULL
-    `).get() as { count: number };
+    `
+			)
+			.get() as { count: number };
 
 		if (legacyJobsResult.count > 0) {
 			return;
 		}
 
 		// Check and fix suite entries that depend exclusively on legacy fields
-		const legacySuiteEntriesResult = db.prepare(`
+		const legacySuiteEntriesResult = db
+			.prepare(
+				`
       SELECT COUNT(*) as count
       FROM suite_entries
       WHERE test_id IS NOT NULL AND conversation_id IS NULL
-    `).get() as { count: number };
+    `
+			)
+			.get() as { count: number };
 
 		if (legacySuiteEntriesResult.count > 0) {
 			// Since the original tests table is gone, we need to map test_id to conversation_id
@@ -91,11 +103,15 @@ function dropLegacyTablesIfSafe() {
       `);
 
 			// Double-check that all suite entries are now migrated
-			const remainingLegacyEntries = db.prepare(`
+			const remainingLegacyEntries = db
+				.prepare(
+					`
         SELECT COUNT(*) as count
         FROM suite_entries
         WHERE test_id IS NOT NULL AND conversation_id IS NULL
-      `).get() as { count: number };
+      `
+				)
+				.get() as { count: number };
 
 			if (remainingLegacyEntries.count > 0) {
 				return;
@@ -221,13 +237,16 @@ db.exec(`
 // Minimal guard: ensure suite_entries.conversation_id exists, then create its index
 try {
 	const suiteEntriesColsForIndex = db.prepare("PRAGMA table_info('suite_entries')").all() as Array<{ name: string }>;
-	if (suiteEntriesColsForIndex.length > 0 && !suiteEntriesColsForIndex.some(col => col.name === 'conversation_id')) {
+	if (
+		suiteEntriesColsForIndex.length > 0 &&
+		!suiteEntriesColsForIndex.some((col) => col.name === 'conversation_id')
+	) {
 		// Try to add the column if it's missing (idempotent)
-		db.exec("ALTER TABLE suite_entries ADD COLUMN conversation_id INTEGER REFERENCES conversations(id)");
+		db.exec('ALTER TABLE suite_entries ADD COLUMN conversation_id INTEGER REFERENCES conversations(id)');
 	}
 	const suiteEntriesColsAfter = db.prepare("PRAGMA table_info('suite_entries')").all() as Array<{ name: string }>;
-	if (suiteEntriesColsAfter.some(col => col.name === 'conversation_id')) {
-		db.exec("CREATE INDEX IF NOT EXISTS idx_suite_entries_conversation ON suite_entries(conversation_id)");
+	if (suiteEntriesColsAfter.some((col) => col.name === 'conversation_id')) {
+		db.exec('CREATE INDEX IF NOT EXISTS idx_suite_entries_conversation ON suite_entries(conversation_id)');
 	}
 } catch (e) {
 	logError('Minimal guard for suite_entries index failed', e);

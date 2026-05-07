@@ -47,9 +47,15 @@ export type ImportExecutionState = {
 };
 
 export const createImportExecutionState = (request: ImportRequest): ImportExecutionState => ({
-	requestTemplateNameCounts: countByName((request.bundle.data.request_templates || []).map((template) => template.name)),
-	responseMapNameCounts: countByName((request.bundle.data.response_maps || []).map((responseMap) => responseMap.name)),
-	conversationNameCounts: countByName((request.bundle.data.conversations || []).map((conversation) => conversation.name)),
+	requestTemplateNameCounts: countByName(
+		(request.bundle.data.request_templates || []).map((template) => template.name)
+	),
+	responseMapNameCounts: countByName(
+		(request.bundle.data.response_maps || []).map((responseMap) => responseMap.name)
+	),
+	conversationNameCounts: countByName(
+		(request.bundle.data.conversations || []).map((conversation) => conversation.name)
+	),
 	suiteNameCounts: countByName((request.bundle.data.test_suites || []).map((suite) => suite.name)),
 	llmConfigNameCounts: countByName((request.bundle.data.llm_configs || []).map((config) => config.name)),
 	requestTemplateIdByName: new Map<string, number>(),
@@ -66,16 +72,15 @@ export const createImportExecutionState = (request: ImportRequest): ImportExecut
 
 export const loadExistingState = (): ExistingState => {
 	const existingTemplatesByName = new Map(listRequestTemplates().map((template) => [template.name, template]));
-	const existingResponseMapsByName = new Map(listResponseMaps().map((responseMap) => [responseMap.name, responseMap]));
-	const existingLlmConfigsByName = getLLMConfigs().reduce<Map<string, ExistingLlmConfig[]>>(
-		(acc, config) => {
-			const items = acc.get(config.name) || [];
-			items.push(config);
-			acc.set(config.name, items);
-			return acc;
-		},
-		new Map()
+	const existingResponseMapsByName = new Map(
+		listResponseMaps().map((responseMap) => [responseMap.name, responseMap])
 	);
+	const existingLlmConfigsByName = getLLMConfigs().reduce<Map<string, ExistingLlmConfig[]>>((acc, config) => {
+		const items = acc.get(config.name) || [];
+		items.push(config);
+		acc.set(config.name, items);
+		return acc;
+	}, new Map());
 	const existingAgentsByNaturalKey = new Map(
 		getAgents().map((agent) => [buildAgentNaturalKey(agent.name, agent.version), agent])
 	);
@@ -88,15 +93,12 @@ export const loadExistingState = (): ExistingState => {
 		},
 		new Map()
 	);
-	const existingSuitesByName = getTestSuites().reduce<Map<string, ExistingSuite[]>>(
-		(acc, suite) => {
-			const items = acc.get(suite.name) || [];
-			items.push(suite);
-			acc.set(suite.name, items);
-			return acc;
-		},
-		new Map()
-	);
+	const existingSuitesByName = getTestSuites().reduce<Map<string, ExistingSuite[]>>((acc, suite) => {
+		const items = acc.get(suite.name) || [];
+		items.push(suite);
+		acc.set(suite.name, items);
+		return acc;
+	}, new Map());
 
 	return {
 		existingTemplatesByName,
@@ -108,10 +110,7 @@ export const loadExistingState = (): ExistingState => {
 	};
 };
 
-export const seedImportExecutionLookups = (
-	state: ImportExecutionState,
-	existing: ExistingState
-): void => {
+export const seedImportExecutionLookups = (state: ImportExecutionState, existing: ExistingState): void => {
 	for (const [name, template] of existing.existingTemplatesByName.entries()) {
 		if (template.id) state.requestTemplateIdByName.set(name, template.id);
 	}

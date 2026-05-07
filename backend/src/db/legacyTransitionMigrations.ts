@@ -2,13 +2,10 @@ import type Database from 'better-sqlite3';
 
 type LogError = (...args: unknown[]) => void;
 
-export const runLegacyTransitionMigrations = (
-	db: Database.Database,
-	logError: LogError
-): void => {
+export const runLegacyTransitionMigrations = (db: Database.Database, logError: LogError): void => {
 	// Migration: create suite_entries table if missing and migrate existing entries
 	const suiteEntriesInfo = db.prepare("PRAGMA table_info('suite_entries')").all() as Array<{ name: string }>;
-	if (!suiteEntriesInfo.some(col => col.name === 'id')) {
+	if (!suiteEntriesInfo.some((col) => col.name === 'id')) {
 		db.exec(`
 			CREATE TABLE IF NOT EXISTS suite_entries (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +35,9 @@ export const runLegacyTransitionMigrations = (
 
 	// Migration: conversation turn targets (finalized schema pre-deploy)
 	try {
-		const hasTurnTargetsTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_turn_targets'").get() as { name?: string } | undefined;
+		const hasTurnTargetsTable = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_turn_targets'")
+			.get() as { name?: string } | undefined;
 		if (!hasTurnTargetsTable) {
 			db.exec(`
 				CREATE TABLE IF NOT EXISTS conversation_turn_targets (
@@ -63,12 +62,16 @@ export const runLegacyTransitionMigrations = (
 
 	// Backfill: move generic expected outcomes into first-turn targets
 	try {
-		const hasConversations = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'").get() as { name?: string } | undefined;
-		const hasTurnTargets = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_turn_targets'").get() as { name?: string } | undefined;
+		const hasConversations = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'")
+			.get() as { name?: string } | undefined;
+		const hasTurnTargets = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_turn_targets'")
+			.get() as { name?: string } | undefined;
 		const convCols = hasConversations
 			? (db.prepare("PRAGMA table_info('conversations')").all() as Array<{ name: string }>)
 			: [];
-		const hasExpectedOutcomeCol = convCols.some(col => col.name === 'expected_outcome');
+		const hasExpectedOutcomeCol = convCols.some((col) => col.name === 'expected_outcome');
 		if (hasConversations && hasTurnTargets && hasExpectedOutcomeCol) {
 			db.exec(`
 				INSERT INTO conversation_turn_targets (conversation_id, user_sequence, target_reply)
@@ -86,9 +89,15 @@ export const runLegacyTransitionMigrations = (
 	}
 
 	try {
-		const hasTests = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='tests'").get() as { name?: string } | undefined;
-		const hasConversations = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'").get() as { name?: string } | undefined;
-		const hasTurnTargets = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_turn_targets'").get() as { name?: string } | undefined;
+		const hasTests = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='tests'").get() as
+			| { name?: string }
+			| undefined;
+		const hasConversations = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'")
+			.get() as { name?: string } | undefined;
+		const hasTurnTargets = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='conversation_turn_targets'")
+			.get() as { name?: string } | undefined;
 		if (hasTests && hasConversations && hasTurnTargets) {
 			db.exec(`
 				INSERT INTO conversation_turn_targets (conversation_id, user_sequence, target_reply)

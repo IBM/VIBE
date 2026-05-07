@@ -29,7 +29,9 @@ const mockedGetConversationById = getConversationById as jest.MockedFunction<typ
 const mockedGetConversationMessages = getConversationMessages as jest.MockedFunction<typeof getConversationMessages>;
 const mockedIsSingleTurnConversation = isSingleTurnConversation as jest.MockedFunction<typeof isSingleTurnConversation>;
 const mockedTestIdToConversationId = testIdToConversationId as jest.MockedFunction<typeof testIdToConversationId>;
-const mockedCreateConversationJob = jobQueue.createConversationJob as jest.MockedFunction<typeof jobQueue.createConversationJob>;
+const mockedCreateConversationJob = jobQueue.createConversationJob as jest.MockedFunction<
+	typeof jobQueue.createConversationJob
+>;
 
 describe('legacy-execution service', () => {
 	beforeEach(() => {

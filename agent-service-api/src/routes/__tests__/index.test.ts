@@ -33,18 +33,16 @@ const createMockResponse = (): MockResponse => {
 };
 
 const getRouteHandler = (method: 'get' | 'post', path: string) => {
-	const layer = router.stack.find((entry: any) => entry.route?.path === path && entry.route?.methods?.[method]) as any;
+	const layer = router.stack.find(
+		(entry: any) => entry.route?.path === path && entry.route?.methods?.[method]
+	) as any;
 	if (!layer || !layer.route) {
 		throw new Error(`Route not found: ${method.toUpperCase()} ${path}`);
 	}
 	return layer.route.stack[0].handle as any;
 };
 
-const callRoute = async (
-	method: 'get' | 'post',
-	path: string,
-	options?: { body?: Record<string, unknown> }
-) => {
+const callRoute = async (method: 'get' | 'post', path: string, options?: { body?: Record<string, unknown> }) => {
 	const handler = getRouteHandler(method, path);
 	const req = {
 		body: options?.body ?? {}
@@ -82,7 +80,9 @@ describe('agent-service-api routes', () => {
 	});
 
 	it('POST /execute-test validates test_id', async () => {
-		const response = await callRoute('post', '/execute-test', { body: { test_input: 'hi', api_endpoint: 'http://test' } });
+		const response = await callRoute('post', '/execute-test', {
+			body: { test_input: 'hi', api_endpoint: 'http://test' }
+		});
 
 		expect(response.statusCode).toBe(400);
 		expect((response.body as any).error).toBe('test_id is required');

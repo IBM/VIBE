@@ -76,11 +76,11 @@ The system consists of four main components:
 - Error handling and request validation
 - Status tracking for running tests
 - Support for external API configuration:
-  - API endpoint configuration
-  - Request/response mapping
-  - Custom headers and authentication
-  - Template-based request formatting
-  - Response validation and success criteria
+    - API endpoint configuration
+    - Request/response mapping
+    - Custom headers and authentication
+    - Template-based request formatting
+    - Response validation and success criteria
 
 ## Agent Types
 

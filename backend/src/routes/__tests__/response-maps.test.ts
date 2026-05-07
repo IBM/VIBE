@@ -8,11 +8,21 @@ import * as templateRepo from '../../db/repositories/templateRepo';
 
 // Type the mocked functions
 const mockListResponseMaps = templateRepo.listResponseMaps as jest.MockedFunction<typeof templateRepo.listResponseMaps>;
-const mockListResponseMapCapabilityNames = templateRepo.listResponseMapCapabilityNames as jest.MockedFunction<typeof templateRepo.listResponseMapCapabilityNames>;
-const mockGetResponseMapById = templateRepo.getResponseMapById as jest.MockedFunction<typeof templateRepo.getResponseMapById>;
-const mockCreateResponseMap = templateRepo.createResponseMap as jest.MockedFunction<typeof templateRepo.createResponseMap>;
-const mockUpdateResponseMap = templateRepo.updateResponseMap as jest.MockedFunction<typeof templateRepo.updateResponseMap>;
-const mockDeleteResponseMap = templateRepo.deleteResponseMap as jest.MockedFunction<typeof templateRepo.deleteResponseMap>;
+const mockListResponseMapCapabilityNames = templateRepo.listResponseMapCapabilityNames as jest.MockedFunction<
+	typeof templateRepo.listResponseMapCapabilityNames
+>;
+const mockGetResponseMapById = templateRepo.getResponseMapById as jest.MockedFunction<
+	typeof templateRepo.getResponseMapById
+>;
+const mockCreateResponseMap = templateRepo.createResponseMap as jest.MockedFunction<
+	typeof templateRepo.createResponseMap
+>;
+const mockUpdateResponseMap = templateRepo.updateResponseMap as jest.MockedFunction<
+	typeof templateRepo.updateResponseMap
+>;
+const mockDeleteResponseMap = templateRepo.deleteResponseMap as jest.MockedFunction<
+	typeof templateRepo.deleteResponseMap
+>;
 
 describe('response-maps routes', () => {
 	let mockReq: Partial<Request>;
@@ -102,20 +112,12 @@ describe('response-maps routes', () => {
 
 	describe('GET /api/response-maps/capability-names', () => {
 		it('returns all capability names', async () => {
-			(mockListResponseMapCapabilityNames as any).mockReturnValue([
-				'capability1',
-				'capability2',
-				'capability3'
-			]);
+			(mockListResponseMapCapabilityNames as any).mockReturnValue(['capability1', 'capability2', 'capability3']);
 
 			await callRoute('get', '/capability-names');
 
 			expect(mockListResponseMapCapabilityNames).toHaveBeenCalled();
-			expect(jsonMock).toHaveBeenCalledWith([
-				'capability1',
-				'capability2',
-				'capability3'
-			]);
+			expect(jsonMock).toHaveBeenCalledWith(['capability1', 'capability2', 'capability3']);
 		});
 
 		it('handles errors gracefully', async () => {

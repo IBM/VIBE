@@ -18,7 +18,9 @@ const mockGetSuiteRunById = getSuiteRunById as jest.MockedFunction<typeof getSui
 const mockGetJobsBySuiteRunId = getJobsBySuiteRunId as jest.MockedFunction<typeof getJobsBySuiteRunId>;
 const mockDeleteSuiteRun = deleteSuiteRun as jest.MockedFunction<typeof deleteSuiteRun>;
 const mockListSuiteRunsWithCount = listSuiteRunsWithCount as jest.MockedFunction<typeof listSuiteRunsWithCount>;
-const mockGetExecutionSessionsByIds = getExecutionSessionsByIds as jest.MockedFunction<typeof getExecutionSessionsByIds>;
+const mockGetExecutionSessionsByIds = getExecutionSessionsByIds as jest.MockedFunction<
+	typeof getExecutionSessionsByIds
+>;
 const mockGetSessionMessages = getSessionMessages as jest.MockedFunction<typeof getSessionMessages>;
 const mockComputeSessionDurationMs = computeSessionDurationMs as jest.MockedFunction<typeof computeSessionDurationMs>;
 
@@ -450,9 +452,7 @@ describe('Suite Runs Routes', () => {
 			});
 			(mockGetJobsBySuiteRunId as any).mockResolvedValue(mockJobs);
 			(mockGetExecutionSessionsByIds as any).mockReturnValue([]);
-			(mockGetSessionMessages as any)
-				.mockResolvedValueOnce(mockMessages1)
-				.mockResolvedValueOnce(mockMessages2);
+			(mockGetSessionMessages as any).mockResolvedValueOnce(mockMessages1).mockResolvedValueOnce(mockMessages2);
 
 			const handler = getRouteHandler('get', '/');
 			await callRoute(handler, mockReq, mockRes);
@@ -551,9 +551,7 @@ describe('Suite Runs Routes', () => {
 			const handler = getRouteHandler('get', '/:id');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(jsonMock).toHaveBeenCalledWith(
-				expect.objectContaining({ status: 'completed', progress: 100 })
-			);
+			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({ status: 'completed', progress: 100 }));
 		});
 
 		it('recalculates status to running when jobs are in progress', async () => {
@@ -577,9 +575,7 @@ describe('Suite Runs Routes', () => {
 			const handler = getRouteHandler('get', '/:id');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(jsonMock).toHaveBeenCalledWith(
-				expect.objectContaining({ status: 'running' })
-			);
+			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({ status: 'running' }));
 		});
 
 		it('sets total execution time to 0 and handles similarity errors', async () => {
@@ -602,9 +598,7 @@ describe('Suite Runs Routes', () => {
 			const handler = getRouteHandler('get', '/:id');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(jsonMock).toHaveBeenCalledWith(
-				expect.objectContaining({ total_execution_time: 0 })
-			);
+			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({ total_execution_time: 0 }));
 		});
 
 		it('should return 400 for invalid ID', async () => {

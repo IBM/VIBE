@@ -14,7 +14,9 @@ import {
 } from '../../db/queries';
 
 const mockGetExecutionSessions = getExecutionSessions as jest.MockedFunction<typeof getExecutionSessions>;
-const mockGetExecutionSessionsWithCount = getExecutionSessionsWithCount as jest.MockedFunction<typeof getExecutionSessionsWithCount>;
+const mockGetExecutionSessionsWithCount = getExecutionSessionsWithCount as jest.MockedFunction<
+	typeof getExecutionSessionsWithCount
+>;
 const mockGetExecutionSessionById = getExecutionSessionById as jest.MockedFunction<typeof getExecutionSessionById>;
 const mockUpdateExecutionSession = updateExecutionSession as jest.MockedFunction<typeof updateExecutionSession>;
 const mockGetSessionMessages = getSessionMessages as jest.MockedFunction<typeof getSessionMessages>;
@@ -412,14 +414,16 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				agent_id: 1,
-				conversation_id: 1,
-				status: 'running',
-				success: null,
-				metadata: null,
-				error_message: null
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					agent_id: 1,
+					conversation_id: 1,
+					status: 'running',
+					success: null,
+					metadata: null,
+					error_message: null
+				})
+			);
 			expect(statusMock).toHaveBeenCalledWith(201);
 			expect(jsonMock).toHaveBeenCalledWith(mockCreatedSession);
 		});
@@ -444,10 +448,12 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				agent_id: 1,
-				conversation_id: 2
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					agent_id: 1,
+					conversation_id: 2
+				})
+			);
 		});
 
 		it('should convert boolean success to 0/1', async () => {
@@ -472,9 +478,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				success: 1
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: 1
+				})
+			);
 		});
 
 		it('should convert false success to 0', async () => {
@@ -499,9 +507,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				success: 0
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: 0
+				})
+			);
 		});
 
 		it('should convert numeric success to 0/1', async () => {
@@ -526,9 +536,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				success: 1
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: 1
+				})
+			);
 		});
 
 		it('should set success to null if undefined', async () => {
@@ -552,9 +564,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				success: null
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: null
+				})
+			);
 		});
 
 		it('should stringify metadata object', async () => {
@@ -579,9 +593,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				metadata: '{"key":"value"}'
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					metadata: '{"key":"value"}'
+				})
+			);
 		});
 
 		it('should set metadata to null if undefined', async () => {
@@ -605,9 +621,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				metadata: null
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					metadata: null
+				})
+			);
 		});
 
 		it('should handle metadata stringify errors gracefully', async () => {
@@ -635,9 +653,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				metadata: null
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					metadata: null
+				})
+			);
 		});
 
 		it('should set error_message to null if undefined', async () => {
@@ -661,9 +681,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				error_message: null
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					error_message: null
+				})
+			);
 		});
 
 		it('should convert non-string error_message to string', async () => {
@@ -688,9 +710,11 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				error_message: '123'
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					error_message: '123'
+				})
+			);
 		});
 
 		it('should convert timestamp objects to ISO strings', async () => {
@@ -720,10 +744,12 @@ describe('Sessions Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockCreateExecutionSession).toHaveBeenCalledWith(expect.objectContaining({
-				started_at: '2024-01-01T10:00:00.000Z',
-				completed_at: '2024-01-01T11:00:00.000Z'
-			}));
+			expect(mockCreateExecutionSession).toHaveBeenCalledWith(
+				expect.objectContaining({
+					started_at: '2024-01-01T10:00:00.000Z',
+					completed_at: '2024-01-01T11:00:00.000Z'
+				})
+			);
 		});
 
 		it('should handle errors gracefully', async () => {
@@ -766,10 +792,13 @@ describe('Sessions Routes', () => {
 			await callRoute(handler, mockReq, mockRes);
 
 			expect(mockGetExecutionSessionById).toHaveBeenCalledWith(1);
-			expect(mockUpdateExecutionSession).toHaveBeenCalledWith(1, expect.objectContaining({
-				status: 'failed',
-				error_message: 'Session cancelled by user'
-			}));
+			expect(mockUpdateExecutionSession).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					status: 'failed',
+					error_message: 'Session cancelled by user'
+				})
+			);
 			expect(statusMock).toHaveBeenCalledWith(204);
 			expect(sendMock).toHaveBeenCalled();
 		});

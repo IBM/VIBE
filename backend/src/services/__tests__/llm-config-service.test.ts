@@ -65,8 +65,7 @@ describe('LLMConfigService', () => {
 		it('should throw error when config not found', async () => {
 			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(null);
 
-			await expect(service.callLLM(999, { prompt: 'Test' }))
-				.rejects.toThrow('LLM config with ID 999 not found');
+			await expect(service.callLLM(999, { prompt: 'Test' })).rejects.toThrow('LLM config with ID 999 not found');
 		});
 
 		it('should return error response when LLM request fails', async () => {
@@ -96,11 +95,9 @@ describe('LLMConfigService', () => {
 			(dbQueries.getLLMConfigs as jest.Mock).mockReturnValue(mockConfigs);
 
 			// First call fails, second succeeds
-			mockedAxios.post
-				.mockRejectedValueOnce(new Error('Ollama failed'))
-				.mockResolvedValueOnce({
-					data: { choices: [{ message: { content: 'OpenAI response' } }] }
-				});
+			mockedAxios.post.mockRejectedValueOnce(new Error('Ollama failed')).mockResolvedValueOnce({
+				data: { choices: [{ message: { content: 'OpenAI response' } }] }
+			});
 
 			const result = await service.callLLMWithFallback({ prompt: 'Test' });
 
@@ -112,19 +109,15 @@ describe('LLMConfigService', () => {
 		it('should throw error when no configs available', async () => {
 			(dbQueries.getLLMConfigs as jest.Mock).mockReturnValue([]);
 
-			await expect(service.callLLMWithFallback({ prompt: 'Test' }))
-				.rejects.toThrow('No LLM configs available');
+			await expect(service.callLLMWithFallback({ prompt: 'Test' })).rejects.toThrow('No LLM configs available');
 		});
 
 		it('should throw error when all configs fail', async () => {
-			const mockConfigs = [
-				{ id: 1, provider: 'ollama', config: '{"model":"llama2"}', priority: 1 }
-			];
+			const mockConfigs = [{ id: 1, provider: 'ollama', config: '{"model":"llama2"}', priority: 1 }];
 			(dbQueries.getLLMConfigs as jest.Mock).mockReturnValue(mockConfigs);
 			mockedAxios.post.mockRejectedValue(new Error('Connection failed'));
 
-			await expect(service.callLLMWithFallback({ prompt: 'Test' }))
-				.rejects.toThrow('All LLM requests failed');
+			await expect(service.callLLMWithFallback({ prompt: 'Test' })).rejects.toThrow('All LLM requests failed');
 		});
 	});
 
@@ -225,7 +218,7 @@ describe('LLMConfigService', () => {
 				{
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': 'Bearer test-key'
+						Authorization: 'Bearer test-key'
 					}
 				}
 			);
@@ -350,7 +343,7 @@ describe('LLMConfigService', () => {
 				}),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'Authorization': 'Bearer test-token'
+						Authorization: 'Bearer test-token'
 					})
 				})
 			);

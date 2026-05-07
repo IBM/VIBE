@@ -12,8 +12,12 @@ const migration: Migration = {
 	name: 'Migrate legacy agent-scoped templates to global tables',
 	up: (db) => {
 		try {
-			const legacyTemplateCount = (db.prepare('SELECT COUNT(*) as count FROM agent_request_templates').get() as { count: number }).count;
-			const legacyMapCount = (db.prepare('SELECT COUNT(*) as count FROM agent_response_maps').get() as { count: number }).count;
+			const legacyTemplateCount = (
+				db.prepare('SELECT COUNT(*) as count FROM agent_request_templates').get() as { count: number }
+			).count;
+			const legacyMapCount = (
+				db.prepare('SELECT COUNT(*) as count FROM agent_response_maps').get() as { count: number }
+			).count;
 
 			if (legacyTemplateCount <= 0 && legacyMapCount <= 0) {
 				return;
@@ -25,55 +29,71 @@ const migration: Migration = {
 
 			const normalizeCapability = (value: string | null) => serializeCapabilities(value);
 
-			const existingTemplates = db.prepare(`
+			const existingTemplates = db
+				.prepare(
+					`
 			SELECT id, name, description, capability, body
 			FROM request_templates
-		`).all() as Array<{ id: number; name: string; capability: string | null; body: string }>;
+		`
+				)
+				.all() as Array<{ id: number; name: string; capability: string | null; body: string }>;
 
-			const existingMaps = db.prepare(`
+			const existingMaps = db
+				.prepare(
+					`
 			SELECT id, name, description, capability, spec
 			FROM response_maps
-		`).all() as Array<{ id: number; name: string; capability: string | null; spec: string }>;
+		`
+				)
+				.all() as Array<{ id: number; name: string; capability: string | null; spec: string }>;
 
 			// Get all legacy request templates
-			const legacyTemplates = db.prepare(`
+			const legacyTemplates = db
+				.prepare(
+					`
 			SELECT art.*, a.name as agent_name
 			FROM agent_request_templates art
 			JOIN agents a ON art.agent_id = a.id
 			ORDER BY art.agent_id, art.is_default DESC
-		`).all() as Array<{
-			id: number;
-			agent_id: number;
-			name: string;
-			description: string | null;
-			body: string;
-			capabilities: string | null;
-			is_default: number;
-			agent_name: string;
-			created_at: string | null;
-		}>;
+		`
+				)
+				.all() as Array<{
+				id: number;
+				agent_id: number;
+				name: string;
+				description: string | null;
+				body: string;
+				capabilities: string | null;
+				is_default: number;
+				agent_name: string;
+				created_at: string | null;
+			}>;
 
 			// Get all legacy response maps
-			const legacyMaps = db.prepare(`
+			const legacyMaps = db
+				.prepare(
+					`
 			SELECT arm.*, a.name as agent_name
 			FROM agent_response_maps arm
 			JOIN agents a ON arm.agent_id = a.id
 			ORDER BY arm.agent_id, arm.is_default DESC
-		`).all() as Array<{
-			id: number;
-			agent_id: number;
-			name: string;
-			description: string | null;
-			spec: string;
-			capabilities: string | null;
-			is_default: number;
-			agent_name: string;
-			created_at: string | null;
-		}>;
+		`
+				)
+				.all() as Array<{
+				id: number;
+				agent_id: number;
+				name: string;
+				description: string | null;
+				spec: string;
+				capabilities: string | null;
+				is_default: number;
+				agent_name: string;
+				created_at: string | null;
+			}>;
 
 			// Track used names to avoid conflicts (seed from existing globals)
-			const usedTemplateNames = new Set(existingTemplates.map(t => t.name));
-			const usedMapNames = new Set(existingMaps.map(m => m.name));
+			const usedTemplateNames = new Set(existingTemplates.map((t) => t.name));
+			const usedMapNames = new Set(existingMaps.map((m) => m.name));
 
 			// Dedupe by name + body/spec (+ capability)
 			const templateKeyToGlobalId = new Map<string, number>();
@@ -212,8 +232,8 @@ const migration: Migration = {
 			if (process.env.NODE_ENV !== 'test') {
 				console.log(
 					`Migrated ${legacyTemplates.length} legacy request templates into ${templateResult.inserted} new global templates ` +
-					`(${templateResult.reused} reused), and ${legacyMaps.length} legacy response maps into ${mapResult.inserted} new global maps ` +
-					`(${mapResult.reused} reused).`
+						`(${templateResult.reused} reused), and ${legacyMaps.length} legacy response maps into ${mapResult.inserted} new global maps ` +
+						`(${mapResult.reused} reused).`
 				);
 			}
 		} catch (e) {

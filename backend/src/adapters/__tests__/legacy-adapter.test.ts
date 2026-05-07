@@ -74,9 +74,7 @@ describe('legacy-adapter', () => {
 		});
 
 		expect(converted.conversation).toEqual({ name: 'Test', description: 'desc' });
-		expect(converted.messages).toEqual([
-			{ sequence: 1, role: 'user', content: 'hello' }
-		]);
+		expect(converted.messages).toEqual([{ sequence: 1, role: 'user', content: 'hello' }]);
 	});
 
 	it('converts session to legacy result with metadata and similarity', () => {
@@ -176,10 +174,15 @@ describe('legacy-adapter', () => {
 	it('detects single-turn conversations', () => {
 		expect(isSingleTurnConversation({} as any)).toBe(false);
 		expect(isSingleTurnConversation({} as any, [{ role: 'user', content: 'hi' }] as any)).toBe(true);
-		expect(isSingleTurnConversation({} as any, [
-			{ role: 'user', content: 'hi' },
-			{ role: 'user', content: 'again' }
-		] as any)).toBe(false);
+		expect(
+			isSingleTurnConversation(
+				{} as any,
+				[
+					{ role: 'user', content: 'hi' },
+					{ role: 'user', content: 'again' }
+				] as any
+			)
+		).toBe(false);
 	});
 
 	it('uses ids as legacy identifiers', () => {

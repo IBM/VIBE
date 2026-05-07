@@ -42,17 +42,15 @@ const formatDuplicateEntityName = (name: string, referenceKey: string, isDuplica
 	return `${name} [${referenceKey.slice(-6)}]`;
 };
 
-const normalizeMessages = (
-	messages: ExportedConversationMessage[] | undefined
-): ExportedConversationMessage[] => [...(messages || [])].sort((a, b) => a.sequence - b.sequence);
+const normalizeMessages = (messages: ExportedConversationMessage[] | undefined): ExportedConversationMessage[] =>
+	[...(messages || [])].sort((a, b) => a.sequence - b.sequence);
 
 const normalizeTurnTargets = (
 	turnTargets: ExportedConversationTurnTarget[] | undefined
 ): ExportedConversationTurnTarget[] => [...(turnTargets || [])].sort((a, b) => a.user_sequence - b.user_sequence);
 
-const normalizeSuiteEntries = (
-	entries: ExportedSuiteEntry[] | undefined
-): ExportedSuiteEntry[] => [...(entries || [])].sort((a, b) => a.sequence - b.sequence);
+const normalizeSuiteEntries = (entries: ExportedSuiteEntry[] | undefined): ExportedSuiteEntry[] =>
+	[...(entries || [])].sort((a, b) => a.sequence - b.sequence);
 
 const normalizeJsonStringValue = (value: string): unknown => {
 	try {
@@ -62,13 +60,13 @@ const normalizeJsonStringValue = (value: string): unknown => {
 	}
 };
 
-export const buildItemKey = (entityType: ExportableDataType, entityIdentity: string): string => `${entityType}:${entityIdentity}`;
+export const buildItemKey = (entityType: ExportableDataType, entityIdentity: string): string =>
+	`${entityType}:${entityIdentity}`;
 
 export const buildAgentNaturalKey = (name: string, version: string): string => `${name}@${version}`;
 
-export const buildAgentItemKey = (agent: Pick<ExportedAgent, 'name' | 'version'>): string => (
-	buildItemKey(ExportableDataType.AGENTS, buildAgentNaturalKey(agent.name, agent.version))
-);
+export const buildAgentItemKey = (agent: Pick<ExportedAgent, 'name' | 'version'>): string =>
+	buildItemKey(ExportableDataType.AGENTS, buildAgentNaturalKey(agent.name, agent.version));
 
 export const buildConversationReferenceKey = (conversation: ExportedConversation): string => {
 	const serializableConversation = {
@@ -90,16 +88,14 @@ export const buildConversationReferenceKey = (conversation: ExportedConversation
 	return buildHashedReferenceKey('conversation', serializableConversation);
 };
 
-export const getConversationReferenceKey = (conversation: ExportedConversation): string => buildConversationReferenceKey(conversation);
+export const getConversationReferenceKey = (conversation: ExportedConversation): string =>
+	buildConversationReferenceKey(conversation);
 
-export const buildConversationItemKey = (conversation: ExportedConversation): string => (
-	buildItemKey(ExportableDataType.CONVERSATIONS, getConversationReferenceKey(conversation))
-);
+export const buildConversationItemKey = (conversation: ExportedConversation): string =>
+	buildItemKey(ExportableDataType.CONVERSATIONS, getConversationReferenceKey(conversation));
 
-export const formatConversationEntityName = (
-	conversation: ExportedConversation,
-	isDuplicateName: boolean
-): string => formatDuplicateEntityName(conversation.name, getConversationReferenceKey(conversation), isDuplicateName);
+export const formatConversationEntityName = (conversation: ExportedConversation, isDuplicateName: boolean): string =>
+	formatDuplicateEntityName(conversation.name, getConversationReferenceKey(conversation), isDuplicateName);
 
 export const buildSuiteReferenceKey = (suite: ExportedTestSuite): string => {
 	const serializableSuite = {
@@ -117,7 +113,9 @@ export const buildSuiteReferenceKey = (suite: ExportedTestSuite): string => {
 				? { child_suite_reference_key: entry.child_suite_reference_key }
 				: {}),
 			...(entry.agent_override_name !== undefined ? { agent_override_name: entry.agent_override_name } : {}),
-			...(entry.agent_override_version !== undefined ? { agent_override_version: entry.agent_override_version } : {})
+			...(entry.agent_override_version !== undefined
+				? { agent_override_version: entry.agent_override_version }
+				: {})
 		}))
 	};
 
@@ -126,14 +124,11 @@ export const buildSuiteReferenceKey = (suite: ExportedTestSuite): string => {
 
 export const getSuiteReferenceKey = (suite: ExportedTestSuite): string => buildSuiteReferenceKey(suite);
 
-export const buildSuiteItemKey = (suite: ExportedTestSuite): string => (
-	buildItemKey(ExportableDataType.TEST_SUITES, getSuiteReferenceKey(suite))
-);
+export const buildSuiteItemKey = (suite: ExportedTestSuite): string =>
+	buildItemKey(ExportableDataType.TEST_SUITES, getSuiteReferenceKey(suite));
 
-export const formatSuiteEntityName = (
-	suite: ExportedTestSuite,
-	isDuplicateName: boolean
-): string => formatDuplicateEntityName(suite.name, getSuiteReferenceKey(suite), isDuplicateName);
+export const formatSuiteEntityName = (suite: ExportedTestSuite, isDuplicateName: boolean): string =>
+	formatDuplicateEntityName(suite.name, getSuiteReferenceKey(suite), isDuplicateName);
 
 export const buildLLMConfigReferenceKey = (config: ExportedLLMConfig): string => {
 	const serializableConfig = {
@@ -146,14 +141,11 @@ export const buildLLMConfigReferenceKey = (config: ExportedLLMConfig): string =>
 	return buildHashedReferenceKey('llm_config', serializableConfig);
 };
 
-export const buildLLMConfigItemKey = (config: ExportedLLMConfig): string => (
-	buildItemKey(ExportableDataType.LLM_CONFIGS, buildLLMConfigReferenceKey(config))
-);
+export const buildLLMConfigItemKey = (config: ExportedLLMConfig): string =>
+	buildItemKey(ExportableDataType.LLM_CONFIGS, buildLLMConfigReferenceKey(config));
 
-export const formatLLMConfigEntityName = (
-	config: ExportedLLMConfig,
-	isDuplicateName: boolean
-): string => formatDuplicateEntityName(config.name, buildLLMConfigReferenceKey(config), isDuplicateName);
+export const formatLLMConfigEntityName = (config: ExportedLLMConfig, isDuplicateName: boolean): string =>
+	formatDuplicateEntityName(config.name, buildLLMConfigReferenceKey(config), isDuplicateName);
 
 export const buildRequestTemplateReferenceKey = (template: ExportedRequestTemplate): string => {
 	const serializableTemplate = {
@@ -166,14 +158,11 @@ export const buildRequestTemplateReferenceKey = (template: ExportedRequestTempla
 	return buildHashedReferenceKey('request_template', serializableTemplate);
 };
 
-export const buildRequestTemplateItemKey = (template: ExportedRequestTemplate): string => (
-	buildItemKey(ExportableDataType.REQUEST_TEMPLATES, buildRequestTemplateReferenceKey(template))
-);
+export const buildRequestTemplateItemKey = (template: ExportedRequestTemplate): string =>
+	buildItemKey(ExportableDataType.REQUEST_TEMPLATES, buildRequestTemplateReferenceKey(template));
 
-export const formatRequestTemplateEntityName = (
-	template: ExportedRequestTemplate,
-	isDuplicateName: boolean
-): string => formatDuplicateEntityName(template.name, buildRequestTemplateReferenceKey(template), isDuplicateName);
+export const formatRequestTemplateEntityName = (template: ExportedRequestTemplate, isDuplicateName: boolean): string =>
+	formatDuplicateEntityName(template.name, buildRequestTemplateReferenceKey(template), isDuplicateName);
 
 export const buildResponseMapReferenceKey = (responseMap: ExportedResponseMap): string => {
 	const serializableResponseMap = {
@@ -186,18 +175,13 @@ export const buildResponseMapReferenceKey = (responseMap: ExportedResponseMap): 
 	return buildHashedReferenceKey('response_map', serializableResponseMap);
 };
 
-export const buildResponseMapItemKey = (responseMap: ExportedResponseMap): string => (
-	buildItemKey(ExportableDataType.RESPONSE_MAPS, buildResponseMapReferenceKey(responseMap))
-);
+export const buildResponseMapItemKey = (responseMap: ExportedResponseMap): string =>
+	buildItemKey(ExportableDataType.RESPONSE_MAPS, buildResponseMapReferenceKey(responseMap));
 
-export const formatResponseMapEntityName = (
-	responseMap: ExportedResponseMap,
-	isDuplicateName: boolean
-): string => formatDuplicateEntityName(responseMap.name, buildResponseMapReferenceKey(responseMap), isDuplicateName);
+export const formatResponseMapEntityName = (responseMap: ExportedResponseMap, isDuplicateName: boolean): string =>
+	formatDuplicateEntityName(responseMap.name, buildResponseMapReferenceKey(responseMap), isDuplicateName);
 
-export const getAllowedResolutionDecisions = (
-	status: AnalysisStatus
-): ImportResolutionDecision[] => {
+export const getAllowedResolutionDecisions = (status: AnalysisStatus): ImportResolutionDecision[] => {
 	if (status === 'new') {
 		return ['skip', 'create_new'];
 	}

@@ -11,8 +11,11 @@ const migration: Migration = {
 	name: 'Ensure jobs.test_id is nullable',
 	up: (db) => {
 		try {
-			const jobsColsDetailedFinal = db.prepare("PRAGMA table_info('jobs')").all() as Array<{ name: string; notnull: number }>;
-			const testIdColFinal = jobsColsDetailedFinal.find(c => c.name === 'test_id');
+			const jobsColsDetailedFinal = db.prepare("PRAGMA table_info('jobs')").all() as Array<{
+				name: string;
+				notnull: number;
+			}>;
+			const testIdColFinal = jobsColsDetailedFinal.find((c) => c.name === 'test_id');
 			if (testIdColFinal && Number(testIdColFinal.notnull) === 1) {
 				db.transaction(() => {
 					db.exec(`

@@ -20,21 +20,22 @@ import {
 	getResultById,
 	getTestById
 } from '../../db/queries';
-import {
-	sessionToLegacyResult,
-	legacyResultToSession
-} from '../../adapters/legacy-adapter';
+import { sessionToLegacyResult, legacyResultToSession } from '../../adapters/legacy-adapter';
 import { testIdToConversationId } from '../../lib/legacyIdResolver';
 import { extractTokenUsage, validateTokenUsage } from '../../lib/tokenUsageExtractor';
 
-const mockGetExecutionSessionsWithCount = getExecutionSessionsWithCount as jest.MockedFunction<typeof getExecutionSessionsWithCount>;
+const mockGetExecutionSessionsWithCount = getExecutionSessionsWithCount as jest.MockedFunction<
+	typeof getExecutionSessionsWithCount
+>;
 const mockGetExecutionSessionById = getExecutionSessionById as jest.MockedFunction<typeof getExecutionSessionById>;
 const mockGetSessionMessages = getSessionMessages as jest.MockedFunction<typeof getSessionMessages>;
 const mockGetConversationById = getConversationById as jest.MockedFunction<typeof getConversationById>;
 const mockCreateExecutionSession = createExecutionSession as jest.MockedFunction<typeof createExecutionSession>;
 const mockAddSessionMessage = addSessionMessage as jest.MockedFunction<typeof addSessionMessage>;
 const mockCountUserTurnsUpTo = countUserTurnsUpTo as jest.MockedFunction<typeof countUserTurnsUpTo>;
-const mockGetConversationTurnTarget = getConversationTurnTarget as jest.MockedFunction<typeof getConversationTurnTarget>;
+const mockGetConversationTurnTarget = getConversationTurnTarget as jest.MockedFunction<
+	typeof getConversationTurnTarget
+>;
 const mockGetConversationMessages = getConversationMessages as jest.MockedFunction<typeof getConversationMessages>;
 const mockGetResultById = getResultById as jest.MockedFunction<typeof getResultById>;
 const mockGetTestById = getTestById as jest.MockedFunction<typeof getTestById>;
@@ -96,9 +97,7 @@ describe('Results Routes', () => {
 			const mockSessions = [
 				{ id: 1, agent_id: 1, conversation_id: 1, status: 'completed', created_at: '2024-01-01' }
 			];
-			const mockMessages = [
-				{ id: 1, session_id: 1, role: 'user', content: 'test', sequence: 1 }
-			];
+			const mockMessages = [{ id: 1, session_id: 1, role: 'user', content: 'test', sequence: 1 }];
 			const mockLegacyResult = {
 				id: 1,
 				agent_id: 1,
@@ -136,9 +135,7 @@ describe('Results Routes', () => {
 			const mockSessions = [
 				{ id: 1, agent_id: 1, conversation_id: 1, status: 'completed', created_at: '2024-01-01' }
 			];
-			const mockMessages = [
-				{ id: 1, session_id: 1, role: 'user', content: 'test', sequence: 1 }
-			];
+			const mockMessages = [{ id: 1, session_id: 1, role: 'user', content: 'test', sequence: 1 }];
 			const mockLegacyResult = {
 				id: 1,
 				agent_id: 1,
@@ -333,9 +330,7 @@ describe('Results Routes', () => {
 				status: 'completed',
 				created_at: '2024-01-01'
 			};
-			const mockMessages = [
-				{ id: 1, session_id: 1, role: 'user', content: 'test', sequence: 1 }
-			];
+			const mockMessages = [{ id: 1, session_id: 1, role: 'user', content: 'test', sequence: 1 }];
 			const mockLegacyResult = {
 				id: 1,
 				agent_id: 1,
@@ -545,13 +540,15 @@ describe('Results Routes', () => {
 			await callRoute(handler, mockReq, mockRes);
 
 			expect(mockGetResultById).toHaveBeenCalledWith(999);
-			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
-				id: 999,
-				agent_id: 1,
-				test_id: 1,
-				output: 'legacy result',
-				success: true
-			}));
+			expect(jsonMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 999,
+					agent_id: 1,
+					test_id: 1,
+					output: 'legacy result',
+					success: true
+				})
+			);
 		});
 
 		it('should return 404 if result not found', async () => {
@@ -627,9 +624,7 @@ describe('Results Routes', () => {
 			}));
 
 			// Get updated result after scoring
-			(mockGetResultById as any)
-				.mockReturnValueOnce(mockResult)
-				.mockReturnValueOnce(mockUpdatedResult);
+			(mockGetResultById as any).mockReturnValueOnce(mockResult).mockReturnValueOnce(mockUpdatedResult);
 
 			const handler = getRouteHandler('post', '/:id/score');
 			await callRoute(handler, mockReq, mockRes);
@@ -707,9 +702,7 @@ describe('Results Routes', () => {
 				expected_output: 'expected'
 			};
 
-			(mockGetResultById as any)
-				.mockReturnValueOnce(mockResult)
-				.mockReturnValueOnce(null);
+			(mockGetResultById as any).mockReturnValueOnce(mockResult).mockReturnValueOnce(null);
 			(mockGetTestById as any).mockReturnValue(mockTest);
 
 			const mockScoringService = {
@@ -855,13 +848,15 @@ describe('Results Routes', () => {
 			expect(mockCreateExecutionSession).toHaveBeenCalledWith(mockSession);
 			expect(mockAddSessionMessage).toHaveBeenCalledTimes(2);
 			expect(statusMock).toHaveBeenCalledWith(201);
-			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
-				id: 1,
-				agent_id: 1,
-				test_id: 1,
-				output: 'test output',
-				success: true
-			}));
+			expect(jsonMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 1,
+					agent_id: 1,
+					test_id: 1,
+					output: 'test output',
+					success: true
+				})
+			);
 		});
 
 		it('should extract token usage from intermediate steps if not provided', async () => {
@@ -887,9 +882,7 @@ describe('Results Routes', () => {
 				conversation_id: 1,
 				status: 'completed'
 			};
-			const mockMessages = [
-				{ role: 'user', content: 'test input', sequence: 1 }
-			];
+			const mockMessages = [{ role: 'user', content: 'test input', sequence: 1 }];
 			const mockCreatedSession = {
 				id: 1,
 				...mockSession,
@@ -966,9 +959,7 @@ describe('Results Routes', () => {
 				conversation_id: 1,
 				status: 'completed'
 			};
-			const mockMessages = [
-				{ role: 'assistant', content: 'test output', sequence: 1 }
-			];
+			const mockMessages = [{ role: 'assistant', content: 'test output', sequence: 1 }];
 			const mockCreatedSession = {
 				id: 1,
 				...mockSession,
@@ -1045,9 +1036,7 @@ describe('Results Routes', () => {
 				conversation_id: 1,
 				status: 'completed'
 			};
-			const mockMessages = [
-				{ role: 'user', content: 'test input', sequence: 1 }
-			];
+			const mockMessages = [{ role: 'user', content: 'test input', sequence: 1 }];
 			const mockCreatedSession = {
 				id: 1,
 				...mockSession,
@@ -1139,9 +1128,7 @@ describe('Results Routes', () => {
 				conversation_id: 1,
 				status: 'completed'
 			};
-			const mockMessages = [
-				{ role: 'user', content: 'test input', sequence: 1 }
-			];
+			const mockMessages = [{ role: 'user', content: 'test input', sequence: 1 }];
 			const mockCreatedSession = {
 				id: 1,
 				...mockSession,

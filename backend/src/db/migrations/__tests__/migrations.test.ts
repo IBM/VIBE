@@ -26,9 +26,9 @@ describe('db migrations', () => {
 		expect(tables).toContain('agents');
 
 		const jobColumns = db.prepare("PRAGMA table_info('jobs')").all() as Array<{ name: string }>;
-		expect(jobColumns.some(c => c.name === 'job_type')).toBe(true);
-		expect(jobColumns.some(c => c.name === 'claimed_by')).toBe(true);
-		expect(jobColumns.some(c => c.name === 'claimed_at')).toBe(true);
+		expect(jobColumns.some((c) => c.name === 'job_type')).toBe(true);
+		expect(jobColumns.some((c) => c.name === 'claimed_by')).toBe(true);
+		expect(jobColumns.some((c) => c.name === 'claimed_at')).toBe(true);
 	});
 
 	it('is idempotent', () => {
@@ -50,8 +50,7 @@ describe('db migrations', () => {
 		expect(getUserVersion(db)).toBeGreaterThanOrEqual(4);
 
 		const suiteRunColumns = db.prepare("PRAGMA table_info('suite_runs')").all() as Array<{ name: string }>;
-		expect(suiteRunColumns.some(c => c.name === 'total_input_tokens')).toBe(true);
-		expect(suiteRunColumns.some(c => c.name === 'total_output_tokens')).toBe(true);
+		expect(suiteRunColumns.some((c) => c.name === 'total_input_tokens')).toBe(true);
+		expect(suiteRunColumns.some((c) => c.name === 'total_output_tokens')).toBe(true);
 	});
 });
-

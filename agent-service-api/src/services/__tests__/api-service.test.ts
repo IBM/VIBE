@@ -172,10 +172,14 @@ describe('ApiService helpers and executeTest', () => {
 
 	it('defaults output when mapping output is missing', () => {
 		const service = new ApiService() as any;
-		const { output } = service.processResponse({ value: 1 }, {
-			test_id: 2,
-			response_mapping: JSON.stringify({ success_criteria: { type: 'contains', value: '1' } })
-		} as any, []);
+		const { output } = service.processResponse(
+			{ value: 1 },
+			{
+				test_id: 2,
+				response_mapping: JSON.stringify({ success_criteria: { type: 'contains', value: '1' } })
+			} as any,
+			[]
+		);
 
 		expect(output).toContain('"value":1');
 	});
@@ -287,11 +291,8 @@ describe('ApiService helpers and executeTest', () => {
 		await service.makeApiRequest('http://example.test', 'POST', { input: 'hi' }, { 'X-Test': 'yes' }, 'token');
 		await service.makeApiRequest('http://example.test', undefined, { input: 'hi' });
 
-		expect(mockedAxios.get).toHaveBeenCalledWith(
-			expect.stringContaining('q=test'),
-			expect.any(Object)
-		);
-		expect((mockedAxios as any)).toHaveBeenCalled();
+		expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('q=test'), expect.any(Object));
+		expect(mockedAxios as any).toHaveBeenCalled();
 	});
 
 	it('executes a test successfully and records token usage', async () => {
@@ -406,9 +407,7 @@ describe('ApiService helpers and executeTest', () => {
 				output: 'output.message',
 				success_criteria: { type: 'contains', value: 'x' }
 			}),
-			conversation_script: [
-				{ conversation_id: 77, sequence: 1, role: 'user', content: 'Short' }
-			]
+			conversation_script: [{ conversation_id: 77, sequence: 1, role: 'user', content: 'Short' }]
 		};
 
 		const result = await service.executeConversation(request);
@@ -425,9 +424,7 @@ describe('ApiService helpers and executeTest', () => {
 			api_endpoint: 'http://example.test',
 			http_method: 'POST',
 			stop_on_failure: true,
-			conversation_script: [
-				{ conversation_id: 9, sequence: 1, role: 'user', content: 'Hi' }
-			]
+			conversation_script: [{ conversation_id: 9, sequence: 1, role: 'user', content: 'Hi' }]
 		};
 
 		const result = await service.executeConversation(request);
@@ -451,20 +448,21 @@ describe('ApiService helpers and executeTest', () => {
 				output: 'output.message',
 				success_criteria: { type: 'exact_match', value: 'Yes' }
 			}),
-			conversation_script: [
-				{ conversation_id: 11, sequence: 1, role: 'user', content: 'Hi' }
-			]
+			conversation_script: [{ conversation_id: 11, sequence: 1, role: 'user', content: 'Hi' }]
 		};
 
 		const result = await service.executeConversation(request);
 
 		expect(result.success).toBe(false);
-		expect(result.intermediate_steps.some((step: { action: string }) => step.action === 'Conversation stopped')).toBe(true);
+		expect(
+			result.intermediate_steps.some((step: { action: string }) => step.action === 'Conversation stopped')
+		).toBe(true);
 	});
 
 	it('resolves pointer variables in conversation messages', async () => {
 		const service = new ApiService() as any;
-		service.makeApiRequest = jest.fn()
+		service.makeApiRequest = jest
+			.fn()
 			.mockResolvedValueOnce({ data: { output: { message: 'First' } } })
 			.mockResolvedValueOnce({ data: { output: { message: 'Second' } } });
 
@@ -524,12 +522,9 @@ describe('ApiService helpers and executeTest', () => {
 		);
 		expect(withCircular).toEqual({ input: 'hello', payload: '[object Object]' });
 
-		const fallback = service.formatConversationRequestWithVars(
-			'hi',
-			'History',
-			'{"input":"{{input}}"',
-			{ value: 1 }
-		);
+		const fallback = service.formatConversationRequestWithVars('hi', 'History', '{"input":"{{input}}"', {
+			value: 1
+		});
 		expect(fallback).toEqual({ input: 'hi', variables: { value: 1 } });
 	});
 
@@ -538,7 +533,9 @@ describe('ApiService helpers and executeTest', () => {
 		const result = await service.executeConversation({ conversation_id: 99 } as any);
 
 		expect(result.success).toBe(false);
-		expect(result.intermediate_steps.some((step: { action: string }) => step.action === 'Conversation error')).toBe(true);
+		expect(result.intermediate_steps.some((step: { action: string }) => step.action === 'Conversation error')).toBe(
+			true
+		);
 	});
 
 	it('returns true for health check', async () => {

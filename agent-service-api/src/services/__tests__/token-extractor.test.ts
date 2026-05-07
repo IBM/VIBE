@@ -63,7 +63,10 @@ describe('token-extractor', () => {
 			throw 'bad';
 		});
 
-		const { metadata } = extractTokenUsage({ usage: { prompt_tokens: 1 } }, '{"input_tokens":"usage.prompt_tokens"}');
+		const { metadata } = extractTokenUsage(
+			{ usage: { prompt_tokens: 1 } },
+			'{"input_tokens":"usage.prompt_tokens"}'
+		);
 
 		expect(metadata.explicit_mapping_error).toBe('Unknown error');
 

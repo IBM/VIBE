@@ -123,9 +123,7 @@ describe('ApiService additional coverage', () => {
 			conversation_id: 300,
 			api_endpoint: 'http://example.test',
 			// no http_method provided -> default branch
-			conversation_script: [
-				{ conversation_id: 300, sequence: 1, role: 'user', content: longContent }
-			]
+			conversation_script: [{ conversation_id: 300, sequence: 1, role: 'user', content: longContent }]
 		};
 
 		const result = await service.executeConversation(request);
@@ -150,9 +148,7 @@ describe('ApiService additional coverage', () => {
 			api_endpoint: 'http://example.test',
 			http_method: 'POST',
 			response_mapping: JSON.stringify({ output: 'output.message' }),
-			conversation_script: [
-				{ conversation_id: 301, sequence: 1, role: 'user', content: 'Hi' }
-			]
+			conversation_script: [{ conversation_id: 301, sequence: 1, role: 'user', content: 'Hi' }]
 		};
 
 		const result = await service.executeConversation(request);
@@ -190,4 +186,3 @@ describe('ApiService additional coverage', () => {
 		expect(result.output).toContain('status code 429');
 	});
 });
-

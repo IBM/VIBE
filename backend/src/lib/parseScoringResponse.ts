@@ -26,7 +26,9 @@ export function parseScoringResponse(rawResponse: string): ScoringResult {
 	try {
 		parsed = JSON.parse(jsonText);
 	} catch (error) {
-		throw new Error(`Failed to parse JSON from LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		throw new Error(
+			`Failed to parse JSON from LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`
+		);
 	}
 
 	// Validate structure

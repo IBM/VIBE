@@ -69,12 +69,14 @@ describe('backend bootstrap', () => {
 		expect(use).toHaveBeenCalledWith('/api/response-maps', 'response-maps-route');
 		expect(use).toHaveBeenCalledWith('/api/data-transfer', 'json-mw', 'data-transfer-route');
 
-		const healthHandler = get.mock.calls.find(call => call[0] === '/api/health')?.[1] as Function;
+		const healthHandler = get.mock.calls.find((call) => call[0] === '/api/health')?.[1] as Function;
 		const res = { json: jest.fn() };
 		healthHandler({} as any, res as any);
 		expect(res.json).toHaveBeenCalledWith({ status: 'ok' });
 
-		const errorHandler = use.mock.calls.find(call => typeof call[0] === 'function' && call[0].length === 4)?.[0] as Function;
+		const errorHandler = use.mock.calls.find(
+			(call) => typeof call[0] === 'function' && call[0].length === 4
+		)?.[0] as Function;
 		const errorRes = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 		errorHandler(new Error('boom'), {} as any, errorRes as any, jest.fn());
 		expect(errorRes.status).toHaveBeenCalledWith(500);

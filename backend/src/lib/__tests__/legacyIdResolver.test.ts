@@ -22,7 +22,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('returns undefined when no direct match exists and no legacy table', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)
@@ -36,7 +37,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('falls back to legacy mapping when direct match fails', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)
@@ -53,7 +55,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('returns undefined when legacy mapping fails', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)
@@ -101,7 +104,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('handles errors in legacy table check', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)
@@ -115,7 +119,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('handles errors in legacy mapping query', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)
@@ -132,7 +137,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('returns undefined for zero id (falsy check in implementation)', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue({ id: 0 })
 				} as any)
@@ -169,7 +175,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('handles null return from direct match', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(null)
 				} as any)
@@ -193,7 +200,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('handles legacy mapping with null conversation_id', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)
@@ -210,7 +218,8 @@ describe('legacyIdResolver', () => {
 		});
 
 		it('handles legacy mapping with missing conversation_id property', () => {
-			mockedDb.prepare = jest.fn()
+			mockedDb.prepare = jest
+				.fn()
 				.mockReturnValueOnce({
 					get: jest.fn().mockReturnValue(undefined)
 				} as any)

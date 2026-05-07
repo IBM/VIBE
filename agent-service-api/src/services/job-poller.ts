@@ -25,12 +25,12 @@ import { executeLegacyTestJobWithApi } from './job-poller-legacy-executor';
 
 const shouldLog = process.env.NODE_ENV !== 'test';
 const logWarn = (...args: unknown[]) => {
-  /* istanbul ignore next */
-  if (shouldLog) console.warn(...args);
+	/* istanbul ignore next */
+	if (shouldLog) console.warn(...args);
 };
 const logError = (...args: unknown[]) => {
-  /* istanbul ignore next */
-  if (shouldLog) console.error(...args);
+	/* istanbul ignore next */
+	if (shouldLog) console.error(...args);
 };
 
 /**
@@ -155,9 +155,7 @@ export class JobPollerService {
 			}
 
 			const availableSlots = Math.max(0, this.maxConcurrentJobs - this.runningJobs.size);
-			const jobsToStart = jobs
-				.filter(job => !this.runningJobs.has(job.id))
-				.slice(0, availableSlots);
+			const jobsToStart = jobs.filter((job) => !this.runningJobs.has(job.id)).slice(0, availableSlots);
 
 			for (const job of jobsToStart) {
 				void this.executeJob(job);
@@ -304,7 +302,8 @@ export class JobPollerService {
 		sessionId?: number
 	): Promise<void> {
 		try {
-			const updateData: Pick<Job, 'status' | 'progress'> & Partial<Pick<Job, 'result_id' | 'session_id' | 'error'>> = {
+			const updateData: Pick<Job, 'status' | 'progress'> &
+				Partial<Pick<Job, 'result_id' | 'session_id' | 'error'>> = {
 				status,
 				progress
 			};
@@ -338,7 +337,6 @@ export class JobPollerService {
 			return false;
 		}
 	}
-
 }
 
 // Export singleton instance

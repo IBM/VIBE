@@ -87,7 +87,7 @@ describe('agent-types', () => {
 					response_mapping: '{"output": "{{response.data}}"}',
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': 'Bearer token'
+						Authorization: 'Bearer token'
 					},
 					http_method: 'POST'
 				};
@@ -125,10 +125,14 @@ describe('agent-types', () => {
 
 			it('should handle different HTTP methods', () => {
 				const methods: Array<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'> = [
-					'GET', 'POST', 'PUT', 'PATCH', 'DELETE'
+					'GET',
+					'POST',
+					'PUT',
+					'PATCH',
+					'DELETE'
 				];
 
-				methods.forEach(method => {
+				methods.forEach((method) => {
 					const settings: ExternalAPISettings = {
 						type: 'external_api',
 						api_endpoint: 'https://api.example.com',

@@ -55,12 +55,14 @@ export function normalizeConversationMessageInsert(message: {
 		}
 	}
 
-	const request_template_id = (message.request_template_id !== undefined && message.request_template_id !== null)
-		? Number(message.request_template_id)
-		: null;
-	const response_map_id = (message.response_map_id !== undefined && message.response_map_id !== null)
-		? Number(message.response_map_id)
-		: null;
+	const request_template_id =
+		message.request_template_id !== undefined && message.request_template_id !== null
+			? Number(message.request_template_id)
+			: null;
+	const response_map_id =
+		message.response_map_id !== undefined && message.response_map_id !== null
+			? Number(message.response_map_id)
+			: null;
 
 	let set_variables: string | null = null;
 	if (message.set_variables === null || message.set_variables === undefined) {

@@ -39,9 +39,8 @@ const MIGRATIONS: Migration[] = [
 
 export function getUserVersion(db: Database.Database): number {
 	const raw = db.pragma('user_version', { simple: true }) as unknown;
-	const value = typeof raw === 'number'
-		? raw
-		: Number((raw as { user_version?: unknown } | null)?.user_version ?? raw);
+	const value =
+		typeof raw === 'number' ? raw : Number((raw as { user_version?: unknown } | null)?.user_version ?? raw);
 
 	return Number.isFinite(value) ? value : 0;
 }
@@ -52,9 +51,7 @@ export function setUserVersion(db: Database.Database, version: number): void {
 
 export function runMigrations(db: Database.Database): void {
 	const currentVersion = getUserVersion(db);
-	const pending = MIGRATIONS
-		.filter(m => m.version > currentVersion)
-		.sort((a, b) => a.version - b.version);
+	const pending = MIGRATIONS.filter((m) => m.version > currentVersion).sort((a, b) => a.version - b.version);
 
 	for (const migration of pending) {
 		try {
@@ -70,4 +67,3 @@ export function runMigrations(db: Database.Database): void {
 		}
 	}
 }
-

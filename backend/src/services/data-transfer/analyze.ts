@@ -64,12 +64,11 @@ const addToNameLookup = (lookup: NameToIds, name: string, id: number | undefined
 	lookup.set(name, existing);
 };
 
-const countByName = (names: string[]): Map<string, number> => (
+const countByName = (names: string[]): Map<string, number> =>
 	names.reduce<Map<string, number>>((acc, name) => {
 		acc.set(name, (acc.get(name) || 0) + 1);
 		return acc;
-	}, new Map())
-);
+	}, new Map());
 
 const getSingleExistingId = (lookup: NameToIds, name: string): number | undefined => {
 	const ids = lookup.get(name) || [];
@@ -84,9 +83,8 @@ const isAmbiguousName = (lookup: NameToIds | Map<string, number>, name: string):
 	return (value || 0) > 1;
 };
 
-const isAvailableItem = (itemKey: string, availableItemKeys?: Set<string>): boolean => (
-	!availableItemKeys || availableItemKeys.has(itemKey)
-);
+const isAvailableItem = (itemKey: string, availableItemKeys?: Set<string>): boolean =>
+	!availableItemKeys || availableItemKeys.has(itemKey);
 
 const createExistingLookups = (): ExistingLookups => {
 	const agentRows = getAgents();
@@ -115,49 +113,56 @@ const createExistingLookups = (): ExistingLookups => {
 	}
 
 	return {
-		agents: new Map(agentRows
-			.filter((agent): agent is typeof agent & { id: number } => agent.id !== undefined)
-			.map((agent) => [buildAgentNaturalKey(agent.name, agent.version), agent.id])),
+		agents: new Map(
+			agentRows
+				.filter((agent): agent is typeof agent & { id: number } => agent.id !== undefined)
+				.map((agent) => [buildAgentNaturalKey(agent.name, agent.version), agent.id])
+		),
 		agentIdsByName,
 		conversationIdsByName,
 		suiteIdsByName,
 		llmConfigIdsByName,
-		requestTemplates: new Map(requestTemplateRows
-			.filter((template): template is typeof template & { id: number } => template.id !== undefined)
-			.map((template) => [template.name, template.id])),
-		responseMaps: new Map(responseMapRows
-			.filter((responseMap): responseMap is typeof responseMap & { id: number } => responseMap.id !== undefined)
-			.map((responseMap) => [responseMap.name, responseMap.id]))
+		requestTemplates: new Map(
+			requestTemplateRows
+				.filter((template): template is typeof template & { id: number } => template.id !== undefined)
+				.map((template) => [template.name, template.id])
+		),
+		responseMaps: new Map(
+			responseMapRows
+				.filter(
+					(responseMap): responseMap is typeof responseMap & { id: number } => responseMap.id !== undefined
+				)
+				.map((responseMap) => [responseMap.name, responseMap.id])
+		)
 	};
 };
 
-const createBundleLookups = (
-	bundle: ExportBundle,
-	availableItemKeys?: Set<string>
-): BundleLookups => {
-	const availableAgents = (bundle.data.agents || []).filter((agent) => (
+const createBundleLookups = (bundle: ExportBundle, availableItemKeys?: Set<string>): BundleLookups => {
+	const availableAgents = (bundle.data.agents || []).filter((agent) =>
 		isAvailableItem(buildAgentItemKey(agent), availableItemKeys)
-	));
-	const availableConversations = (bundle.data.conversations || []).filter((conversation) => (
+	);
+	const availableConversations = (bundle.data.conversations || []).filter((conversation) =>
 		isAvailableItem(buildConversationItemKey(conversation), availableItemKeys)
-	));
-	const availableSuites = (bundle.data.test_suites || []).filter((suite) => (
+	);
+	const availableSuites = (bundle.data.test_suites || []).filter((suite) =>
 		isAvailableItem(buildSuiteItemKey(suite), availableItemKeys)
-	));
-	const availableLlmConfigs = (bundle.data.llm_configs || []).filter((config) => (
+	);
+	const availableLlmConfigs = (bundle.data.llm_configs || []).filter((config) =>
 		isAvailableItem(buildLLMConfigItemKey(config), availableItemKeys)
-	));
-	const availableRequestTemplates = (bundle.data.request_templates || []).filter((template) => (
+	);
+	const availableRequestTemplates = (bundle.data.request_templates || []).filter((template) =>
 		isAvailableItem(buildRequestTemplateItemKey(template), availableItemKeys)
-	));
-	const availableResponseMaps = (bundle.data.response_maps || []).filter((responseMap) => (
+	);
+	const availableResponseMaps = (bundle.data.response_maps || []).filter((responseMap) =>
 		isAvailableItem(buildResponseMapItemKey(responseMap), availableItemKeys)
-	));
+	);
 
 	return {
 		agents: new Set(availableAgents.map((agent) => buildAgentNaturalKey(agent.name, agent.version))),
 		agentNameCounts: countByName(availableAgents.map((agent) => agent.name)),
-		conversationReferences: new Set(availableConversations.map((conversation) => getConversationReferenceKey(conversation))),
+		conversationReferences: new Set(
+			availableConversations.map((conversation) => getConversationReferenceKey(conversation))
+		),
 		conversationNameCounts: countByName(availableConversations.map((conversation) => conversation.name)),
 		suiteReferences: new Set(availableSuites.map((suite) => getSuiteReferenceKey(suite))),
 		suiteNameCounts: countByName(availableSuites.map((suite) => suite.name)),
@@ -169,17 +174,14 @@ const createBundleLookups = (
 	};
 };
 
-const hasRequestTemplate = (name: string, existing: ExistingLookups, bundle: BundleLookups): boolean => (
-	bundle.requestTemplates.has(name) || existing.requestTemplates.has(name)
-);
+const hasRequestTemplate = (name: string, existing: ExistingLookups, bundle: BundleLookups): boolean =>
+	bundle.requestTemplates.has(name) || existing.requestTemplates.has(name);
 
-const hasResponseMap = (name: string, existing: ExistingLookups, bundle: BundleLookups): boolean => (
-	bundle.responseMaps.has(name) || existing.responseMaps.has(name)
-);
+const hasResponseMap = (name: string, existing: ExistingLookups, bundle: BundleLookups): boolean =>
+	bundle.responseMaps.has(name) || existing.responseMaps.has(name);
 
-const formatDependencyLabel = (name: string | undefined, referenceKey: string | undefined): string => (
-	name || referenceKey || 'unknown dependency'
-);
+const formatDependencyLabel = (name: string | undefined, referenceKey: string | undefined): string =>
+	name || referenceKey || 'unknown dependency';
 
 const resolveConversationDependencyIssue = (
 	entry: { conversation_name?: string; conversation_reference_key?: string },
@@ -372,11 +374,8 @@ const analyzeRequestTemplates = (
 	return (bundle.data.request_templates || []).map((template) => {
 		const existingId = existing.requestTemplates.get(template.name);
 		const hasDuplicateImportedName = (bundleLookups.requestTemplateNameCounts.get(template.name) || 0) > 1;
-		const allowedDecisions: ImportResolutionDecision[] | undefined = (
-			existingId !== undefined && hasDuplicateImportedName
-		)
-			? ['skip', 'create_new']
-			: undefined;
+		const allowedDecisions: ImportResolutionDecision[] | undefined =
+			existingId !== undefined && hasDuplicateImportedName ? ['skip', 'create_new'] : undefined;
 
 		return createItem(
 			buildRequestTemplateItemKey(template),
@@ -397,11 +396,8 @@ const analyzeResponseMaps = (
 	return (bundle.data.response_maps || []).map((responseMap) => {
 		const existingId = existing.responseMaps.get(responseMap.name);
 		const hasDuplicateImportedName = (bundleLookups.responseMapNameCounts.get(responseMap.name) || 0) > 1;
-		const allowedDecisions: ImportResolutionDecision[] | undefined = (
-			existingId !== undefined && hasDuplicateImportedName
-		)
-			? ['skip', 'create_new']
-			: undefined;
+		const allowedDecisions: ImportResolutionDecision[] | undefined =
+			existingId !== undefined && hasDuplicateImportedName ? ['skip', 'create_new'] : undefined;
 
 		return createItem(
 			buildResponseMapItemKey(responseMap),
@@ -424,22 +420,28 @@ const analyzeConversations = (
 		const issues: string[] = [];
 		const hasDuplicateImportedName = (bundleLookups.conversationNameCounts.get(conversation.name) || 0) > 1;
 		const hasAmbiguousExistingName = isAmbiguousName(existing.conversationIdsByName, conversation.name);
-		const allowedDecisions: ImportResolutionDecision[] | undefined = (
+		const allowedDecisions: ImportResolutionDecision[] | undefined =
 			hasAmbiguousExistingName || (existingId !== undefined && hasDuplicateImportedName)
-		)
-			? ['skip', 'create_new']
-			: undefined;
+				? ['skip', 'create_new']
+				: undefined;
 
 		if (hasAmbiguousExistingName) {
 			issues.push(`Ambiguous existing conversation name: ${conversation.name}`);
 		}
 
 		for (const message of conversation.messages || []) {
-			if (message.request_template_name && !hasRequestTemplate(message.request_template_name, existing, bundleLookups)) {
-				issues.push(`Missing request template dependency in message #${message.sequence}: ${message.request_template_name}`);
+			if (
+				message.request_template_name &&
+				!hasRequestTemplate(message.request_template_name, existing, bundleLookups)
+			) {
+				issues.push(
+					`Missing request template dependency in message #${message.sequence}: ${message.request_template_name}`
+				);
 			}
 			if (message.response_map_name && !hasResponseMap(message.response_map_name, existing, bundleLookups)) {
-				issues.push(`Missing response map dependency in message #${message.sequence}: ${message.response_map_name}`);
+				issues.push(
+					`Missing response map dependency in message #${message.sequence}: ${message.response_map_name}`
+				);
 			}
 		}
 
@@ -465,11 +467,10 @@ const analyzeSuites = (
 		const issues: string[] = [];
 		const hasDuplicateImportedName = (bundleLookups.suiteNameCounts.get(suite.name) || 0) > 1;
 		const hasAmbiguousExistingName = isAmbiguousName(existing.suiteIdsByName, suite.name);
-		const allowedDecisions: ImportResolutionDecision[] | undefined = (
+		const allowedDecisions: ImportResolutionDecision[] | undefined =
 			hasAmbiguousExistingName || (existingId !== undefined && hasDuplicateImportedName)
-		)
-			? ['skip', 'create_new']
-			: undefined;
+				? ['skip', 'create_new']
+				: undefined;
 
 		if (hasAmbiguousExistingName) {
 			issues.push(`Ambiguous existing suite name: ${suite.name}`);
@@ -521,11 +522,10 @@ const analyzeLlmConfigs = (
 		const issues: string[] = [];
 		const hasDuplicateImportedName = (bundleLookups.llmConfigNameCounts.get(config.name) || 0) > 1;
 		const hasAmbiguousExistingName = isAmbiguousName(existing.llmConfigIdsByName, config.name);
-		const allowedDecisions: ImportResolutionDecision[] | undefined = (
+		const allowedDecisions: ImportResolutionDecision[] | undefined =
 			hasAmbiguousExistingName || (existingId !== undefined && hasDuplicateImportedName)
-		)
-			? ['skip', 'create_new']
-			: undefined;
+				? ['skip', 'create_new']
+				: undefined;
 
 		if (hasAmbiguousExistingName) {
 			issues.push(`Ambiguous existing LLM config name: ${config.name}`);
@@ -547,14 +547,14 @@ const buildAnalysisItems = (
 	bundle: ExportBundle,
 	existing: ExistingLookups,
 	bundleLookups: BundleLookups
-): AnalysisItem[] => ([
+): AnalysisItem[] => [
 	...analyzeRequestTemplates(bundle, existing, bundleLookups),
 	...analyzeResponseMaps(bundle, existing, bundleLookups),
 	...analyzeLlmConfigs(bundle, existing, bundleLookups),
 	...analyzeAgents(bundle, existing, bundleLookups),
 	...analyzeConversations(bundle, existing, bundleLookups),
 	...analyzeSuites(bundle, existing, bundleLookups)
-]);
+];
 
 const calculateTotals = (items: AnalysisItem[]): AnalysisReport['totals'] => {
 	return items.reduce(
@@ -586,25 +586,20 @@ const buildAnalysisReport = (
 	};
 };
 
-const getDefaultResolutionDecision = (status: AnalysisStatus): ImportResolutionDecision => (
-	status === 'new' ? 'create_new' : 'skip'
-);
+const getDefaultResolutionDecision = (status: AnalysisStatus): ImportResolutionDecision =>
+	status === 'new' ? 'create_new' : 'skip';
 
 const getAnalysisDecision = (
 	item: AnalysisItem,
 	resolutions: Record<string, ImportResolution>
-): ImportResolutionDecision => (
-	resolutions[item.item_key]?.decision || getDefaultResolutionDecision(item.status)
-);
+): ImportResolutionDecision => resolutions[item.item_key]?.decision || getDefaultResolutionDecision(item.status);
 
-const createAvailableItemKeys = (
-	report: AnalysisReport,
-	resolutions: Record<string, ImportResolution>
-): Set<string> => (
-	new Set(report.items
-		.filter((item) => getAnalysisDecision(item, resolutions) !== 'skip' && item.status !== 'dependency_missing')
-		.map((item) => item.item_key))
-);
+const createAvailableItemKeys = (report: AnalysisReport, resolutions: Record<string, ImportResolution>): Set<string> =>
+	new Set(
+		report.items
+			.filter((item) => getAnalysisDecision(item, resolutions) !== 'skip' && item.status !== 'dependency_missing')
+			.map((item) => item.item_key)
+	);
 
 const areSetsEqual = (left: Set<string>, right: Set<string>): boolean => {
 	if (left.size !== right.size) {

@@ -15,7 +15,7 @@ export interface Agent {
 	name: string;
 	version: string;
 	prompt: string;
-	settings: string;  // JSON string containing configuration settings
+	settings: string; // JSON string containing configuration settings
 	created_at?: string;
 }
 
@@ -60,17 +60,17 @@ export interface TestResult {
 	agent_id: number;
 	test_id: number;
 	output: string;
-	intermediate_steps?: string;  // JSON string containing intermediate processing steps
+	intermediate_steps?: string; // JSON string containing intermediate processing steps
 	success: boolean;
-	execution_time?: number;  // Time in milliseconds
+	execution_time?: number; // Time in milliseconds
 	created_at?: string;
-	similarity_score?: number;  // Similarity score (0-100)
-	similarity_scoring_status?: 'pending' | 'running' | 'completed' | 'failed';  // Scoring job status
-	similarity_scoring_error?: string;  // Error message if scoring failed
-	similarity_scoring_metadata?: string;  // JSON metadata about the scoring process
-	input_tokens?: number;  // Number of input tokens used
-	output_tokens?: number;  // Number of output tokens generated
-	token_mapping_metadata?: string;  // JSON metadata about token extraction process
+	similarity_score?: number; // Similarity score (0-100)
+	similarity_scoring_status?: 'pending' | 'running' | 'completed' | 'failed'; // Scoring job status
+	similarity_scoring_error?: string; // Error message if scoring failed
+	similarity_scoring_metadata?: string; // JSON metadata about the scoring process
+	input_tokens?: number; // Number of input tokens used
+	output_tokens?: number; // Number of output tokens generated
+	token_mapping_metadata?: string; // JSON metadata about token extraction process
 }
 
 // New Conversation interfaces
@@ -101,14 +101,14 @@ export interface ConversationMessage {
 }
 
 export interface ConversationTurnTarget {
-    id?: number;
-    conversation_id: number;
-    user_sequence: number; // matches conversation_messages(sequence) for role='user'
-    target_reply: string;
-    threshold?: number | null; // 0 - 100
-    weight?: number | null; // default 1.0
-    created_at?: string;
-    updated_at?: string;
+	id?: number;
+	conversation_id: number;
+	user_sequence: number; // matches conversation_messages(sequence) for role='user'
+	target_reply: string;
+	threshold?: number | null; // 0 - 100
+	weight?: number | null; // default 1.0
+	created_at?: string;
+	updated_at?: string;
 }
 
 export interface ExecutionSession {
@@ -140,12 +140,12 @@ export interface SessionMessage {
 }
 
 export interface Job {
-	id: string;  // UUID
+	id: string; // UUID
 	agent_id: number;
 	test_id?: number; // Legacy field (kept for compatibility)
 	conversation_id?: number; // New field for conversation testing
 	status: JobStatus;
-	progress?: number;  // 0-100 percentage
+	progress?: number; // 0-100 percentage
 	partial_result?: string;
 	result_id?: number; // Legacy field (kept for compatibility)
 	session_id?: number; // New field for execution sessions
@@ -192,15 +192,15 @@ export interface SuiteRun {
 	agent_id: number;
 	agent_name?: string;
 	status: JobStatus;
-	progress?: number;  // 0-100 percentage
+	progress?: number; // 0-100 percentage
 	total_tests: number;
 	completed_tests: number;
 	successful_tests: number;
 	failed_tests: number;
-	average_execution_time?: number;  // Time in milliseconds
+	average_execution_time?: number; // Time in milliseconds
 	avg_similarity_score?: number; // average similarity score for the run
-	total_input_tokens?: number;  // Total input tokens for all tests in suite
-	total_output_tokens?: number;  // Total output tokens for all tests in suite
+	total_input_tokens?: number; // Total input tokens for all tests in suite
+	total_output_tokens?: number; // Total output tokens for all tests in suite
 	started_at?: string;
 	completed_at?: string;
 }
@@ -217,7 +217,7 @@ export interface LLMConfig {
 	id?: number;
 	name: string;
 	provider: string;
-	config: string;  // JSON-stringified configuration object
+	config: string; // JSON-stringified configuration object
 	priority: number;
 	created_at?: string;
 	updated_at?: string;

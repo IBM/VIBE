@@ -163,7 +163,7 @@ export class LLMConfigService {
 				{
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${apiKey}`
+						Authorization: `Bearer ${apiKey}`
 					}
 				}
 			);
@@ -245,16 +245,12 @@ export class LLMConfigService {
 			tokenParams.append('grant_type', 'urn:ibm:params:oauth:grant-type:apikey');
 			tokenParams.append('apikey', apiKey);
 
-			const tokenResponse = await axios.post(
-				'https://iam.cloud.ibm.com/identity/token',
-				tokenParams,
-				{
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-						'Accept': 'application/json'
-					}
+			const tokenResponse = await axios.post('https://iam.cloud.ibm.com/identity/token', tokenParams, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					Accept: 'application/json'
 				}
-			);
+			});
 
 			const accessToken = tokenResponse.data.access_token;
 
@@ -274,8 +270,8 @@ export class LLMConfigService {
 				{
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${accessToken}`,
-						'Accept': 'application/json'
+						Authorization: `Bearer ${accessToken}`,
+						Accept: 'application/json'
 					}
 				}
 			);

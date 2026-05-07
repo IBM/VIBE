@@ -77,15 +77,15 @@ jobs:
             # For push events, check commits between the previous and current HEAD
             COMMIT_RANGE="${{ github.event.before }}..${{ github.sha }}"
           fi
-          
+
           # Get list of commit SHAs in the range
           COMMITS=$(git rev-list --no-merges "${COMMIT_RANGE}")
-          
+
           if [ -z "$COMMITS" ]; then
             echo "No commits to check"
             exit 0
           fi
-          
+
           # Check each commit for DCO signoff
           MISSING_DCO=0
           for COMMIT in $COMMITS; do
@@ -94,11 +94,11 @@ jobs:
               MISSING_DCO=1
             fi
           done
-          
+
           if [ $MISSING_DCO -eq 1 ]; then
             echo "::error::One or more commits are missing DCO signoff"
             echo "Please ensure all commits include a 'Signed-off-by:' line"
             exit 1
           fi
-          
+
           echo "All commits have DCO signoff"

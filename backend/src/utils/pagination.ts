@@ -5,13 +5,15 @@ export interface PaginationParams {
 	offset?: number;
 }
 
-export type ParsedPaginationResult = {
-	success: true;
-	params: PaginationParams;
-} | {
-	success: false;
-	error: string;
-};
+export type ParsedPaginationResult =
+	| {
+			success: true;
+			params: PaginationParams;
+	  }
+	| {
+			success: false;
+			error: string;
+	  };
 
 /**
  * Parses and validates limit/offset query parameters

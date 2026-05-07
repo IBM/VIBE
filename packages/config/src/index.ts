@@ -28,7 +28,9 @@ const frontendEnvSchema = z.object({
 
 type EnvSource = Record<string, string | undefined>;
 
-export const loadBackendConfig = (env: EnvSource = process.env): {
+export const loadBackendConfig = (
+	env: EnvSource = process.env
+): {
 	server: { port: number; host: string };
 	agentService: { url: string; timeout: number };
 	database: { path: string };
@@ -49,7 +51,9 @@ export const loadBackendConfig = (env: EnvSource = process.env): {
 	};
 };
 
-export const loadAgentServiceApiConfig = (env: EnvSource = process.env): {
+export const loadAgentServiceApiConfig = (
+	env: EnvSource = process.env
+): {
 	server: { port: number; host: string };
 	backend: { url: string; timeout: number };
 	defaults: { requestTimeout: number; healthCheckInterval: number };
@@ -83,7 +87,9 @@ export const loadAgentServiceApiConfig = (env: EnvSource = process.env): {
 	};
 };
 
-export const loadFrontendConfig = (env: EnvSource = process.env): {
+export const loadFrontendConfig = (
+	env: EnvSource = process.env
+): {
 	apiUrl: string;
 	instanceName: string | null;
 } => {

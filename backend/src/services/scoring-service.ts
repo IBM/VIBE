@@ -50,7 +50,11 @@ export function generateTurnSimilarityPrompt(targetReply: string, actualReply: s
 }
 
 // Lightweight similarity scorer for arbitrary expected/actual pairs
-export async function scoreSimilarityText(expected: string, actual: string, llmConfigId?: number): Promise<{
+export async function scoreSimilarityText(
+	expected: string,
+	actual: string,
+	llmConfigId?: number
+): Promise<{
 	score: number;
 	metadata: {
 		provider: string;
@@ -102,7 +106,7 @@ function hasExplicitSuccessCriteria(agent: Agent): boolean {
 		}
 
 		const responseMapping = JSON.parse(settings.response_mapping);
-		return !!(responseMapping.success_criteria);
+		return !!responseMapping.success_criteria;
 	} catch (error) {
 		logError('Error parsing agent settings or response mapping:', error);
 		return false;
@@ -165,10 +169,11 @@ export class ScoringService {
 				shouldUpdateSuccess = true;
 			}
 
-
 			// Update legacy result for compatibility if results table exists
 			try {
-				const hasResults = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='results'").all() as { name: string }[];
+				const hasResults = db
+					.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='results'")
+					.all() as { name: string }[];
 				if (hasResults.length > 0) {
 					const updateData: Partial<TestResult> = {
 						similarity_score: scoringResult.score,
@@ -178,24 +183,26 @@ export class ScoringService {
 					};
 					if (shouldUpdateSuccess) {
 						const threshold = 70;
-						updateData.success = scoringResult.score >= threshold ? 1 : 0 as any;
+						updateData.success = scoringResult.score >= threshold ? 1 : (0 as any);
 					}
 					await updateResult(result.id, updateData);
 				}
-			} catch { }
+			} catch {}
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred during scoring';
 
 			// Attempt to update legacy result with failure (compatibility only)
 			try {
-				const hasResults = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='results'").all() as { name: string }[];
+				const hasResults = db
+					.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='results'")
+					.all() as { name: string }[];
 				if (hasResults.length > 0) {
 					await updateResult(result.id, {
 						similarity_scoring_status: 'failed',
 						similarity_scoring_error: errorMessage
 					});
 				}
-			} catch { }
+			} catch {}
 
 			logError(`Scoring failed for result ${result.id}:`, error);
 		}

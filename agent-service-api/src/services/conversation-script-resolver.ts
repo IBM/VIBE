@@ -40,7 +40,7 @@ export const validateConversationRequirements = (
 	conversation: Conversation,
 	resolvedMessages: ConversationScriptMessage[]
 ): void => {
-	const userMessages = resolvedMessages.filter(message => message.role === 'user');
+	const userMessages = resolvedMessages.filter((message) => message.role === 'user');
 	if (!userMessages.length) {
 		return;
 	}
@@ -52,7 +52,9 @@ export const validateConversationRequirements = (
 			const available = metadata.request_capabilities;
 			const matchResult = matchCapabilities(requestRequirement, available as Record<string, unknown> | undefined);
 			if (!matchResult.ok) {
-				throw new Error(`Request template capabilities do not satisfy conversation requirements: ${matchResult.reasons.join('; ')}`);
+				throw new Error(
+					`Request template capabilities do not satisfy conversation requirements: ${matchResult.reasons.join('; ')}`
+				);
 			}
 		}
 	}
@@ -62,9 +64,14 @@ export const validateConversationRequirements = (
 		for (const message of userMessages) {
 			const metadata = (message.metadata || {}) as Record<string, unknown>;
 			const available = metadata.response_capabilities;
-			const matchResult = matchCapabilities(responseRequirement, available as Record<string, unknown> | undefined);
+			const matchResult = matchCapabilities(
+				responseRequirement,
+				available as Record<string, unknown> | undefined
+			);
 			if (!matchResult.ok) {
-				throw new Error(`Response map capabilities do not satisfy conversation requirements: ${matchResult.reasons.join('; ')}`);
+				throw new Error(
+					`Response map capabilities do not satisfy conversation requirements: ${matchResult.reasons.join('; ')}`
+				);
 			}
 		}
 	}
@@ -79,16 +86,17 @@ export const resolveConversationScript = (
 	const conversationDefaultMapId = conversation.default_response_map_id;
 	const conversationVars = parseJson<Record<string, unknown>>(conversation.variables, {});
 
-	const findTemplateById = (id?: number | null) => templates.find(t => t.id === id);
-	const findMapById = (id?: number | null) => maps.find(m => m.id === id);
+	const findTemplateById = (id?: number | null) => templates.find((t) => t.id === id);
+	const findMapById = (id?: number | null) => maps.find((m) => m.id === id);
 
 	const resolvedMessages: ConversationScriptMessage[] = (conversation.messages || []).map((m) => {
 		const conversation_id = m.conversation_id ?? conversation.id;
 
 		if (m.role !== 'user') {
-			const metadata = typeof m.metadata === 'string'
-				? parseJson<Record<string, unknown>>(m.metadata, {})
-				: (m.metadata as Record<string, unknown> | undefined) || {};
+			const metadata =
+				typeof m.metadata === 'string'
+					? parseJson<Record<string, unknown>>(m.metadata, {})
+					: (m.metadata as Record<string, unknown> | undefined) || {};
 
 			return {
 				...m,
@@ -100,9 +108,8 @@ export const resolveConversationScript = (
 		const msgOverrideTemplateId = m.request_template_id;
 		const msgOverrideMapId = m.response_map_id;
 
-		const messageVars = typeof m.set_variables === 'string'
-			? parseJson<Record<string, unknown>>(m.set_variables, {})
-			: {};
+		const messageVars =
+			typeof m.set_variables === 'string' ? parseJson<Record<string, unknown>>(m.set_variables, {}) : {};
 
 		const templateCandidate =
 			(msgOverrideTemplateId ? findTemplateById(msgOverrideTemplateId) : undefined) ??
@@ -115,15 +122,18 @@ export const resolveConversationScript = (
 			defaultMap;
 
 		const effectiveTemplate = templateCandidate?.body;
-		const effectiveTemplateCapabilities = templateCandidate ? parseCapabilities(templateCandidate.capabilities) : null;
+		const effectiveTemplateCapabilities = templateCandidate
+			? parseCapabilities(templateCandidate.capabilities)
+			: null;
 
 		const effectiveMap = mapCandidate?.spec;
 		const effectiveMapCapabilities = mapCandidate ? parseCapabilities(mapCandidate.capabilities) : null;
 
 		const mergedVars = { ...conversationVars, ...messageVars };
-		const metadata = typeof m.metadata === 'string'
-			? parseJson<Record<string, unknown>>(m.metadata, {})
-			: (m.metadata as Record<string, unknown> | undefined) || {};
+		const metadata =
+			typeof m.metadata === 'string'
+				? parseJson<Record<string, unknown>>(m.metadata, {})
+				: (m.metadata as Record<string, unknown> | undefined) || {};
 
 		const mergedMetadata = {
 			...metadata,

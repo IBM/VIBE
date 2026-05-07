@@ -98,11 +98,7 @@ export class ApiService {
 			const executionTime = Date.now() - startTime;
 
 			// Process the response
-			const { output, steps, success } = this.processResponse(
-				response.data,
-				request,
-				intermediateSteps
-			);
+			const { output, steps, success } = this.processResponse(response.data, request, intermediateSteps);
 
 			// Extract token usage from response
 			const { tokens, metadata } = extractTokenUsage(response.data, request.token_mapping);
@@ -212,7 +208,7 @@ export class ApiService {
 		responseData: any,
 		request: TestExecutionRequest,
 		steps: IntermediateStep[]
-	): { output: string, steps: IntermediateStep[], success: boolean, extractedVariables?: Record<string, any> } {
+	): { output: string; steps: IntermediateStep[]; success: boolean; extractedVariables?: Record<string, any> } {
 		return this.responseProcessor.processResponse(responseData, request, steps);
 	}
 
@@ -282,7 +278,7 @@ export class ApiService {
 		const requestHeaders = {
 			'Content-Type': 'application/json',
 			...headers,
-			...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
+			...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {})
 		};
 
 		const config: AxiosRequestConfig = {
@@ -377,7 +373,12 @@ export class ApiService {
 	 * Formats a conversation request with variables, supporting {{input}}, {{conversation_history}}, and {{var}} placeholders.
 	 * Variables are injected as strings unless the template author places the placeholder without quotes to embed JSON.
 	 */
-	private formatConversationRequestWithVars(currentInput: string, conversationHistory: string, template: string, variables: Record<string, any>): any {
+	private formatConversationRequestWithVars(
+		currentInput: string,
+		conversationHistory: string,
+		template: string,
+		variables: Record<string, any>
+	): any {
 		return formatConversationRequestWithTemplateVars(currentInput, conversationHistory, template, variables);
 	}
 

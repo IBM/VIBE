@@ -18,12 +18,18 @@ import { hasPaginationParams, validatePaginationOrError } from '../../utils/pagi
 const mockListJobsWithCount = queries.listJobsWithCount as jest.MockedFunction<typeof queries.listJobsWithCount>;
 const mockGetAgentById = queries.getAgentById as jest.MockedFunction<typeof queries.getAgentById>;
 const mockGetConversationById = queries.getConversationById as jest.MockedFunction<typeof queries.getConversationById>;
-const mockGetConversationMessages = queries.getConversationMessages as jest.MockedFunction<typeof queries.getConversationMessages>;
-const mockGetExecutionSessionById = queries.getExecutionSessionById as jest.MockedFunction<typeof queries.getExecutionSessionById>;
+const mockGetConversationMessages = queries.getConversationMessages as jest.MockedFunction<
+	typeof queries.getConversationMessages
+>;
+const mockGetExecutionSessionById = queries.getExecutionSessionById as jest.MockedFunction<
+	typeof queries.getExecutionSessionById
+>;
 const mockGetSessionMessages = queries.getSessionMessages as jest.MockedFunction<typeof queries.getSessionMessages>;
 const mockGetAvailableJobs = jobQueue.getAvailableJobs as jest.MockedFunction<typeof jobQueue.getAvailableJobs>;
 const mockGetJob = jobQueue.getJob as jest.MockedFunction<typeof jobQueue.getJob>;
-const mockCreateConversationJob = jobQueue.createConversationJob as jest.MockedFunction<typeof jobQueue.createConversationJob>;
+const mockCreateConversationJob = jobQueue.createConversationJob as jest.MockedFunction<
+	typeof jobQueue.createConversationJob
+>;
 const mockUpdateJob = jobQueue.updateJob as jest.MockedFunction<typeof jobQueue.updateJob>;
 const mockDeleteJob = jobQueue.deleteJob as jest.MockedFunction<typeof jobQueue.deleteJob>;
 const mockClaimJob = jobQueue.claimJob as jest.MockedFunction<typeof jobQueue.claimJob>;
@@ -31,7 +37,9 @@ const mockTestIdToConversationId = testIdToConversationId as jest.MockedFunction
 const mockSessionToLegacyResult = sessionToLegacyResult as jest.MockedFunction<typeof sessionToLegacyResult>;
 const mockIsSingleTurnConversation = isSingleTurnConversation as jest.MockedFunction<typeof isSingleTurnConversation>;
 const mockHasPaginationParams = hasPaginationParams as jest.MockedFunction<typeof hasPaginationParams>;
-const mockValidatePaginationOrError = validatePaginationOrError as jest.MockedFunction<typeof validatePaginationOrError>;
+const mockValidatePaginationOrError = validatePaginationOrError as jest.MockedFunction<
+	typeof validatePaginationOrError
+>;
 
 describe('jobs routes', () => {
 	let mockReq: Partial<Request>;
@@ -158,9 +166,7 @@ describe('jobs routes', () => {
 
 			await callRoute('get', '/');
 
-			expect(mockListJobsWithCount).toHaveBeenCalledWith(
-				expect.objectContaining({ agent_id: 5 })
-			);
+			expect(mockListJobsWithCount).toHaveBeenCalledWith(expect.objectContaining({ agent_id: 5 }));
 		});
 
 		it('filters jobs by test_id', async () => {
@@ -170,9 +176,7 @@ describe('jobs routes', () => {
 
 			await callRoute('get', '/');
 
-			expect(mockListJobsWithCount).toHaveBeenCalledWith(
-				expect.objectContaining({ test_id: 10 })
-			);
+			expect(mockListJobsWithCount).toHaveBeenCalledWith(expect.objectContaining({ test_id: 10 }));
 		});
 
 		it('filters jobs by date range', async () => {
@@ -232,16 +236,12 @@ describe('jobs routes', () => {
 		it('gets available jobs without job type', async () => {
 			mockReq.params = {};
 			mockReq.query = {};
-			(mockGetAvailableJobs as any).mockResolvedValue([
-				{ id: '1', status: JobStatus.PENDING }
-			]);
+			(mockGetAvailableJobs as any).mockResolvedValue([{ id: '1', status: JobStatus.PENDING }]);
 
 			await callRoute('get', '/available/:job_type?');
 
 			expect(mockGetAvailableJobs).toHaveBeenCalledWith(undefined, 10);
-			expect(jsonMock).toHaveBeenCalledWith([
-				{ id: '1', status: JobStatus.PENDING }
-			]);
+			expect(jsonMock).toHaveBeenCalledWith([{ id: '1', status: JobStatus.PENDING }]);
 		});
 
 		it('gets available jobs with job type', async () => {
@@ -315,9 +315,7 @@ describe('jobs routes', () => {
 
 			expect(mockGetExecutionSessionById).toHaveBeenCalledWith('session-1');
 			expect(mockSessionToLegacyResult).toHaveBeenCalled();
-			expect(jsonMock).toHaveBeenCalledWith(
-				expect.objectContaining({ result: { result: 'data' } })
-			);
+			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({ result: { result: 'data' } }));
 		});
 
 		it('returns job without result when session_id points to missing session', async () => {
@@ -356,9 +354,7 @@ describe('jobs routes', () => {
 
 			await callRoute('get', '/:id');
 
-			expect(jsonMock).toHaveBeenCalledWith(
-				expect.objectContaining({ result: { legacy: 'result' } })
-			);
+			expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({ result: { legacy: 'result' } }));
 		});
 
 		it('handles session enrichment errors', async () => {
@@ -442,9 +438,7 @@ describe('jobs routes', () => {
 			(mockTestIdToConversationId as any).mockReturnValue(10);
 			(mockGetAgentById as any).mockResolvedValue({ id: 1, name: 'Agent' });
 			(mockGetConversationById as any).mockResolvedValue({ id: 10, name: 'Test' });
-			(mockGetConversationMessages as any).mockResolvedValue([
-				{ id: 1, role: 'user', content: 'Hello' }
-			]);
+			(mockGetConversationMessages as any).mockResolvedValue([{ id: 1, role: 'user', content: 'Hello' }]);
 			(mockIsSingleTurnConversation as any).mockReturnValue(true);
 			(mockCreateConversationJob as any).mockResolvedValue('job-456');
 
@@ -462,9 +456,7 @@ describe('jobs routes', () => {
 			(mockTestIdToConversationId as any).mockReturnValue(undefined);
 			(mockGetAgentById as any).mockResolvedValue({ id: 1, name: 'Agent' });
 			(mockGetConversationById as any).mockResolvedValue({ id: 100, name: 'Test' });
-			(mockGetConversationMessages as any).mockResolvedValue([
-				{ id: 1, role: 'user', content: 'Hello' }
-			]);
+			(mockGetConversationMessages as any).mockResolvedValue([{ id: 1, role: 'user', content: 'Hello' }]);
 			(mockIsSingleTurnConversation as any).mockReturnValue(true);
 			(mockCreateConversationJob as any).mockResolvedValue('job-456');
 

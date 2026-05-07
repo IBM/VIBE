@@ -54,8 +54,8 @@ export async function getJobById(id: string): Promise<Job | undefined> {
 export async function updateJob(id: string, updates: Partial<Job>): Promise<void> {
 	// Create SET clause
 	const fields = Object.keys(updates)
-		.filter(key => key !== 'id' && key !== 'created_at')
-		.map(key => `${key} = @${key}`);
+		.filter((key) => key !== 'id' && key !== 'created_at')
+		.map((key) => `${key} = @${key}`);
 
 	if (fields.length === 0) {
 		return;
@@ -138,7 +138,9 @@ export async function listJobs(filters: JobFilters & { limit?: number; offset?: 
 	return statement.all(params) as Job[];
 }
 
-export async function listJobsWithCount(filters: JobFilters & { limit?: number; offset?: number } = {}): Promise<{ data: Job[], total: number }> {
+export async function listJobsWithCount(
+	filters: JobFilters & { limit?: number; offset?: number } = {}
+): Promise<{ data: Job[]; total: number }> {
 	// First, get the total count without pagination
 	let countSql = 'SELECT COUNT(*) as count FROM jobs';
 	const countParams: any = {};
@@ -258,7 +260,7 @@ export const createExecutionSession = (session: ExecutionSession) => {
 		status,
 		started_at: session.started_at ?? nowIso,
 		completed_at: session.completed_at ?? (status === 'completed' ? nowIso : null),
-		success: (typeof session.success === 'boolean') ? (session.success ? 1 : 0) : null,
+		success: typeof session.success === 'boolean' ? (session.success ? 1 : 0) : null,
 		error_message: session.error_message ?? null,
 		metadata: metadataString,
 		variables: variablesString
@@ -278,7 +280,12 @@ export const createExecutionSession = (session: ExecutionSession) => {
 	return statement.get(normalizedSession) as ExecutionSession;
 };
 
-export const getExecutionSessions = (filters?: { conversation_id?: number; agent_id?: number; limit?: number; offset?: number }) => {
+export const getExecutionSessions = (filters?: {
+	conversation_id?: number;
+	agent_id?: number;
+	limit?: number;
+	offset?: number;
+}) => {
 	let query = 'SELECT * FROM execution_sessions';
 	const params: any[] = [];
 
@@ -311,7 +318,12 @@ export const getExecutionSessions = (filters?: { conversation_id?: number; agent
 	return db.prepare(query).all(...params) as ExecutionSession[];
 };
 
-export const getExecutionSessionsWithCount = (filters?: { conversation_id?: number; agent_id?: number; limit?: number; offset?: number }): { data: ExecutionSession[]; total: number } => {
+export const getExecutionSessionsWithCount = (filters?: {
+	conversation_id?: number;
+	agent_id?: number;
+	limit?: number;
+	offset?: number;
+}): { data: ExecutionSession[]; total: number } => {
 	// Get total count
 	let countQuery = 'SELECT COUNT(*) as count FROM execution_sessions';
 	const countParams: any[] = [];
@@ -355,17 +367,15 @@ export const getExecutionSessionsByIds = (ids: number[]): ExecutionSession[] => 
 };
 
 export const updateExecutionSession = (id: number, session: Partial<ExecutionSession>) => {
-	const filteredSession = Object.fromEntries(
-		Object.entries(session).filter(([_, value]) => value !== undefined)
-	);
+	const filteredSession = Object.fromEntries(Object.entries(session).filter(([_, value]) => value !== undefined));
 
 	if (Object.keys(filteredSession).length === 0) {
 		return getExecutionSessionById(id);
 	}
 
 	const updates = Object.keys(filteredSession)
-		.filter(key => key !== 'id')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -412,18 +422,25 @@ export const addSessionMessage = (message: SessionMessage) => {
 
 export function updateSessionMessage(
 	id: number,
-	updates: Partial<Pick<SessionMessage,
-		'content' | 'metadata' | 'similarity_score' | 'similarity_scoring_status' | 'similarity_scoring_error' | 'similarity_scoring_metadata'>>
+	updates: Partial<
+		Pick<
+			SessionMessage,
+			| 'content'
+			| 'metadata'
+			| 'similarity_score'
+			| 'similarity_scoring_status'
+			| 'similarity_scoring_error'
+			| 'similarity_scoring_metadata'
+		>
+	>
 ): void {
-	const filtered = Object.fromEntries(
-		Object.entries(updates).filter(([, v]) => v !== undefined)
-	);
+	const filtered = Object.fromEntries(Object.entries(updates).filter(([, v]) => v !== undefined));
 
 	if (Object.keys(filtered).length === 0) {
 		return;
 	}
 
-	const fields = Object.keys(filtered).map(k => `${k} = @${k}`);
+	const fields = Object.keys(filtered).map((k) => `${k} = @${k}`);
 	const stmt = db.prepare(`
 		UPDATE session_messages
 		SET ${fields.join(', ')}
@@ -433,7 +450,9 @@ export function updateSessionMessage(
 }
 
 export const getSessionMessages = (sessionId: number) => {
-	return db.prepare('SELECT * FROM session_messages WHERE session_id = ? ORDER BY sequence').all(sessionId) as SessionMessage[];
+	return db
+		.prepare('SELECT * FROM session_messages WHERE session_id = ? ORDER BY sequence')
+		.all(sessionId) as SessionMessage[];
 };
 
 export const getFullSessionTranscript = (sessionId: number) => {
@@ -451,13 +470,17 @@ export const getFullSessionTranscript = (sessionId: number) => {
  * Used to compute turn index k for the assistant reply (ignore system/tool).
  */
 export function countUserTurnsUpTo(sessionId: number, sequenceInclusive: number): number {
-	const row = db.prepare(`
+	const row = db
+		.prepare(
+			`
     SELECT COUNT(*) as cnt
     FROM session_messages
     WHERE session_id = ?
 		AND sequence <= ?
 		AND role = 'user'
-	`).get(sessionId, sequenceInclusive) as { cnt: number };
+	`
+		)
+		.get(sessionId, sequenceInclusive) as { cnt: number };
 	return row?.cnt ?? 0;
 }
 
@@ -466,17 +489,22 @@ export function countUserTurnsUpTo(sessionId: number, sequenceInclusive: number)
  */
 export function updateSessionMessageScoring(
 	id: number,
-	updates: Partial<Pick<SessionMessage,
-		'similarity_score' | 'similarity_scoring_status' | 'similarity_scoring_error' | 'similarity_scoring_metadata'>>
+	updates: Partial<
+		Pick<
+			SessionMessage,
+			| 'similarity_score'
+			| 'similarity_scoring_status'
+			| 'similarity_scoring_error'
+			| 'similarity_scoring_metadata'
+		>
+	>
 ): void {
-	const filtered = Object.fromEntries(
-		Object.entries(updates).filter(([, v]) => v !== undefined)
-	);
+	const filtered = Object.fromEntries(Object.entries(updates).filter(([, v]) => v !== undefined));
 	if (Object.keys(filtered).length === 0) {
 		return;
 	}
 
-	const fields = Object.keys(filtered).map(k => `${k} = @${k}`);
+	const fields = Object.keys(filtered).map((k) => `${k} = @${k}`);
 	const stmt = db.prepare(`
 		UPDATE session_messages
 		SET ${fields.join(', ')}

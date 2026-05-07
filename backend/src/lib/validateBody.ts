@@ -38,4 +38,3 @@ export function validateBody<T>(
 	res.status(status).json(payload);
 	return null;
 }
-

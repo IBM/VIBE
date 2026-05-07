@@ -74,6 +74,3 @@ describe('agentRepo capabilities storage', () => {
 		expect(parsed.name).toBe('openai-chat');
 	});
 });
-
-
-

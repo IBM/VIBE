@@ -201,9 +201,7 @@ describe('JobQueueService additional coverage', () => {
 	});
 
 	it('createSuiteRun uses external_api leaf test_id as fallback conversation id', async () => {
-		(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([
-			{ agent_id: 1, test_id: 123 }
-		]);
+		(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([{ agent_id: 1, test_id: 123 }]);
 		(dbQueries.createSuiteRun as any).mockResolvedValue({ id: 50 });
 		(dbQueries.updateSuiteRun as any).mockResolvedValue();
 		(dbQueries.getAgentById as any).mockResolvedValue({ settings: JSON.stringify({ type: 'external_api' }) });
@@ -250,11 +248,13 @@ describe('JobQueueService additional coverage', () => {
 		await service!.updateSuiteRunProgress(77);
 
 		expect(dbQueries.getExecutionSessionsByIds).toHaveBeenCalledWith([]);
-		expect(dbQueries.updateSuiteRun).toHaveBeenCalledWith(77, expect.objectContaining({
-			progress: 50,
-			status: JobStatus.PENDING,
-			average_execution_time: undefined
-		}));
+		expect(dbQueries.updateSuiteRun).toHaveBeenCalledWith(
+			77,
+			expect.objectContaining({
+				progress: 50,
+				status: JobStatus.PENDING,
+				average_execution_time: undefined
+			})
+		);
 	});
 });
-

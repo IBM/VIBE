@@ -10,33 +10,33 @@ The External API Agent Service is designed to connect to any external agent API,
 
 1. Install dependencies in the project root (required for shared types):
 
-   ```bash
-   # In project root
-   npm install
-   ```
+    ```bash
+    # In project root
+    npm install
+    ```
 
 2. Configure environment variables:
    Copy `.env.example` to `.env` in the `agent-service-api` directory:
 
-   ```bash
-   # In agent-service-api directory
-   cd agent-service-api
-   cp .env.example .env
-   ```
+    ```bash
+    # In agent-service-api directory
+    cd agent-service-api
+    cp .env.example .env
+    ```
 
-   Adjust settings in `.env` as needed.
+    Adjust settings in `.env` as needed.
 
 3. Build the service:
 
-   ```bash
-   npm run build
-   ```
+    ```bash
+    npm run build
+    ```
 
 4. Start the service:
 
-   ```bash
-   npm start
-   ```
+    ```bash
+    npm start
+    ```
 
 For development, use:
 
@@ -66,17 +66,17 @@ Request body:
 
 ```json
 {
-  "test_input": "The user's input to test",
-  "test_id": 123,
-  "api_endpoint": "https://api.example.com/chat",
-  "api_key": "optional-api-key",
-  "http_method": "POST",
-  "request_template": "{\"messages\": [{\"role\": \"user\", \"content\": \"{{input}}\"}]}",
-  "response_mapping": "{\"output\": \"choices.0.message.content\", \"intermediate_steps\": \"usage\"}",
-  "token_mapping": "{\"input_tokens\": \"usage.prompt_tokens\", \"output_tokens\": \"usage.completion_tokens\"}",
-  "headers": {
-    "custom-header": "value"
-  }
+	"test_input": "The user's input to test",
+	"test_id": 123,
+	"api_endpoint": "https://api.example.com/chat",
+	"api_key": "optional-api-key",
+	"http_method": "POST",
+	"request_template": "{\"messages\": [{\"role\": \"user\", \"content\": \"{{input}}\"}]}",
+	"response_mapping": "{\"output\": \"choices.0.message.content\", \"intermediate_steps\": \"usage\"}",
+	"token_mapping": "{\"input_tokens\": \"usage.prompt_tokens\", \"output_tokens\": \"usage.completion_tokens\"}",
+	"headers": {
+		"custom-header": "value"
+	}
 }
 ```
 
@@ -84,27 +84,27 @@ Response:
 
 ```json
 {
-  "test_id": 123,
-  "output": "Response from the API",
-  "success": true,
-  "execution_time": 1234,
-  "intermediate_steps": [
-    {
-      "timestamp": "2025-04-01T00:00:00.000Z",
-      "action": "API Call Initiated",
-      "output": "Calling https://api.example.com/chat"
-    },
-    {
-      "timestamp": "2025-04-01T00:00:01.000Z",
-      "action": "API Response Received",
-      "output": "Response received from external API"
-    }
-  ],
-  "metrics": {
-    "execution_time": 1234,
-    "input_tokens": 150,
-    "output_tokens": 75
-  }
+	"test_id": 123,
+	"output": "Response from the API",
+	"success": true,
+	"execution_time": 1234,
+	"intermediate_steps": [
+		{
+			"timestamp": "2025-04-01T00:00:00.000Z",
+			"action": "API Call Initiated",
+			"output": "Calling https://api.example.com/chat"
+		},
+		{
+			"timestamp": "2025-04-01T00:00:01.000Z",
+			"action": "API Response Received",
+			"output": "Response received from external API"
+		}
+	],
+	"metrics": {
+		"execution_time": 1234,
+		"input_tokens": 150,
+		"output_tokens": 75
+	}
 }
 ```
 
@@ -114,13 +114,13 @@ The `request_template` field allows you to specify how to format the test input 
 
 ```json
 {
-  "messages": [
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content": "{{input}}"},
-    {"role": "system", "content": "History:\n{{conversation_history}}"},
-    {"role": "system", "content": "Request id: {{requestId}}"}
-  ],
-  "temperature": 0.7
+	"messages": [
+		{ "role": "system", "content": "You are a helpful assistant." },
+		{ "role": "user", "content": "{{input}}" },
+		{ "role": "system", "content": "History:\n{{conversation_history}}" },
+		{ "role": "system", "content": "Request id: {{requestId}}" }
+	],
+	"temperature": 0.7
 }
 ```
 
@@ -131,16 +131,16 @@ You can also extract variables from the response to be made available to subsequ
 
 ```json
 {
-  "output": "choices.0.message.content",
-  "intermediate_steps": "usage",
-  "variables": {
-    "responseId": "id",
-    "firstToolCall": "tool_calls[0].name"
-  },
-  "success_criteria": {
-    "type": "contains",
-    "value": "correct answer"
-  }
+	"output": "choices.0.message.content",
+	"intermediate_steps": "usage",
+	"variables": {
+		"responseId": "id",
+		"firstToolCall": "tool_calls[0].name"
+	},
+	"success_criteria": {
+		"type": "contains",
+		"value": "correct answer"
+	}
 }
 ```
 
@@ -162,8 +162,8 @@ The service returns a standardized error format:
 
 ```json
 {
-  "error": "Failed to execute test",
-  "details": "Specific error message"
+	"error": "Failed to execute test",
+	"details": "Specific error message"
 }
 ```
 
@@ -191,7 +191,7 @@ The service can automatically extract token usage from API responses. You can pr
 
 ```json
 {
-  "token_mapping": "{\"input_tokens\": \"usage.prompt_tokens\", \"output_tokens\": \"usage.completion_tokens\"}"
+	"token_mapping": "{\"input_tokens\": \"usage.prompt_tokens\", \"output_tokens\": \"usage.completion_tokens\"}"
 }
 ```
 
@@ -203,24 +203,24 @@ The service supports various authentication methods:
 
 1. **API Key in Authorization Header**:
 
-   ```json
-   {
-     "api_key": "your-api-key"
-   }
-   ```
+    ```json
+    {
+    	"api_key": "your-api-key"
+    }
+    ```
 
-   This will be sent as `Authorization: Bearer your-api-key`
+    This will be sent as `Authorization: Bearer your-api-key`
 
 2. **Custom Headers**:
 
-   ```json
-   {
-     "headers": {
-       "X-API-Key": "your-api-key",
-       "Custom-Auth": "custom-value"
-     }
-   }
-   ```
+    ```json
+    {
+    	"headers": {
+    		"X-API-Key": "your-api-key",
+    		"Custom-Auth": "custom-value"
+    	}
+    }
+    ```
 
 ### Advanced Response Mapping
 
@@ -230,8 +230,8 @@ You can use dot notation to access nested properties:
 
 ```json
 {
-  "output": "data.results.0.text",
-  "intermediate_steps": "data.metadata.steps"
+	"output": "data.results.0.text",
+	"intermediate_steps": "data.metadata.steps"
 }
 ```
 
@@ -241,8 +241,8 @@ For array responses, you can map specific elements:
 
 ```json
 {
-  "output": "responses[0].text",
-  "intermediate_steps": "responses[0].steps"
+	"output": "responses[0].text",
+	"intermediate_steps": "responses[0].steps"
 }
 ```
 
@@ -252,12 +252,12 @@ For complex success validation:
 
 ```json
 {
-  "success_criteria": {
-    "type": "json_match",
-    "path": "data.status",
-    "operator": "===",
-    "value": "completed"
-  }
+	"success_criteria": {
+		"type": "json_match",
+		"path": "data.status",
+		"operator": "===",
+		"value": "completed"
+	}
 }
 ```
 
@@ -267,17 +267,17 @@ When executing conversations, the service supports per-message overrides via the
 
 ```json
 {
-  "sequence": 2,
-  "role": "user",
-  "content": "hello",
-  "metadata": {
-    "request_template": "{\"model\":\"gpt-5\",\"messages\":[{\"role\":\"user\",\"content\":\"{{input}}\"}],\"temperature\":0.7}",
-    "response_mapping": "{\"output\":\"choices.0.message.content\",\"variables\":{\"replyLen\":\"choices.0.message.content.length\"}}",
-    "variables": {
-      "requestId": "abc-123",
-      "sessionRef": "$.lastResponse.id"
-    }
-  }
+	"sequence": 2,
+	"role": "user",
+	"content": "hello",
+	"metadata": {
+		"request_template": "{\"model\":\"gpt-5\",\"messages\":[{\"role\":\"user\",\"content\":\"{{input}}\"}],\"temperature\":0.7}",
+		"response_mapping": "{\"output\":\"choices.0.message.content\",\"variables\":{\"replyLen\":\"choices.0.message.content.length\"}}",
+		"variables": {
+			"requestId": "abc-123",
+			"sessionRef": "$.lastResponse.id"
+		}
+	}
 }
 ```
 
@@ -292,13 +292,13 @@ Notes:
 
 ```json
 {
-  "api_endpoint": "https://api.openai.com/v1/chat/completions",
-  "api_key": "sk-...",
-  "request_template": "{\"model\": \"gpt-4o\", \"messages\": [{\"role\": \"user\", \"content\": \"{{input}}\"}], \"temperature\": 0.7}",
-  "response_mapping": "{\"output\": \"choices.0.message.content\", \"intermediate_steps\": \"usage\", \"success_criteria\": {\"type\": \"contains\", \"value\": \"answer\"}}",
-  "headers": {
-    "Content-Type": "application/json"
-  }
+	"api_endpoint": "https://api.openai.com/v1/chat/completions",
+	"api_key": "sk-...",
+	"request_template": "{\"model\": \"gpt-4o\", \"messages\": [{\"role\": \"user\", \"content\": \"{{input}}\"}], \"temperature\": 0.7}",
+	"response_mapping": "{\"output\": \"choices.0.message.content\", \"intermediate_steps\": \"usage\", \"success_criteria\": {\"type\": \"contains\", \"value\": \"answer\"}}",
+	"headers": {
+		"Content-Type": "application/json"
+	}
 }
 ```
 
@@ -306,13 +306,13 @@ Notes:
 
 ```json
 {
-  "api_endpoint": "https://api.anthropic.com/v1/messages",
-  "api_key": "sk-ant-...",
-  "request_template": "{\"model\": \"claude-3.7-sonnet\", \"max_tokens\": 1024, \"messages\": [{\"role\": \"user\", \"content\": \"{{input}}\"}]}",
-  "response_mapping": "{\"output\": \"content.0.text\", \"intermediate_steps\": \"usage\", \"success_criteria\": {\"type\": \"contains\", \"value\": \"answer\"}}",
-  "headers": {
-    "Content-Type": "application/json"
-  }
+	"api_endpoint": "https://api.anthropic.com/v1/messages",
+	"api_key": "sk-ant-...",
+	"request_template": "{\"model\": \"claude-3.7-sonnet\", \"max_tokens\": 1024, \"messages\": [{\"role\": \"user\", \"content\": \"{{input}}\"}]}",
+	"response_mapping": "{\"output\": \"content.0.text\", \"intermediate_steps\": \"usage\", \"success_criteria\": {\"type\": \"contains\", \"value\": \"answer\"}}",
+	"headers": {
+		"Content-Type": "application/json"
+	}
 }
 ```
 
@@ -320,9 +320,9 @@ Notes:
 
 ```json
 {
-  "api_endpoint": "https://api.example.com/agent",
-  "request_template": "{\"query\": \"{{input}}\", \"include_steps\": true}",
-  "response_mapping": "{\"output\": \"final_response\", \"intermediate_steps\": \"reasoning_steps\", \"success_criteria\": {\"type\": \"json_match\", \"path\": \"status\", \"operator\": \"===\", \"value\": \"success\"}}"
+	"api_endpoint": "https://api.example.com/agent",
+	"request_template": "{\"query\": \"{{input}}\", \"include_steps\": true}",
+	"response_mapping": "{\"output\": \"final_response\", \"intermediate_steps\": \"reasoning_steps\", \"success_criteria\": {\"type\": \"json_match\", \"path\": \"status\", \"operator\": \"===\", \"value\": \"success\"}}"
 }
 ```
 

@@ -13,9 +13,12 @@ export const createConversation = (conversation: Conversation) => {
 		variables: conversation.variables ?? null,
 		required_request_template_capabilities: conversation.required_request_template_capabilities ?? null,
 		required_response_map_capabilities: conversation.required_response_map_capabilities ?? null,
-		stop_on_failure: typeof conversation.stop_on_failure === 'boolean'
-			? (conversation.stop_on_failure ? 1 : 0)
-			: (conversation.stop_on_failure ?? 0)
+		stop_on_failure:
+			typeof conversation.stop_on_failure === 'boolean'
+				? conversation.stop_on_failure
+					? 1
+					: 0
+				: (conversation.stop_on_failure ?? 0)
 	};
 
 	const statement = db.prepare(`
@@ -43,20 +46,26 @@ export const createConversation = (conversation: Conversation) => {
 };
 
 export const getConversations = () => {
-	return db.prepare(`
+	return db
+		.prepare(
+			`
 		SELECT c.*, (
 			SELECT COUNT(*) FROM conversation_messages m WHERE m.conversation_id = c.id
 		) AS message_count
 		FROM conversations c
 		ORDER BY c.created_at DESC
-	`).all() as (Conversation & { message_count?: number })[];
+	`
+		)
+		.all() as (Conversation & { message_count?: number })[];
 };
 
 export const getConversationById = (id: number) => {
 	return db.prepare('SELECT * FROM conversations WHERE id = ?').get(id) as Conversation;
 };
 
-export const getConversationsWithCount = (params: { limit?: number; offset?: number } = {}): { data: (Conversation & { message_count?: number })[]; total: number } => {
+export const getConversationsWithCount = (
+	params: { limit?: number; offset?: number } = {}
+): { data: (Conversation & { message_count?: number })[]; total: number } => {
 	const { limit, offset } = params;
 	let query = `
 		SELECT c.*, (
@@ -108,8 +117,8 @@ export const updateConversation = (id: number, conversation: Partial<Conversatio
 	}
 
 	const updates = Object.keys(filteredConversation)
-		.filter(key => key !== 'id' && key !== 'created_at')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id' && key !== 'created_at')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -159,21 +168,21 @@ export const addMessageToConversation = (message: ConversationMessage) => {
 };
 
 export const getConversationMessages = (conversationId: number) => {
-	return db.prepare('SELECT * FROM conversation_messages WHERE conversation_id = ? ORDER BY sequence').all(conversationId) as ConversationMessage[];
+	return db
+		.prepare('SELECT * FROM conversation_messages WHERE conversation_id = ? ORDER BY sequence')
+		.all(conversationId) as ConversationMessage[];
 };
 
 export const updateConversationMessage = (id: number, message: Partial<ConversationMessage>) => {
-	const filteredMessage = Object.fromEntries(
-		Object.entries(message).filter(([_, value]) => value !== undefined)
-	);
+	const filteredMessage = Object.fromEntries(Object.entries(message).filter(([_, value]) => value !== undefined));
 
 	if (Object.keys(filteredMessage).length === 0) {
 		return db.prepare('SELECT * FROM conversation_messages WHERE id = ?').get(id) as ConversationMessage;
 	}
 
 	const updates = Object.keys(filteredMessage)
-		.filter(key => key !== 'id' && key !== 'created_at')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id' && key !== 'created_at')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -205,11 +214,18 @@ export const reorderConversationMessages = (_conversationId: number, newOrder: {
 /**
  * Fetch target reply config for a conversation + user_sequence.
  */
-export function getConversationTurnTarget(conversationId: number, userSequence: number): ConversationTurnTarget | undefined {
-	const row = db.prepare(`
+export function getConversationTurnTarget(
+	conversationId: number,
+	userSequence: number
+): ConversationTurnTarget | undefined {
+	const row = db
+		.prepare(
+			`
 		SELECT * FROM conversation_turn_targets
 		WHERE conversation_id = ? AND user_sequence = ?
-	`).get(conversationId, userSequence) as ConversationTurnTarget | undefined;
+	`
+		)
+		.get(conversationId, userSequence) as ConversationTurnTarget | undefined;
 	return row;
 }
 
@@ -218,7 +234,9 @@ export function getConversationTurnTarget(conversationId: number, userSequence: 
  * A single-turn conversation has exactly one user message.
  */
 export const getSingleTurnTestsCount = (): number => {
-	const row = db.prepare(`
+	const row = db
+		.prepare(
+			`
 		SELECT COUNT(*) AS count
 		FROM (
 			SELECT c.id
@@ -227,6 +245,8 @@ export const getSingleTurnTestsCount = (): number => {
 			GROUP BY c.id
 			HAVING SUM(CASE WHEN m.role = 'user' THEN 1 ELSE 0 END) = 1
 		) t
-	`).get() as { count: number };
+	`
+		)
+		.get() as { count: number };
 	return row.count;
 };

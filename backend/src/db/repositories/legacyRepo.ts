@@ -16,8 +16,8 @@ export const createTest = (test: Test) => {
 	// Ensure description has a default value if not provided
 	const testWithDefaults = {
 		...test,
-		description: test.description || '',  // Default to empty string if not provided
-		expected_output: test.expected_output || ''  // Default to empty string if not provided
+		description: test.description || '', // Default to empty string if not provided
+		expected_output: test.expected_output || '' // Default to empty string if not provided
 	};
 
 	const statement = db.prepare(`
@@ -30,9 +30,7 @@ export const createTest = (test: Test) => {
 
 export const updateTest = (id: number, test: Partial<Test>) => {
 	// Filter out undefined values to avoid SQL errors
-	const filteredTest = Object.fromEntries(
-		Object.entries(test).filter(([_, value]) => value !== undefined)
-	);
+	const filteredTest = Object.fromEntries(Object.entries(test).filter(([_, value]) => value !== undefined));
 
 	// If there are no fields to update, return the existing test
 	if (Object.keys(filteredTest).length === 0) {
@@ -40,8 +38,8 @@ export const updateTest = (id: number, test: Partial<Test>) => {
 	}
 
 	const updates = Object.keys(filteredTest)
-		.filter(key => key !== 'id')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -85,7 +83,9 @@ export const getTestById = (id: number) => {
 	return db.prepare('SELECT * FROM tests WHERE id = ?').get(id) as Test;
 };
 
-export const getTestsWithCount = (params: { limit?: number; offset?: number } = {}): { data: Test[]; total: number } => {
+export const getTestsWithCount = (
+	params: { limit?: number; offset?: number } = {}
+): { data: Test[]; total: number } => {
 	const { limit, offset } = params;
 	let query = 'SELECT * FROM tests ORDER BY created_at DESC';
 	const queryParams: any[] = [];
@@ -154,19 +154,11 @@ export const createResult = (result: TestResult) => {
 	let outputTokens = null;
 	let tokenMappingMetadata = '';
 
-	if (
-		result.input_tokens !== undefined
-		&& typeof result.input_tokens === 'number'
-		&& result.input_tokens >= 0
-	) {
+	if (result.input_tokens !== undefined && typeof result.input_tokens === 'number' && result.input_tokens >= 0) {
 		inputTokens = Math.floor(result.input_tokens);
 	}
 
-	if (
-		result.output_tokens !== undefined
-		&& typeof result.output_tokens === 'number'
-		&& result.output_tokens >= 0
-	) {
+	if (result.output_tokens !== undefined && typeof result.output_tokens === 'number' && result.output_tokens >= 0) {
 		outputTokens = Math.floor(result.output_tokens);
 	}
 
@@ -275,7 +267,12 @@ export const getResults = (filters?: { agent_id?: number; test_id?: number; limi
 	return db.prepare(query).all(...params) as TestResult[];
 };
 
-export const getResultsWithCount = (filters?: { agent_id?: number; test_id?: number; limit?: number; offset?: number }): { data: TestResult[], total: number } => {
+export const getResultsWithCount = (filters?: {
+	agent_id?: number;
+	test_id?: number;
+	limit?: number;
+	offset?: number;
+}): { data: TestResult[]; total: number } => {
 	// First, get the total count without pagination
 	let countQuery = 'SELECT COUNT(*) as count FROM results';
 	const countParams: any[] = [];
@@ -310,11 +307,7 @@ export const getResultById = (id: number) => {
 
 export const updateResult = (id: number, updates: Partial<TestResult>) => {
 	const filteredUpdates = Object.fromEntries(
-		Object.entries(updates).filter(([key, value]) =>
-			value !== undefined &&
-			key !== 'id' &&
-			key !== 'created_at'
-		)
+		Object.entries(updates).filter(([key, value]) => value !== undefined && key !== 'id' && key !== 'created_at')
 	);
 
 	// If there are no fields to update, return
@@ -322,7 +315,7 @@ export const updateResult = (id: number, updates: Partial<TestResult>) => {
 		return;
 	}
 
-	const fields = Object.keys(filteredUpdates).map(key => `${key} = @${key}`);
+	const fields = Object.keys(filteredUpdates).map((key) => `${key} = @${key}`);
 
 	const statement = db.prepare(`
 		UPDATE results

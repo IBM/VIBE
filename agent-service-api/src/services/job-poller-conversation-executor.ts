@@ -59,9 +59,9 @@ export async function executeConversationJobWithApi(context: ConversationJobExec
 	try {
 		const startTime = new Date().toISOString();
 
-		const conversationResponse = await axios.get<Conversation & { id: number; messages?: ConversationMessageDraft[] }>(
-			`${backendUrl}/api/conversations/${job.conversation_id}`
-		);
+		const conversationResponse = await axios.get<
+			Conversation & { id: number; messages?: ConversationMessageDraft[] }
+		>(`${backendUrl}/api/conversations/${job.conversation_id}`);
 		const conversation = conversationResponse.data;
 
 		const agentConfig = await getAgentConfig(job.agent_id);
@@ -85,13 +85,7 @@ export async function executeConversationJobWithApi(context: ConversationJobExec
 		await updateJobStatus(job.id, JobStatus.RUNNING, 80);
 
 		const completionTime = new Date().toISOString();
-		const sessionId = await saveSessionResults(
-			conversation.id!,
-			agent.id!,
-			startTime,
-			completionTime,
-			result
-		);
+		const sessionId = await saveSessionResults(conversation.id!, agent.id!, startTime, completionTime, result);
 
 		await updateJobStatus(job.id, JobStatus.COMPLETED, 100, undefined, undefined, sessionId);
 	} catch (error: unknown) {

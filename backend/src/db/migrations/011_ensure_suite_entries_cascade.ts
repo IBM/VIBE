@@ -4,17 +4,24 @@ const migration: Migration = {
 	version: 11,
 	name: 'Ensure suite_entries conversation foreign key uses cascade',
 	up: (db) => {
-		const tableExists = db.prepare(
-			"SELECT 1 FROM sqlite_master WHERE type='table' AND name='suite_entries'"
-		).get();
+		const tableExists = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='suite_entries'").get();
 		if (!tableExists) {
 			return;
 		}
 		const suiteEntriesForeignKeys = db.prepare("PRAGMA foreign_key_list('suite_entries')").all() as Array<{
-			id: number; seq: number; table: string; from: string; to: string; on_update?: string; on_delete?: string;
+			id: number;
+			seq: number;
+			table: string;
+			from: string;
+			to: string;
+			on_update?: string;
+			on_delete?: string;
 		}>;
-		const conversationForeignKey = suiteEntriesForeignKeys.find(fk => fk.table === 'conversations' && fk.from === 'conversation_id');
-		const hasCascade = conversationForeignKey && String(conversationForeignKey.on_delete || '').toUpperCase() === 'CASCADE';
+		const conversationForeignKey = suiteEntriesForeignKeys.find(
+			(fk) => fk.table === 'conversations' && fk.from === 'conversation_id'
+		);
+		const hasCascade =
+			conversationForeignKey && String(conversationForeignKey.on_delete || '').toUpperCase() === 'CASCADE';
 
 		if (!hasCascade) {
 			db.transaction(() => {
@@ -39,7 +46,7 @@ const migration: Migration = {
         ALTER TABLE suite_entries_new RENAME TO suite_entries;
       `);
 
-					db.exec(`
+				db.exec(`
         CREATE INDEX IF NOT EXISTS idx_suite_entries_parent ON suite_entries(parent_suite_id);
         CREATE INDEX IF NOT EXISTS idx_suite_entries_sequence ON suite_entries(sequence);
         CREATE INDEX IF NOT EXISTS idx_suite_entries_test ON suite_entries(test_id);

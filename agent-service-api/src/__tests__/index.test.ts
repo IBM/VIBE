@@ -63,9 +63,9 @@ describe('agent-service-api bootstrap', () => {
 		getHandler(6)(new Error('boom'), req, res, next);
 		getHandler(6)({} as any, req, res, next);
 
-		const sigtermHandler = onSpy.mock.calls.find(call => call[0] === 'SIGTERM')?.[1] as (() => void) | undefined;
+		const sigtermHandler = onSpy.mock.calls.find((call) => call[0] === 'SIGTERM')?.[1] as (() => void) | undefined;
 		sigtermHandler?.();
-		const sigintHandler = onSpy.mock.calls.find(call => call[0] === 'SIGINT')?.[1] as (() => void) | undefined;
+		const sigintHandler = onSpy.mock.calls.find((call) => call[0] === 'SIGINT')?.[1] as (() => void) | undefined;
 		sigintHandler?.();
 
 		expect(stopPolling).toHaveBeenCalledTimes(2);

@@ -30,10 +30,14 @@ const migration: Migration = {
 	`);
 			// Unique default per agent (partial unique index)
 			try {
-				db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_agent_req_tmpl_default ON agent_request_templates(agent_id) WHERE is_default = 1;');
-			} catch { } // older SQLite might not support partial indexes; enforce in code if needed
-			const reqTemplateCols = db.prepare("PRAGMA table_info('agent_request_templates')").all() as Array<{ name: string }>;
-			if (reqTemplateCols.length > 0 && !reqTemplateCols.some(col => col.name === 'capabilities')) {
+				db.exec(
+					'CREATE UNIQUE INDEX IF NOT EXISTS idx_agent_req_tmpl_default ON agent_request_templates(agent_id) WHERE is_default = 1;'
+				);
+			} catch {} // older SQLite might not support partial indexes; enforce in code if needed
+			const reqTemplateCols = db.prepare("PRAGMA table_info('agent_request_templates')").all() as Array<{
+				name: string;
+			}>;
+			if (reqTemplateCols.length > 0 && !reqTemplateCols.some((col) => col.name === 'capabilities')) {
 				db.exec("ALTER TABLE agent_request_templates ADD COLUMN capabilities TEXT DEFAULT '{}'");
 				db.exec("UPDATE agent_request_templates SET capabilities = '{}' WHERE capabilities IS NULL");
 			}
@@ -54,55 +58,66 @@ const migration: Migration = {
 		);
 	`);
 			try {
-				db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_agent_resp_map_default ON agent_response_maps(agent_id) WHERE is_default = 1;');
-			} catch { /* see note above */ }
+				db.exec(
+					'CREATE UNIQUE INDEX IF NOT EXISTS idx_agent_resp_map_default ON agent_response_maps(agent_id) WHERE is_default = 1;'
+				);
+			} catch {
+				/* see note above */
+			}
 			const respMapCols = db.prepare("PRAGMA table_info('agent_response_maps')").all() as Array<{ name: string }>;
-			if (respMapCols.length > 0 && !respMapCols.some(col => col.name === 'capabilities')) {
+			if (respMapCols.length > 0 && !respMapCols.some((col) => col.name === 'capabilities')) {
 				db.exec("ALTER TABLE agent_response_maps ADD COLUMN capabilities TEXT DEFAULT '{}'");
 				db.exec("UPDATE agent_response_maps SET capabilities = '{}' WHERE capabilities IS NULL");
 			}
 
 			// 3) Add selection/variables columns to conversations
 			const convCols2 = db.prepare("PRAGMA table_info('conversations')").all() as Array<{ name: string }>;
-			if (!convCols2.some(c => c.name === 'default_request_template_id')) {
+			if (!convCols2.some((c) => c.name === 'default_request_template_id')) {
 				db.exec('ALTER TABLE conversations ADD COLUMN default_request_template_id INTEGER');
 			}
-			if (!convCols2.some(c => c.name === 'default_response_map_id')) {
+			if (!convCols2.some((c) => c.name === 'default_response_map_id')) {
 				db.exec('ALTER TABLE conversations ADD COLUMN default_response_map_id INTEGER');
 			}
-			if (!convCols2.some(c => c.name === 'variables')) {
+			if (!convCols2.some((c) => c.name === 'variables')) {
 				db.exec('ALTER TABLE conversations ADD COLUMN variables TEXT');
 			}
-			if (!convCols2.some(c => c.name === 'required_request_template_capabilities')) {
+			if (!convCols2.some((c) => c.name === 'required_request_template_capabilities')) {
 				db.exec('ALTER TABLE conversations ADD COLUMN required_request_template_capabilities TEXT');
 			}
-			if (!convCols2.some(c => c.name === 'required_response_map_capabilities')) {
+			if (!convCols2.some((c) => c.name === 'required_response_map_capabilities')) {
 				db.exec('ALTER TABLE conversations ADD COLUMN required_response_map_capabilities TEXT');
 			}
-			if (!convCols2.some(c => c.name === 'stop_on_failure')) {
+			if (!convCols2.some((c) => c.name === 'stop_on_failure')) {
 				db.exec('ALTER TABLE conversations ADD COLUMN stop_on_failure INTEGER DEFAULT 0');
 			}
 
 			// 4) Add overrides/variables to conversation_messages
-			const convMsgCols2 = db.prepare("PRAGMA table_info('conversation_messages')").all() as Array<{ name: string }>;
-			if (convMsgCols2.length > 0 && !convMsgCols2.some(c => c.name === 'request_template_id')) {
+			const convMsgCols2 = db.prepare("PRAGMA table_info('conversation_messages')").all() as Array<{
+				name: string;
+			}>;
+			if (convMsgCols2.length > 0 && !convMsgCols2.some((c) => c.name === 'request_template_id')) {
 				db.exec('ALTER TABLE conversation_messages ADD COLUMN request_template_id INTEGER');
 			}
-			if (convMsgCols2.length > 0 && !convMsgCols2.some(c => c.name === 'response_map_id')) {
+			if (convMsgCols2.length > 0 && !convMsgCols2.some((c) => c.name === 'response_map_id')) {
 				db.exec('ALTER TABLE conversation_messages ADD COLUMN response_map_id INTEGER');
 			}
-			if (convMsgCols2.length > 0 && !convMsgCols2.some(c => c.name === 'set_variables')) {
+			if (convMsgCols2.length > 0 && !convMsgCols2.some((c) => c.name === 'set_variables')) {
 				db.exec('ALTER TABLE conversation_messages ADD COLUMN set_variables TEXT');
 			}
 
 			// 5) Add variables to execution_sessions
-			const execSessCols2 = db.prepare("PRAGMA table_info('execution_sessions')").all() as Array<{ name: string }>;
-			if (!execSessCols2.some(c => c.name === 'variables')) {
+			const execSessCols2 = db.prepare("PRAGMA table_info('execution_sessions')").all() as Array<{
+				name: string;
+			}>;
+			if (!execSessCols2.some((c) => c.name === 'variables')) {
 				db.exec('ALTER TABLE execution_sessions ADD COLUMN variables TEXT');
 			}
 
 			// 6) Backfill from agents.settings (one-shot): move request_template/response_mapping into new tables, set defaults, and clean settings
-			const agents = db.prepare('SELECT id, settings FROM agents').all() as Array<{ id: number; settings: string }>;
+			const agents = db.prepare('SELECT id, settings FROM agents').all() as Array<{
+				id: number;
+				settings: string;
+			}>;
 			const insertReqTmpl = db.prepare(`
 		INSERT INTO agent_request_templates (agent_id, name, description, engine, content_type, body, tags, is_default)
 		VALUES (@agent_id, @name, @description, @engine, @content_type, @body, @tags, @is_default)
@@ -111,8 +126,12 @@ const migration: Migration = {
 		INSERT INTO agent_response_maps (agent_id, name, description, spec, tags, is_default)
 		VALUES (@agent_id, @name, @description, @spec, @tags, @is_default)
 	`);
-			const selectAnyReqDefault = db.prepare('SELECT id FROM agent_request_templates WHERE agent_id = ? AND is_default = 1 LIMIT 1');
-			const selectAnyRespDefault = db.prepare('SELECT id FROM agent_response_maps WHERE agent_id = ? AND is_default = 1 LIMIT 1');
+			const selectAnyReqDefault = db.prepare(
+				'SELECT id FROM agent_request_templates WHERE agent_id = ? AND is_default = 1 LIMIT 1'
+			);
+			const selectAnyRespDefault = db.prepare(
+				'SELECT id FROM agent_response_maps WHERE agent_id = ? AND is_default = 1 LIMIT 1'
+			);
 			const updateAgentSettings = db.prepare('UPDATE agents SET settings = @settings WHERE id = @id');
 
 			const backfillTx = db.transaction(() => {
@@ -121,7 +140,9 @@ const migration: Migration = {
 					let settingsObj: any = {};
 					try {
 						settingsObj = JSON.parse(ag.settings);
-					} catch { settingsObj = {}; }
+					} catch {
+						settingsObj = {};
+					}
 					const isExternal = String(settingsObj?.type || '').toLowerCase() === 'external_api';
 
 					if (!isExternal) {
@@ -132,9 +153,16 @@ const migration: Migration = {
 
 					// request_template -> agent_request_templates (default)
 					if (settingsObj.request_template && !selectAnyReqDefault.get(ag.id)) {
-						const body = typeof settingsObj.request_template === 'string'
-							? settingsObj.request_template
-							: (() => { try { return JSON.stringify(settingsObj.request_template); } catch { return String(settingsObj.request_template); } })();
+						const body =
+							typeof settingsObj.request_template === 'string'
+								? settingsObj.request_template
+								: (() => {
+										try {
+											return JSON.stringify(settingsObj.request_template);
+										} catch {
+											return String(settingsObj.request_template);
+										}
+									})();
 						insertReqTmpl.run({
 							agent_id: ag.id,
 							name: 'default',
@@ -151,9 +179,16 @@ const migration: Migration = {
 
 					// response_mapping -> agent_response_maps (default)
 					if (settingsObj.response_mapping && !selectAnyRespDefault.get(ag.id)) {
-						const spec = typeof settingsObj.response_mapping === 'string'
-							? settingsObj.response_mapping
-							: (() => { try { return JSON.stringify(settingsObj.response_mapping); } catch { return String(settingsObj.response_mapping); } })();
+						const spec =
+							typeof settingsObj.response_mapping === 'string'
+								? settingsObj.response_mapping
+								: (() => {
+										try {
+											return JSON.stringify(settingsObj.response_mapping);
+										} catch {
+											return String(settingsObj.response_mapping);
+										}
+									})();
 						insertRespMap.run({
 							agent_id: ag.id,
 							name: 'default',
@@ -171,7 +206,9 @@ const migration: Migration = {
 						let settingsStr = '{}';
 						try {
 							settingsStr = JSON.stringify(settingsObj);
-						} catch { settingsStr = '{}'; }
+						} catch {
+							settingsStr = '{}';
+						}
 						updateAgentSettings.run({ id: ag.id, settings: settingsStr });
 					}
 				}

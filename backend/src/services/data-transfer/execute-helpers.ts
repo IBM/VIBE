@@ -26,21 +26,17 @@ export const createSummary = (): MutableSummary => ({
 	items: []
 });
 
-const createNameWithImportedSuffix = (name: string, counter?: number): string => (
-	counter === undefined ? `${name} (imported)` : `${name} (imported ${counter})`
-);
+const createNameWithImportedSuffix = (name: string, counter?: number): string =>
+	counter === undefined ? `${name} (imported)` : `${name} (imported ${counter})`;
 
-const getDefaultDecision = (status: AnalysisItem['status']): ImportResolutionDecision => (
-	status === 'new' ? 'create_new' : 'skip'
-);
+const getDefaultDecision = (status: AnalysisItem['status']): ImportResolutionDecision =>
+	status === 'new' ? 'create_new' : 'skip';
 
 export const getResolution = (
 	resolutions: Record<string, ImportResolution>,
 	itemKey: string,
 	status: AnalysisItem['status']
-): ImportResolution => (
-	resolutions[itemKey] || { item_key: itemKey, decision: getDefaultDecision(status) }
-);
+): ImportResolution => resolutions[itemKey] || { item_key: itemKey, decision: getDefaultDecision(status) };
 
 export const resolveCreatedName = (
 	originalName: string,
@@ -84,16 +80,10 @@ export const pushSummaryItem = (
 	});
 };
 
-export const resolveAgentVersion = (
-	originalVersion: string,
-	resolution?: ImportResolution
-): string => resolution?.new_version || originalVersion;
+export const resolveAgentVersion = (originalVersion: string, resolution?: ImportResolution): string =>
+	resolution?.new_version || originalVersion;
 
-export const addToNameLookup = (
-	lookup: NameToIds,
-	name: string,
-	id: number | undefined
-): void => {
+export const addToNameLookup = (lookup: NameToIds, name: string, id: number | undefined): void => {
 	if (id === undefined) {
 		return;
 	}
@@ -104,18 +94,13 @@ export const addToNameLookup = (
 	lookup.set(name, ids);
 };
 
-export const countByName = (names: string[]): Map<string, number> => (
+export const countByName = (names: string[]): Map<string, number> =>
 	names.reduce<Map<string, number>>((acc, name) => {
 		acc.set(name, (acc.get(name) || 0) + 1);
 		return acc;
-	}, new Map())
-);
+	}, new Map());
 
-export const getUniqueId = (
-	lookup: NameToIds,
-	name: string,
-	entityLabel: string
-): number | undefined => {
+export const getUniqueId = (lookup: NameToIds, name: string, entityLabel: string): number | undefined => {
 	const ids = lookup.get(name) || [];
 	if (ids.length > 1) {
 		throw new ImportValidationError(`Ambiguous ${entityLabel}: ${name}`);
@@ -123,11 +108,7 @@ export const getUniqueId = (
 	return ids[0];
 };
 
-export const getRequiredLookupId = (
-	lookup: Map<string, number>,
-	name: string,
-	entityLabel: string
-): number => {
+export const getRequiredLookupId = (lookup: Map<string, number>, name: string, entityLabel: string): number => {
 	const id = lookup.get(name);
 	if (!id) {
 		throw new ImportValidationError(`Missing ${entityLabel}: ${name}`);

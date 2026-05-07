@@ -11,11 +11,15 @@ const migration: Migration = {
 	name: 'Backfill similarity metadata onto assistant session messages',
 	up: (db) => {
 		try {
-			const sessionsWithMeta = db.prepare(`
+			const sessionsWithMeta = db
+				.prepare(
+					`
 		SELECT id, metadata
 		FROM execution_sessions
 		WHERE metadata IS NOT NULL AND metadata != ''
-	`).all() as Array<{ id: number; metadata: string | null }>;
+	`
+				)
+				.all() as Array<{ id: number; metadata: string | null }>;
 
 			const selectAssistantMsg = db.prepare(`
         SELECT id FROM session_messages
@@ -44,16 +48,22 @@ const migration: Migration = {
 					let meta: any = {};
 					try {
 						meta = JSON.parse(row.metadata);
-					} catch { }
+					} catch {}
 					const score = typeof meta?.similarity_score === 'number' ? meta.similarity_score : null;
-					const status = typeof meta?.similarity_scoring_status === 'string' ? meta.similarity_scoring_status : null;
-					const error = typeof meta?.similarity_scoring_error === 'string' ? meta.similarity_scoring_error : null;
+					const status =
+						typeof meta?.similarity_scoring_status === 'string' ? meta.similarity_scoring_status : null;
+					const error =
+						typeof meta?.similarity_scoring_error === 'string' ? meta.similarity_scoring_error : null;
 					let metaStr: string | null = null;
 					if (meta && meta.similarity_scoring_metadata !== undefined) {
 						if (typeof meta.similarity_scoring_metadata === 'string') {
 							metaStr = meta.similarity_scoring_metadata;
 						} else {
-							try { metaStr = JSON.stringify(meta.similarity_scoring_metadata); } catch { metaStr = null; }
+							try {
+								metaStr = JSON.stringify(meta.similarity_scoring_metadata);
+							} catch {
+								metaStr = null;
+							}
 						}
 					}
 

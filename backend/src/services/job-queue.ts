@@ -9,12 +9,7 @@ import {
 	getAgentById
 } from '../db/queries';
 import { computeSessionDurationMs } from '../lib/sessionMetadata';
-import {
-	SuiteRun,
-	JobStatus,
-	Job,
-	JobFilters
-} from '@ibm-vibe/types';
+import { SuiteRun, JobStatus, Job, JobFilters } from '@ibm-vibe/types';
 // Import functions directly from db/queries to avoid TypeScript errors
 import * as dbQueries from '../db/queries';
 import { suiteProcessingService } from './suite-processing-service';
@@ -72,7 +67,7 @@ export class JobQueueService {
 
 		// Wait for any in-flight processQueue to complete
 		while (this.isProcessing) {
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 		}
 	}
 
@@ -226,9 +221,11 @@ export class JobQueueService {
 		await dbUpdateJob(id, updates);
 
 		// If job completed or failed, remove from running jobs
-		if (updates.status === JobStatus.COMPLETED ||
-				updates.status === JobStatus.FAILED ||
-				updates.status === JobStatus.TIMEOUT) {
+		if (
+			updates.status === JobStatus.COMPLETED ||
+			updates.status === JobStatus.FAILED ||
+			updates.status === JobStatus.TIMEOUT
+		) {
 			this.runningJobs.delete(id);
 		}
 
@@ -248,7 +245,7 @@ export class JobQueueService {
 
 		try {
 			// Clean up any orphaned running jobs (running too long without updates)
-			const staleThreshold = Date.now() - (10 * 60 * 1000); // 10 minutes
+			const staleThreshold = Date.now() - 10 * 60 * 1000; // 10 minutes
 			for (const job of this.jobs.values()) {
 				if (job.status === JobStatus.RUNNING && job.updated_at) {
 					const updatedAt = new Date(job.updated_at).getTime();
@@ -451,36 +448,38 @@ export class JobQueueService {
 		if (!createdSuiteRun.id) {
 			throw new Error('Failed to create suite run');
 		}
-        // Create jobs for each leaf test in the suite
-        const jobPromises = leaves.map(async (leaf: { agent_id: number; conversation_id?: number; test_id?: number }) => {
-            const jobAgentId = leaf.agent_id;
+		// Create jobs for each leaf test in the suite
+		const jobPromises = leaves.map(
+			async (leaf: { agent_id: number; conversation_id?: number; test_id?: number }) => {
+				const jobAgentId = leaf.agent_id;
 
-            // Determine agent job type to decide which job creator to use
-            const agent = await dbQueries.getAgentById(jobAgentId);
-            if (!agent) {
-                throw new Error(`Agent ${jobAgentId} not found`);
-            }
-            const jobType = getAgentJobType(agent.settings);
+				// Determine agent job type to decide which job creator to use
+				const agent = await dbQueries.getAgentById(jobAgentId);
+				if (!agent) {
+					throw new Error(`Agent ${jobAgentId} not found`);
+				}
+				const jobType = getAgentJobType(agent.settings);
 
-            if (jobType === 'external_api') {
-                // Prefer conversation-first jobs
-                const conversationId = leaf.conversation_id ?? leaf.test_id;
-                if (!conversationId) {
-                    throw new Error('Missing conversation identifier for external_api job');
-                }
-                return this.createConversationJob(jobAgentId, conversationId, createdSuiteRun.id!);
-            }
+				if (jobType === 'external_api') {
+					// Prefer conversation-first jobs
+					const conversationId = leaf.conversation_id ?? leaf.test_id;
+					if (!conversationId) {
+						throw new Error('Missing conversation identifier for external_api job');
+					}
+					return this.createConversationJob(jobAgentId, conversationId, createdSuiteRun.id!);
+				}
 
-            // CrewAI path (legacy tests still supported)
-            if (leaf.test_id) {
-                return this.createJobForSuiteRun(jobAgentId, leaf.test_id, createdSuiteRun.id!);
-            }
-            // If only conversation_id is present, fallback to conversation job
-            if (leaf.conversation_id) {
-                return this.createConversationJob(jobAgentId, leaf.conversation_id, createdSuiteRun.id!);
-            }
-            throw new Error('Leaf has neither test_id nor conversation_id');
-        });
+				// CrewAI path (legacy tests still supported)
+				if (leaf.test_id) {
+					return this.createJobForSuiteRun(jobAgentId, leaf.test_id, createdSuiteRun.id!);
+				}
+				// If only conversation_id is present, fallback to conversation job
+				if (leaf.conversation_id) {
+					return this.createConversationJob(jobAgentId, leaf.conversation_id, createdSuiteRun.id!);
+				}
+				throw new Error('Leaf has neither test_id nor conversation_id');
+			}
+		);
 		await Promise.all(jobPromises);
 		// Immediately mark suite run as RUNNING
 		await dbQueries.updateSuiteRun(createdSuiteRun.id, { status: JobStatus.RUNNING });
@@ -495,11 +494,7 @@ export class JobQueueService {
 	 * @param suite_run_id Suite run ID
 	 * @returns The job ID
 	 */
-	private async createJobForSuiteRun(
-		agent_id: number,
-		test_id: number,
-		suite_run_id: number
-	): Promise<string> {
+	private async createJobForSuiteRun(agent_id: number, test_id: number, suite_run_id: number): Promise<string> {
 		// Get agent details to determine job type
 		const agent = await dbQueries.getAgentById(agent_id);
 		if (!agent) {
@@ -539,22 +534,24 @@ export class JobQueueService {
 
 		// Calculate progress
 		const totalJobs = jobs.length;
-		const completedJobs = jobs.filter(job =>
-			job.status === JobStatus.COMPLETED ||
-			job.status === JobStatus.FAILED ||
-			job.status === JobStatus.TIMEOUT
+		const completedJobs = jobs.filter(
+			(job) =>
+				job.status === JobStatus.COMPLETED ||
+				job.status === JobStatus.FAILED ||
+				job.status === JobStatus.TIMEOUT
 		);
-		const successfulJobs = jobs.filter(job => job.status === JobStatus.COMPLETED);
+		const successfulJobs = jobs.filter((job) => job.status === JobStatus.COMPLETED);
 
 		// Compute execution time from execution sessions (batch fetch)
 		const sessionIds = completedJobs
-			.map(job => job.session_id)
+			.map((job) => job.session_id)
 			.filter((id): id is number => id !== undefined && id !== null);
 		const sessions = dbQueries.getExecutionSessionsByIds(sessionIds);
-		const executionTimesMs = sessions.map(s => computeSessionDurationMs(s));
-		const averageExecutionTime = executionTimesMs.length > 0
-			? executionTimesMs.reduce((sum, ms) => sum + ms, 0) / executionTimesMs.length
-			: undefined;
+		const executionTimesMs = sessions.map((s) => computeSessionDurationMs(s));
+		const averageExecutionTime =
+			executionTimesMs.length > 0
+				? executionTimesMs.reduce((sum, ms) => sum + ms, 0) / executionTimesMs.length
+				: undefined;
 
 		// Calculate overall progress percentage
 		const progress = Math.floor((completedJobs.length / totalJobs) * 100);
@@ -563,7 +560,7 @@ export class JobQueueService {
 		let status = suiteRun.status;
 		if (completedJobs.length === totalJobs) {
 			status = JobStatus.COMPLETED;
-		} else if (jobs.some(job => job.status === JobStatus.RUNNING)) {
+		} else if (jobs.some((job) => job.status === JobStatus.RUNNING)) {
 			status = JobStatus.RUNNING;
 		}
 

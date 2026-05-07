@@ -81,7 +81,10 @@ describe('Tests Routes (Legacy)', () => {
 			];
 			const mockMessages1 = [{ role: 'user', content: 'test1' }];
 			const mockMessages2 = [{ role: 'user', content: 'test2' }];
-			const mockMessages3 = [{ role: 'user', content: 'msg1' }, { role: 'assistant', content: 'reply' }];
+			const mockMessages3 = [
+				{ role: 'user', content: 'msg1' },
+				{ role: 'assistant', content: 'reply' }
+			];
 			const mockTest1 = { id: 1, name: 'Test 1', input: 'test1' };
 			const mockTest2 = { id: 2, name: 'Test 2', input: 'test2' };
 
@@ -154,9 +157,7 @@ describe('Tests Routes (Legacy)', () => {
 			(queries.getConversationMessages as any)
 				.mockResolvedValueOnce(mockSingleMessages)
 				.mockResolvedValueOnce(mockMultiMessages);
-			(legacyAdapter.isSingleTurnConversation as any)
-				.mockReturnValueOnce(true)
-				.mockReturnValueOnce(false);
+			(legacyAdapter.isSingleTurnConversation as any).mockReturnValueOnce(true).mockReturnValueOnce(false);
 			(legacyAdapter.conversationToLegacyTest as any).mockReturnValue(mockTest);
 
 			const handler = getRouteHandler('GET', '/');

@@ -1,9 +1,5 @@
 import db from '../database';
-import {
-	Agent,
-	AgentRequestTemplate,
-	AgentResponseMap
-} from '@ibm-vibe/types';
+import { Agent, AgentRequestTemplate, AgentResponseMap } from '@ibm-vibe/types';
 import { serializeCapabilities } from '../../lib/communicationCapabilities';
 
 /**
@@ -37,9 +33,7 @@ export const getAgentById = (id: number) => {
 
 export const updateAgent = (id: number, agent: Partial<Agent>) => {
 	// Filter out undefined values to avoid SQL errors
-	const filteredAgent = Object.fromEntries(
-		Object.entries(agent).filter(([_, value]) => value !== undefined)
-	);
+	const filteredAgent = Object.fromEntries(Object.entries(agent).filter(([_, value]) => value !== undefined));
 
 	// If there are no fields to update, return the existing agent
 	if (Object.keys(filteredAgent).length === 0) {
@@ -47,8 +41,8 @@ export const updateAgent = (id: number, agent: Partial<Agent>) => {
 	}
 
 	const updates = Object.keys(filteredAgent)
-		.filter(key => key !== 'id' && key !== 'created_at')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id' && key !== 'created_at')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -66,7 +60,9 @@ export const deleteAgent = (id: number) => {
 	return statement.run(id);
 };
 
-export const getAgentsWithCount = (params: { limit?: number; offset?: number } = {}): { data: Agent[]; total: number } => {
+export const getAgentsWithCount = (
+	params: { limit?: number; offset?: number } = {}
+): { data: Agent[]; total: number } => {
 	const { limit, offset } = params;
 	let query = 'SELECT * FROM agents ORDER BY created_at DESC';
 	const queryParams: any[] = [];
@@ -106,8 +102,13 @@ export function getAgentRequestTemplateById(id: number): AgentRequestTemplate | 
 	return stmt.get(id) as AgentRequestTemplate | undefined;
 }
 
-export function createAgentRequestTemplate(agentId: number, payload: Omit<AgentRequestTemplate, 'id' | 'agent_id' | 'created_at'>): AgentRequestTemplate {
-	const hadDefaultStmt = db.prepare(`SELECT id FROM agent_request_templates WHERE agent_id = ? AND is_default = 1 LIMIT 1`);
+export function createAgentRequestTemplate(
+	agentId: number,
+	payload: Omit<AgentRequestTemplate, 'id' | 'agent_id' | 'created_at'>
+): AgentRequestTemplate {
+	const hadDefaultStmt = db.prepare(
+		`SELECT id FROM agent_request_templates WHERE agent_id = ? AND is_default = 1 LIMIT 1`
+	);
 	const insertStmt = db.prepare(`
 		INSERT INTO agent_request_templates (agent_id, name, description, engine, content_type, body, tags, capabilities, is_default)
 		VALUES (@agent_id, @name, @description, @engine, @content_type, @body, @tags, @capabilities, @is_default)
@@ -144,9 +145,14 @@ export function createAgentRequestTemplate(agentId: number, payload: Omit<AgentR
 	return tx();
 }
 
-export function updateAgentRequestTemplate(id: number, updates: Partial<Omit<AgentRequestTemplate, 'id' | 'agent_id' | 'created_at'>>): AgentRequestTemplate | undefined {
+export function updateAgentRequestTemplate(
+	id: number,
+	updates: Partial<Omit<AgentRequestTemplate, 'id' | 'agent_id' | 'created_at'>>
+): AgentRequestTemplate | undefined {
 	// Handle default toggle inside a transaction
-	const clearDefaultStmt = db.prepare(`UPDATE agent_request_templates SET is_default = 0 WHERE agent_id = (SELECT agent_id FROM agent_request_templates WHERE id = ?)`);
+	const clearDefaultStmt = db.prepare(
+		`UPDATE agent_request_templates SET is_default = 0 WHERE agent_id = (SELECT agent_id FROM agent_request_templates WHERE id = ?)`
+	);
 	const setDefaultStmt = db.prepare(`UPDATE agent_request_templates SET is_default = 1 WHERE id = ?`);
 
 	const current = getAgentRequestTemplateById(id);
@@ -200,8 +206,12 @@ export function deleteAgentRequestTemplate(id: number): void {
 		delStmt.run(id);
 		if (row.is_default) {
 			// if we deleted the default, promote the newest one as default (if any)
-			const hasAny = db.prepare(`SELECT id FROM agent_request_templates WHERE agent_id = ? LIMIT 1`).get(row.agent_id) as { id?: number } | undefined;
-			const hasDefault = db.prepare(`SELECT id FROM agent_request_templates WHERE agent_id = ? AND is_default = 1 LIMIT 1`).get(row.agent_id) as { id?: number } | undefined;
+			const hasAny = db
+				.prepare(`SELECT id FROM agent_request_templates WHERE agent_id = ? LIMIT 1`)
+				.get(row.agent_id) as { id?: number } | undefined;
+			const hasDefault = db
+				.prepare(`SELECT id FROM agent_request_templates WHERE agent_id = ? AND is_default = 1 LIMIT 1`)
+				.get(row.agent_id) as { id?: number } | undefined;
 			if (hasAny && !hasDefault) {
 				ensureDefaultStmt.run(row.agent_id);
 			}
@@ -213,7 +223,10 @@ export function deleteAgentRequestTemplate(id: number): void {
 export function setDefaultAgentRequestTemplate(agentId: number, templateId: number): void {
 	const tx = db.transaction(() => {
 		db.prepare(`UPDATE agent_request_templates SET is_default = 0 WHERE agent_id = ?`).run(agentId);
-		db.prepare(`UPDATE agent_request_templates SET is_default = 1 WHERE id = ? AND agent_id = ?`).run(templateId, agentId);
+		db.prepare(`UPDATE agent_request_templates SET is_default = 1 WHERE id = ? AND agent_id = ?`).run(
+			templateId,
+			agentId
+		);
 	});
 	tx();
 }
@@ -233,8 +246,13 @@ export function getAgentResponseMapById(id: number): AgentResponseMap | undefine
 	return stmt.get(id) as AgentResponseMap | undefined;
 }
 
-export function createAgentResponseMap(agentId: number, payload: Omit<AgentResponseMap, 'id' | 'agent_id' | 'created_at'>): AgentResponseMap {
-	const hadDefaultStmt = db.prepare(`SELECT id FROM agent_response_maps WHERE agent_id = ? AND is_default = 1 LIMIT 1`);
+export function createAgentResponseMap(
+	agentId: number,
+	payload: Omit<AgentResponseMap, 'id' | 'agent_id' | 'created_at'>
+): AgentResponseMap {
+	const hadDefaultStmt = db.prepare(
+		`SELECT id FROM agent_response_maps WHERE agent_id = ? AND is_default = 1 LIMIT 1`
+	);
 	const insertStmt = db.prepare(`
 		INSERT INTO agent_response_maps (agent_id, name, description, spec, tags, capabilities, is_default)
 		VALUES (@agent_id, @name, @description, @spec, @tags, @capabilities, @is_default)
@@ -269,8 +287,13 @@ export function createAgentResponseMap(agentId: number, payload: Omit<AgentRespo
 	return tx();
 }
 
-export function updateAgentResponseMap(id: number, updates: Partial<Omit<AgentResponseMap, 'id' | 'agent_id' | 'created_at'>>): AgentResponseMap | undefined {
-	const clearDefaultStmt = db.prepare(`UPDATE agent_response_maps SET is_default = 0 WHERE agent_id = (SELECT agent_id FROM agent_response_maps WHERE id = ?)`);
+export function updateAgentResponseMap(
+	id: number,
+	updates: Partial<Omit<AgentResponseMap, 'id' | 'agent_id' | 'created_at'>>
+): AgentResponseMap | undefined {
+	const clearDefaultStmt = db.prepare(
+		`UPDATE agent_response_maps SET is_default = 0 WHERE agent_id = (SELECT agent_id FROM agent_response_maps WHERE id = ?)`
+	);
 	const setDefaultStmt = db.prepare(`UPDATE agent_response_maps SET is_default = 1 WHERE id = ?`);
 
 	const current = getAgentResponseMapById(id);
@@ -325,8 +348,12 @@ export function deleteAgentResponseMap(id: number): void {
 		}
 		delStmt.run(id);
 		if (row.is_default) {
-			const hasAny = db.prepare(`SELECT id FROM agent_response_maps WHERE agent_id = ? LIMIT 1`).get(row.agent_id) as { id?: number } | undefined;
-			const hasDefault = db.prepare(`SELECT id FROM agent_response_maps WHERE agent_id = ? AND is_default = 1 LIMIT 1`).get(row.agent_id) as { id?: number } | undefined;
+			const hasAny = db
+				.prepare(`SELECT id FROM agent_response_maps WHERE agent_id = ? LIMIT 1`)
+				.get(row.agent_id) as { id?: number } | undefined;
+			const hasDefault = db
+				.prepare(`SELECT id FROM agent_response_maps WHERE agent_id = ? AND is_default = 1 LIMIT 1`)
+				.get(row.agent_id) as { id?: number } | undefined;
 			if (hasAny && !hasDefault) {
 				ensureDefaultStmt.run(row.agent_id);
 			}
@@ -364,10 +391,14 @@ function extractCapabilityNameFromJson(capabilitiesJson: string | null): string 
  * Returns an array of unique capability names, sorted alphabetically.
  */
 export function listRequestTemplateCapabilityNames(): string[] {
-	const rows = db.prepare(`
+	const rows = db
+		.prepare(
+			`
 		SELECT DISTINCT capabilities FROM agent_request_templates
 		WHERE capabilities IS NOT NULL AND capabilities != '{}'
-	`).all() as Array<{ capabilities: string }>;
+	`
+		)
+		.all() as Array<{ capabilities: string }>;
 
 	const names = new Set<string>();
 	for (const row of rows) {
@@ -385,10 +416,14 @@ export function listRequestTemplateCapabilityNames(): string[] {
  * Returns an array of unique capability names, sorted alphabetically.
  */
 export function listResponseMapCapabilityNames(): string[] {
-	const rows = db.prepare(`
+	const rows = db
+		.prepare(
+			`
 		SELECT DISTINCT capabilities FROM agent_response_maps
 		WHERE capabilities IS NOT NULL AND capabilities != '{}'
-	`).all() as Array<{ capabilities: string }>;
+	`
+		)
+		.all() as Array<{ capabilities: string }>;
 
 	const names = new Set<string>();
 	for (const row of rows) {

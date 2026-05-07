@@ -6,9 +6,7 @@
  */
 
 import type { TokenUsage, TokenMapping } from '@ibm-vibe/types';
-import {
-	extractTokenUsage as extractTokenUsageShared
-} from '@ibm-vibe/utils';
+import { extractTokenUsage as extractTokenUsageShared } from '@ibm-vibe/utils';
 
 /**
  * Extracts token usage from intermediate steps (for CrewAI/existing results)
@@ -138,7 +136,11 @@ export function validateTokenUsage(tokens: TokenUsage): TokenUsage {
 	// Compute total if we have both input and output
 	if (result.input_tokens !== undefined && result.output_tokens !== undefined) {
 		result.total_tokens = result.input_tokens + result.output_tokens;
-	} else if (tokens.total_tokens !== undefined && typeof tokens.total_tokens === 'number' && tokens.total_tokens >= 0) {
+	} else if (
+		tokens.total_tokens !== undefined &&
+		typeof tokens.total_tokens === 'number' &&
+		tokens.total_tokens >= 0
+	) {
 		result.total_tokens = Math.floor(tokens.total_tokens);
 	}
 

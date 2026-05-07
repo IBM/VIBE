@@ -5,21 +5,21 @@ This document describes how VIBE models and resolves communication configs for E
 ## Data model
 
 - Global request templates: `request_templates`
-  - Core fields: `id`, `name`, `description`, `capability`, `body`, `created_at`
+    - Core fields: `id`, `name`, `description`, `capability`, `body`, `created_at`
 - Global response maps: `response_maps`
-  - Core fields: `id`, `name`, `description`, `capability`, `spec`, `created_at`
+    - Core fields: `id`, `name`, `description`, `capability`, `spec`, `created_at`
 - Agent linkage tables:
-  - `agent_template_links` (`agent_id`, `template_id`, `is_default`, `linked_at`)
-  - `agent_response_map_links` (`agent_id`, `response_map_id`, `is_default`, `linked_at`)
+    - `agent_template_links` (`agent_id`, `template_id`, `is_default`, `linked_at`)
+    - `agent_response_map_links` (`agent_id`, `response_map_id`, `is_default`, `linked_at`)
 - Conversation fields used during execution:
-  - `default_request_template_id` and `default_response_map_id` (legacy-compatible defaults)
-  - `required_request_template_capabilities`, `required_response_map_capabilities`
-  - `variables` (JSON string)
-  - `stop_on_failure`
+    - `default_request_template_id` and `default_response_map_id` (legacy-compatible defaults)
+    - `required_request_template_capabilities`, `required_response_map_capabilities`
+    - `variables` (JSON string)
+    - `stop_on_failure`
 - Conversation message fields:
-  - `request_template_id`, `response_map_id`, `set_variables`, `metadata`
+    - `request_template_id`, `response_map_id`, `set_variables`, `metadata`
 - Execution session fields:
-  - `variables` (JSON snapshot of accumulated variables after execution)
+    - `variables` (JSON snapshot of accumulated variables after execution)
 
 ## Selection logic
 
@@ -45,15 +45,15 @@ Template `body` is a JSON string with placeholders:
 
 ```json
 {
-  "output": "choices.0.message.content",
-  "intermediate_steps": "usage",
-  "variables": {
-    "responseId": "id"
-  },
-  "success_criteria": {
-    "type": "contains",
-    "value": "success"
-  }
+	"output": "choices.0.message.content",
+	"intermediate_steps": "usage",
+	"variables": {
+		"responseId": "id"
+	},
+	"success_criteria": {
+		"type": "contains",
+		"value": "success"
+	}
 }
 ```
 

@@ -206,9 +206,8 @@ export interface ExtractTokenUsageOptions extends TokenExtractionOptions {
 	popularFormats?: TokenMapping[];
 }
 
-const hasInputOrOutputTokens = (tokens: TokenUsage): boolean => (
-	tokens.input_tokens !== undefined || tokens.output_tokens !== undefined
-);
+const hasInputOrOutputTokens = (tokens: TokenUsage): boolean =>
+	tokens.input_tokens !== undefined || tokens.output_tokens !== undefined;
 
 /**
  * Extract token usage using an explicit mapping first, then popular known formats.

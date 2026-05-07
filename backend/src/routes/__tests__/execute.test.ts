@@ -21,14 +21,24 @@ import { preflightConversationExecution } from '../../lib/conversationPreflight'
 // Type the mocked functions
 const mockGetAgentById = queries.getAgentById as jest.MockedFunction<typeof queries.getAgentById>;
 const mockGetConversationById = queries.getConversationById as jest.MockedFunction<typeof queries.getConversationById>;
-const mockGetConversationMessages = queries.getConversationMessages as jest.MockedFunction<typeof queries.getConversationMessages>;
+const mockGetConversationMessages = queries.getConversationMessages as jest.MockedFunction<
+	typeof queries.getConversationMessages
+>;
 const mockTestIdToConversationId = testIdToConversationId as jest.MockedFunction<typeof testIdToConversationId>;
-const mockCreateConversationJob = jobQueue.createConversationJob as jest.MockedFunction<typeof jobQueue.createConversationJob>;
+const mockCreateConversationJob = jobQueue.createConversationJob as jest.MockedFunction<
+	typeof jobQueue.createConversationJob
+>;
 const mockIsSingleTurnConversation = isSingleTurnConversation as jest.MockedFunction<typeof isSingleTurnConversation>;
 const mockGetAgentJobType = getAgentJobType as jest.MockedFunction<typeof getAgentJobType>;
-const mockPreflightConversationExecution = preflightConversationExecution as jest.MockedFunction<typeof preflightConversationExecution>;
-const mockGetAgentTemplates = templateRepo.getAgentTemplates as jest.MockedFunction<typeof templateRepo.getAgentTemplates>;
-const mockGetAgentResponseMaps = templateRepo.getAgentResponseMaps as jest.MockedFunction<typeof templateRepo.getAgentResponseMaps>;
+const mockPreflightConversationExecution = preflightConversationExecution as jest.MockedFunction<
+	typeof preflightConversationExecution
+>;
+const mockGetAgentTemplates = templateRepo.getAgentTemplates as jest.MockedFunction<
+	typeof templateRepo.getAgentTemplates
+>;
+const mockGetAgentResponseMaps = templateRepo.getAgentResponseMaps as jest.MockedFunction<
+	typeof templateRepo.getAgentResponseMaps
+>;
 
 describe('execute routes', () => {
 	let mockReq: Partial<Request>;
@@ -77,9 +87,7 @@ describe('execute routes', () => {
 			(mockTestIdToConversationId as any).mockReturnValue(1);
 			(mockGetAgentById as any).mockResolvedValue({ id: 1, name: 'Test Agent' });
 			(mockGetConversationById as any).mockResolvedValue({ id: 1, name: 'Test Conversation' });
-			(mockGetConversationMessages as any).mockResolvedValue([
-				{ id: 1, role: 'user', content: 'Hello' }
-			]);
+			(mockGetConversationMessages as any).mockResolvedValue([{ id: 1, role: 'user', content: 'Hello' }]);
 			(mockIsSingleTurnConversation as any).mockReturnValue(true);
 			(mockCreateConversationJob as any).mockResolvedValue(42);
 
@@ -165,9 +173,7 @@ describe('execute routes', () => {
 			(mockTestIdToConversationId as any).mockReturnValue(null);
 			(mockGetAgentById as any).mockResolvedValue({ id: 1, name: 'Test Agent' });
 			(mockGetConversationById as any).mockResolvedValue({ id: 50, name: 'Direct Conversation' });
-			(mockGetConversationMessages as any).mockResolvedValue([
-				{ id: 1, role: 'user', content: 'Hello' }
-			]);
+			(mockGetConversationMessages as any).mockResolvedValue([{ id: 1, role: 'user', content: 'Hello' }]);
 			(mockIsSingleTurnConversation as any).mockReturnValue(true);
 			(mockCreateConversationJob as any).mockResolvedValue(99);
 
@@ -225,15 +231,9 @@ describe('execute routes', () => {
 				settings: { type: 'external_api' }
 			});
 			(mockGetConversationById as any).mockResolvedValue({ id: 10, name: 'Test Conversation' });
-			(mockGetConversationMessages as any).mockResolvedValue([
-				{ id: 1, role: 'user', content: 'Hello' }
-			]);
-			(mockGetAgentTemplates as any).mockReturnValue([
-				{ id: 1, is_default: true, capability: null }
-			]);
-			(mockGetAgentResponseMaps as any).mockReturnValue([
-				{ id: 1, is_default: true, capability: null }
-			]);
+			(mockGetConversationMessages as any).mockResolvedValue([{ id: 1, role: 'user', content: 'Hello' }]);
+			(mockGetAgentTemplates as any).mockReturnValue([{ id: 1, is_default: true, capability: null }]);
+			(mockGetAgentResponseMaps as any).mockReturnValue([{ id: 1, is_default: true, capability: null }]);
 			(mockGetAgentJobType as any).mockReturnValue('external_api');
 			(mockPreflightConversationExecution as any).mockReturnValue({ ok: true });
 			(mockCreateConversationJob as any).mockResolvedValue(66);

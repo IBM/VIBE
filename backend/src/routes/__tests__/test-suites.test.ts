@@ -1,4 +1,3 @@
-
 import type { Request, Response } from 'express';
 
 // Mock all dependencies before imports
@@ -88,9 +87,7 @@ describe('Test Suites Routes', () => {
 		});
 
 		it('should return paginated test suites with test counts', async () => {
-			const mockSuites = [
-				{ id: 1, name: 'Suite 1', description: 'Test suite 1' }
-			];
+			const mockSuites = [{ id: 1, name: 'Suite 1', description: 'Test suite 1' }];
 
 			(pagination.hasPaginationParams as any).mockReturnValue(true);
 			(pagination.validatePaginationOrError as any).mockReturnValue({ limit: 10, offset: 0 });
@@ -124,9 +121,7 @@ describe('Test Suites Routes', () => {
 			const handler = getRouteHandler('GET', '/');
 			await handler(mockReq, mockRes);
 
-			expect(mockJson).toHaveBeenCalledWith([
-				{ id: 1, name: 'Suite 1', test_count: 0 }
-			]);
+			expect(mockJson).toHaveBeenCalledWith([{ id: 1, name: 'Suite 1', test_count: 0 }]);
 		});
 
 		it('should return early if pagination validation fails', async () => {
@@ -400,9 +395,7 @@ describe('Test Suites Routes', () => {
 			(queries.getEntriesInSuite as any).mockReturnValue(mockEntries);
 			(queries.getConversationById as any).mockResolvedValue({ id: 10, name: 'Conv' });
 			(queries.getConversationMessages as any).mockResolvedValue([]);
-			(legacyAdapter.isSingleTurnConversation as any)
-				.mockReturnValueOnce(true)
-				.mockReturnValueOnce(false);
+			(legacyAdapter.isSingleTurnConversation as any).mockReturnValueOnce(true).mockReturnValueOnce(false);
 			(legacyAdapter.conversationToLegacyTest as any).mockReturnValue({ id: 10, prompt: 'test' });
 
 			const handler = getRouteHandler('GET', '/:id/tests');

@@ -33,10 +33,7 @@ describe('AgentService', () => {
 			const result = await service.healthCheck();
 
 			expect(result).toBe(true);
-			expect(mockedAxios.get).toHaveBeenCalledWith(
-				'http://localhost:8000/api/health',
-				{ timeout: 5000 }
-			);
+			expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:8000/api/health', { timeout: 5000 });
 		});
 
 		it('should return false when health check fails with error', async () => {
@@ -110,29 +107,33 @@ describe('AgentService', () => {
 		it('should throw error when execution fails', async () => {
 			mockedAxios.post.mockRejectedValue(new Error('Execution failed'));
 
-			await expect(service.executeTest(mockAgent, mockTest))
-				.rejects.toThrow('Agent service execution failed: Execution failed');
+			await expect(service.executeTest(mockAgent, mockTest)).rejects.toThrow(
+				'Agent service execution failed: Execution failed'
+			);
 		});
 
 		it('should throw error when agent service is unavailable', async () => {
 			mockedAxios.post.mockRejectedValue(new Error('ECONNREFUSED'));
 
-			await expect(service.executeTest(mockAgent, mockTest))
-				.rejects.toThrow('Agent service execution failed: ECONNREFUSED');
+			await expect(service.executeTest(mockAgent, mockTest)).rejects.toThrow(
+				'Agent service execution failed: ECONNREFUSED'
+			);
 		});
 
 		it('should handle timeout errors', async () => {
 			mockedAxios.post.mockRejectedValue(new Error('timeout of 300000ms exceeded'));
 
-			await expect(service.executeTest(mockAgent, mockTest))
-				.rejects.toThrow('Agent service execution failed: timeout of 300000ms exceeded');
+			await expect(service.executeTest(mockAgent, mockTest)).rejects.toThrow(
+				'Agent service execution failed: timeout of 300000ms exceeded'
+			);
 		});
 
 		it('should handle network errors', async () => {
 			mockedAxios.post.mockRejectedValue(new Error('Network Error'));
 
-			await expect(service.executeTest(mockAgent, mockTest))
-				.rejects.toThrow('Agent service execution failed: Network Error');
+			await expect(service.executeTest(mockAgent, mockTest)).rejects.toThrow(
+				'Agent service execution failed: Network Error'
+			);
 		});
 
 		it('should pass agent settings as string', async () => {

@@ -16,24 +16,24 @@ By default, `start-instance.sh` manages backend, agent-service-api, and frontend
 
 1. **PM2 installed globally**:
 
-   ```bash
-   npm install -g pm2
-   ```
+    ```bash
+    npm install -g pm2
+    ```
 
 2. **All dependencies installed**:
 
-   ```bash
-   # Install root dependencies (links workspaces)
-   npm install
+    ```bash
+    # Install root dependencies (links workspaces)
+    npm install
 
-   # Agent Service (Python)
-   cd agent-service && pip install -r requirements.txt && cd ..
-   ```
+    # Agent Service (Python)
+    cd agent-service && pip install -r requirements.txt && cd ..
+    ```
 
 ## Port Allocation
 
-| Instance | Backend | Agent Service | Agent Service API | Frontend | Database |
-|----------|---------|---------------|-------------------|----------|----------|
+| Instance  | Backend | Agent Service | Agent Service API | Frontend | Database                            |
+| --------- | ------- | ------------- | ----------------- | -------- | ----------------------------------- |
 | instance1 | 5000    | 5001          | 5003              | 3000     | `./data/agent-testing-instance1.db` |
 | instance2 | 5010    | 5011          | 5013              | 3010     | `./data/agent-testing-instance2.db` |
 | instance3 | 5020    | 5021          | 5023              | 3020     | `./data/agent-testing-instance3.db` |
@@ -215,26 +215,26 @@ Use `env.instance1.example` as the committed template. Keep concrete `env.instan
 
 1. **Copy an existing environment file**:
 
-   ```bash
-   cp env.instance1.example env.instance4
-   ```
+    ```bash
+    cp env.instance1.example env.instance4
+    ```
 
 2. **Edit the new file** with unique ports:
 
-   ```bash
-   INSTANCE_NAME=instance4
-   BACKEND_PORT=5030
-   AGENT_SERVICE_PORT=5031
-   AGENT_SERVICE_API_PORT=5033
-   FRONTEND_PORT=3030
-   DB_PATH=./data/agent-testing-instance4.db
-   ```
+    ```bash
+    INSTANCE_NAME=instance4
+    BACKEND_PORT=5030
+    AGENT_SERVICE_PORT=5031
+    AGENT_SERVICE_API_PORT=5033
+    FRONTEND_PORT=3030
+    DB_PATH=./data/agent-testing-instance4.db
+    ```
 
 3. **Start the new instance**:
 
-   ```bash
-   ./start-instance.sh env.instance4
-   ```
+    ```bash
+    ./start-instance.sh env.instance4
+    ```
 
 ## Troubleshooting
 

@@ -74,13 +74,12 @@ export async function executeConversationWithApi(
 				const effectiveResponseMappingForMessage = scriptMetadata.response_mapping || request.response_mapping;
 				const scriptRequestCapabilities = scriptMetadata.request_capabilities;
 				const scriptResponseCapabilities = scriptMetadata.response_capabilities;
-				const templateIncludesHistory = typeof effectiveTemplateForMessage === 'string'
-					? /{{\s*conversation_history\s*}}/.test(effectiveTemplateForMessage)
-					: false;
+				const templateIncludesHistory =
+					typeof effectiveTemplateForMessage === 'string'
+						? /{{\s*conversation_history\s*}}/.test(effectiveTemplateForMessage)
+						: false;
 				const historyIncludingCurrent = `${conversationHistory}User: ${scriptMessage.content}\n`;
-				const currentInput = templateIncludesHistory
-					? scriptMessage.content
-					: historyIncludingCurrent;
+				const currentInput = templateIncludesHistory ? scriptMessage.content : historyIncludingCurrent;
 
 				const messageStartTime = Date.now();
 
@@ -132,7 +131,12 @@ export async function executeConversationWithApi(
 
 					conversationHistory += `User: ${scriptMessage.content}\n`;
 					const requestPayload = effectiveTemplateForMessage
-						? deps.formatConversationRequestWithVars(currentInput, conversationHistory, effectiveTemplateForMessage, mergedVars)
+						? deps.formatConversationRequestWithVars(
+								currentInput,
+								conversationHistory,
+								effectiveTemplateForMessage,
+								mergedVars
+							)
 						: { input: currentInput };
 					lastRequestPayload = requestPayload;
 
@@ -164,7 +168,7 @@ export async function executeConversationWithApi(
 					}
 					accumulatedVariables = nextVariables;
 
-					steps.forEach(step => {
+					steps.forEach((step) => {
 						intermediateSteps.push({
 							...step,
 							action: `Message ${scriptMessage.sequence}: ${step.action}`
@@ -187,7 +191,9 @@ export async function executeConversationWithApi(
 							request_template_used: effectiveTemplateForMessage ? 'custom' : undefined,
 							response_mapping_used: effectiveResponseMappingForMessage ? 'custom' : undefined,
 							variables_before: Object.keys(mergedVars || {}).length ? mergedVars : undefined,
-							variables_after: Object.keys(accumulatedVariables || {}).length ? accumulatedVariables : undefined,
+							variables_after: Object.keys(accumulatedVariables || {}).length
+								? accumulatedVariables
+								: undefined,
 							input_tokens: tokens.input_tokens,
 							output_tokens: tokens.output_tokens,
 							request_capabilities: scriptRequestCapabilities,

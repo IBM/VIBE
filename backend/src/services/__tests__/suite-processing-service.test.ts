@@ -94,12 +94,8 @@ describe('SuiteProcessingService', () => {
 
 		it('should detect and prevent circular references', () => {
 			mockGetEntriesInSuite
-				.mockReturnValueOnce([
-					{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry
-				])
-				.mockReturnValueOnce([
-					{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 1 } as SuiteEntry
-				]);
+				.mockReturnValueOnce([{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry])
+				.mockReturnValueOnce([{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 1 } as SuiteEntry]);
 
 			const count = service.countLeafTests(1);
 
@@ -108,15 +104,9 @@ describe('SuiteProcessingService', () => {
 
 		it('should handle deeply nested suites', () => {
 			mockGetEntriesInSuite
-				.mockReturnValueOnce([
-					{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry
-				])
-				.mockReturnValueOnce([
-					{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 3 } as SuiteEntry
-				])
-				.mockReturnValueOnce([
-					{ id: 3, parent_suite_id: 3, sequence: 1, test_id: 100 } as SuiteEntry
-				]);
+				.mockReturnValueOnce([{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry])
+				.mockReturnValueOnce([{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 3 } as SuiteEntry])
+				.mockReturnValueOnce([{ id: 3, parent_suite_id: 3, sequence: 1, test_id: 100 } as SuiteEntry]);
 
 			const count = service.countLeafTests(1);
 
@@ -169,9 +159,7 @@ describe('SuiteProcessingService', () => {
 
 		it('should flatten nested suites', () => {
 			mockGetEntriesInSuite
-				.mockReturnValueOnce([
-					{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry
-				])
+				.mockReturnValueOnce([{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry])
 				.mockReturnValueOnce([
 					{ id: 2, parent_suite_id: 2, sequence: 1, test_id: 100 } as SuiteEntry,
 					{ id: 3, parent_suite_id: 2, sequence: 2, test_id: 101 } as SuiteEntry
@@ -190,25 +178,17 @@ describe('SuiteProcessingService', () => {
 				.mockReturnValueOnce([
 					{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2, agent_id_override: 2 } as SuiteEntry
 				])
-				.mockReturnValueOnce([
-					{ id: 2, parent_suite_id: 2, sequence: 1, test_id: 100 } as SuiteEntry
-				]);
+				.mockReturnValueOnce([{ id: 2, parent_suite_id: 2, sequence: 1, test_id: 100 } as SuiteEntry]);
 
 			const result = service.getFlattenedLeaves(1, 1);
 
-			expect(result).toEqual([
-				{ agent_id: 2, test_id: 100 }
-			]);
+			expect(result).toEqual([{ agent_id: 2, test_id: 100 }]);
 		});
 
 		it('should detect and prevent circular references', () => {
 			mockGetEntriesInSuite
-				.mockReturnValueOnce([
-					{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry
-				])
-				.mockReturnValueOnce([
-					{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 1 } as SuiteEntry
-				]);
+				.mockReturnValueOnce([{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry])
+				.mockReturnValueOnce([{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 1 } as SuiteEntry]);
 
 			const result = service.getFlattenedLeaves(1, 1);
 
@@ -232,9 +212,7 @@ describe('SuiteProcessingService', () => {
 			const result = service.getFlattenedLeaves(1, 999);
 
 			// Should still return results even with invalid agent
-			expect(result).toEqual([
-				{ agent_id: 999, test_id: 100 }
-			]);
+			expect(result).toEqual([{ agent_id: 999, test_id: 100 }]);
 		});
 
 		it('should handle agent with invalid settings JSON', () => {
@@ -254,9 +232,7 @@ describe('SuiteProcessingService', () => {
 			const result = service.getFlattenedLeaves(1, 1);
 
 			// Should still return results
-			expect(result).toEqual([
-				{ agent_id: 1, test_id: 100 }
-			]);
+			expect(result).toEqual([{ agent_id: 1, test_id: 100 }]);
 		});
 
 		it('should warn about agent without type field', () => {
@@ -275,9 +251,7 @@ describe('SuiteProcessingService', () => {
 
 			const result = service.getFlattenedLeaves(1, 1);
 
-			expect(result).toEqual([
-				{ agent_id: 1, test_id: 100 }
-			]);
+			expect(result).toEqual([{ agent_id: 1, test_id: 100 }]);
 		});
 
 		it('should warn about unexpected agent types', () => {
@@ -296,9 +270,7 @@ describe('SuiteProcessingService', () => {
 
 			const result = service.getFlattenedLeaves(1, 1);
 
-			expect(result).toEqual([
-				{ agent_id: 1, test_id: 100 }
-			]);
+			expect(result).toEqual([{ agent_id: 1, test_id: 100 }]);
 		});
 
 		it('should skip invalid entries without test_id or child_suite_id', () => {
@@ -318,21 +290,13 @@ describe('SuiteProcessingService', () => {
 
 		it('should handle deeply nested suites', () => {
 			mockGetEntriesInSuite
-				.mockReturnValueOnce([
-					{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry
-				])
-				.mockReturnValueOnce([
-					{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 3 } as SuiteEntry
-				])
-				.mockReturnValueOnce([
-					{ id: 3, parent_suite_id: 3, sequence: 1, test_id: 100 } as SuiteEntry
-				]);
+				.mockReturnValueOnce([{ id: 1, parent_suite_id: 1, sequence: 1, child_suite_id: 2 } as SuiteEntry])
+				.mockReturnValueOnce([{ id: 2, parent_suite_id: 2, sequence: 1, child_suite_id: 3 } as SuiteEntry])
+				.mockReturnValueOnce([{ id: 3, parent_suite_id: 3, sequence: 1, test_id: 100 } as SuiteEntry]);
 
 			const result = service.getFlattenedLeaves(1, 1);
 
-			expect(result).toEqual([
-				{ agent_id: 1, test_id: 100 }
-			]);
+			expect(result).toEqual([{ agent_id: 1, test_id: 100 }]);
 		});
 
 		it('should handle mixed test and conversation entries', () => {
@@ -358,9 +322,7 @@ describe('SuiteProcessingService', () => {
 
 			const result = service.getFlattenedLeaves(1, 1);
 
-			expect(result).toEqual([
-				{ agent_id: 1, conversation_id: 200 }
-			]);
+			expect(result).toEqual([{ agent_id: 1, conversation_id: 200 }]);
 		});
 
 		it('should handle complex nested structure with overrides', () => {
@@ -374,9 +336,7 @@ describe('SuiteProcessingService', () => {
 					{ id: 4, parent_suite_id: 2, sequence: 1, test_id: 102 } as SuiteEntry,
 					{ id: 5, parent_suite_id: 2, sequence: 2, child_suite_id: 3, agent_id_override: 3 } as SuiteEntry
 				])
-				.mockReturnValueOnce([
-					{ id: 6, parent_suite_id: 3, sequence: 1, test_id: 103 } as SuiteEntry
-				]);
+				.mockReturnValueOnce([{ id: 6, parent_suite_id: 3, sequence: 1, test_id: 103 } as SuiteEntry]);
 
 			const result = service.getFlattenedLeaves(1, 1);
 

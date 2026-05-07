@@ -196,8 +196,8 @@ The service currently supports Ollama as the LLM provider, with plans to expand 
 ### TODO
 
 - [ ] Implement non-blocking execution for long-running tests
-  - Current implementation blocks until test completion
-  - Future: Implement background task processing with status tracking
+    - Current implementation blocks until test completion
+    - Future: Implement background task processing with status tracking
 - [ ] Add tool configuration support beyond the basic list of tool names
 - [ ] Implement proper test ID handling and tracking
 - [ ] Add proper success criteria implementation (currently always returns true)

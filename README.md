@@ -19,21 +19,21 @@ When building AI agents, it's essential to ensure they perform consistently and 
 The application is separated into four main components:
 
 1. **Frontend** - User interface for managing tests and viewing results
-   - Built with Next.js and Carbon React
-   - Provides test management UI, agent configuration, results visualization, and comparison views
+    - Built with Next.js and Carbon React
+    - Provides test management UI, agent configuration, results visualization, and comparison views
 
 2. **Backend** - API server for test management and data storage
-   - Built with TypeScript, Express.js, and SQLite
-   - Handles REST API for test management, coordination with agent service, and data persistence
+    - Built with TypeScript, Express.js, and SQLite
+    - Handles REST API for test management, coordination with agent service, and data persistence
 
 3. **Agent Service** - Python service for executing CrewAI tests
-   - Built with Python, FastAPI, and CrewAI
-   - Handles agent execution, LLM provider integration, and result collection
-   - Status: currently out of date and needs TLC before relying on it in production
+    - Built with Python, FastAPI, and CrewAI
+    - Handles agent execution, LLM provider integration, and result collection
+    - Status: currently out of date and needs TLC before relying on it in production
 
 4. **Agent Service API** - TypeScript service for external API style agents
-   - Built with TypeScript and Express.js
-   - Polls jobs from backend, executes conversations against external APIs, and posts sessions/transcripts back
+    - Built with TypeScript and Express.js
+    - Polls jobs from backend, executes conversations against external APIs, and posts sessions/transcripts back
 
 ## Key Features
 
@@ -99,12 +99,12 @@ For multi-instance local setups, use `env.instance1.example` as a template and c
 
 ## Service topology and ports
 
-| Service | Default port | Role |
-|---|---:|---|
-| Frontend | 3000 | UI for conversations, sessions, and analysis |
-| Backend | 5000 | System API, storage, job orchestration |
-| Agent Service API | 5003 | External API executor and backend job poller |
-| Agent Service (Python) | 5002 | CrewAI execution service |
+| Service                | Default port | Role                                         |
+| ---------------------- | -----------: | -------------------------------------------- |
+| Frontend               |         3000 | UI for conversations, sessions, and analysis |
+| Backend                |         5000 | System API, storage, job orchestration       |
+| Agent Service API      |         5003 | External API executor and backend job poller |
+| Agent Service (Python) |         5002 | CrewAI execution service                     |
 
 Key integration paths:
 

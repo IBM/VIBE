@@ -453,4 +453,3 @@ describe('template routes (HTTP)', () => {
 		});
 	});
 });
-

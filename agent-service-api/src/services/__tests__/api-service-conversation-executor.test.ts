@@ -1,5 +1,8 @@
 import type { ConversationExecutionRequest, IntermediateStep } from '@ibm-vibe/types';
-import { executeConversationWithApi, type ConversationExecutorDependencies } from '../api-service-conversation-executor';
+import {
+	executeConversationWithApi,
+	type ConversationExecutorDependencies
+} from '../api-service-conversation-executor';
 import { extractTokenUsage } from '../token-extractor';
 
 jest.mock('../token-extractor', () => ({
@@ -8,9 +11,7 @@ jest.mock('../token-extractor', () => ({
 
 const mockedExtractTokenUsage = extractTokenUsage as jest.MockedFunction<typeof extractTokenUsage>;
 
-const serializeMetadata = (metadata?: Record<string, unknown>) => (
-	metadata ? JSON.stringify(metadata) : undefined
-);
+const serializeMetadata = (metadata?: Record<string, unknown>) => (metadata ? JSON.stringify(metadata) : undefined);
 
 const parseScriptMetadata = (metadata: unknown): Record<string, any> => {
 	if (!metadata) {
@@ -19,21 +20,19 @@ const parseScriptMetadata = (metadata: unknown): Record<string, any> => {
 	if (typeof metadata === 'string') {
 		try {
 			const parsed = JSON.parse(metadata);
-			return parsed && typeof parsed === 'object' ? parsed as Record<string, any> : {};
+			return parsed && typeof parsed === 'object' ? (parsed as Record<string, any>) : {};
 		} catch {
 			return {};
 		}
 	}
-	return typeof metadata === 'object' ? metadata as Record<string, any> : {};
+	return typeof metadata === 'object' ? (metadata as Record<string, any>) : {};
 };
 
 const baseRequest = (): ConversationExecutionRequest => ({
 	conversation_id: 101,
 	api_endpoint: 'http://example.test',
 	http_method: 'POST',
-	conversation_script: [
-		{ conversation_id: 101, sequence: 1, role: 'user', content: 'Hello there' }
-	]
+	conversation_script: [{ conversation_id: 101, sequence: 1, role: 'user', content: 'Hello there' }]
 });
 
 const buildDeps = (overrides: Partial<ConversationExecutorDependencies> = {}): ConversationExecutorDependencies => ({
@@ -57,10 +56,12 @@ const buildDeps = (overrides: Partial<ConversationExecutorDependencies> = {}): C
 		}
 		return undefined;
 	}),
-	formatConversationRequestWithVars: jest.fn((currentInput: string, _history: string, _template: string, variables: Record<string, any>) => ({
-		input: currentInput,
-		variables
-	})),
+	formatConversationRequestWithVars: jest.fn(
+		(currentInput: string, _history: string, _template: string, variables: Record<string, any>) => ({
+			input: currentInput,
+			variables
+		})
+	),
 	serializeMetadata,
 	...overrides
 });
@@ -97,9 +98,9 @@ describe('executeConversationWithApi', () => {
 		expect(result.transcript).toHaveLength(3);
 		expect(result.metrics.input_tokens).toBe(3);
 		expect(result.metrics.output_tokens).toBe(5);
-		expect((deps.makeApiRequest as jest.Mock)).toHaveBeenCalledTimes(1);
-		expect((deps.processResponse as jest.Mock)).toHaveBeenCalledTimes(1);
-		expect(result.intermediate_steps.some(step => step.action === 'Conversation completed')).toBe(true);
+		expect(deps.makeApiRequest as jest.Mock).toHaveBeenCalledTimes(1);
+		expect(deps.processResponse as jest.Mock).toHaveBeenCalledTimes(1);
+		expect(result.intermediate_steps.some((step) => step.action === 'Conversation completed')).toBe(true);
 	});
 
 	it('stops at the first failed scripted message when stop_on_failure is true', async () => {
@@ -121,8 +122,8 @@ describe('executeConversationWithApi', () => {
 		const result = await executeConversationWithApi(request, deps);
 
 		expect(result.success).toBe(false);
-		expect((deps.makeApiRequest as jest.Mock)).toHaveBeenCalledTimes(1);
-		expect(result.intermediate_steps.some(step => step.action === 'Conversation stopped')).toBe(true);
+		expect(deps.makeApiRequest as jest.Mock).toHaveBeenCalledTimes(1);
+		expect(result.intermediate_steps.some((step) => step.action === 'Conversation stopped')).toBe(true);
 	});
 
 	it('resolves pointer variables across turns and merges extracted values', async () => {
@@ -192,9 +193,9 @@ describe('executeConversationWithApi', () => {
 		const result = await executeConversationWithApi(request, deps);
 
 		expect(result.success).toBe(false);
-		expect((deps.makeApiRequest as jest.Mock)).toHaveBeenCalledTimes(2);
-		expect(result.transcript.some(message => message.content.includes('Error: network timeout'))).toBe(true);
-		expect(result.transcript.some(message => message.content === 'recovered')).toBe(true);
+		expect(deps.makeApiRequest as jest.Mock).toHaveBeenCalledTimes(2);
+		expect(result.transcript.some((message) => message.content.includes('Error: network timeout'))).toBe(true);
+		expect(result.transcript.some((message) => message.content === 'recovered')).toBe(true);
 	});
 
 	it('returns a failed execution payload when a fatal error escapes outer flow', async () => {
@@ -207,6 +208,6 @@ describe('executeConversationWithApi', () => {
 		const result = await executeConversationWithApi(baseRequest(), deps);
 
 		expect(result.success).toBe(false);
-		expect(result.intermediate_steps.some(step => step.action === 'Conversation error')).toBe(true);
+		expect(result.intermediate_steps.some((step) => step.action === 'Conversation error')).toBe(true);
 	});
 });

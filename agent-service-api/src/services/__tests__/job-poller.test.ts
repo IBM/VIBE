@@ -68,8 +68,10 @@ describe('JobPollerService conversation script resolution', () => {
 		const poller = new JobPollerService('http://example.com', 'test-service');
 		const conversation = buildConversation();
 
-		const resolvedScript = (poller as unknown as { resolveConversationScript: Function })
-			.resolveConversationScript(conversation, agentConfig);
+		const resolvedScript = (poller as unknown as { resolveConversationScript: Function }).resolveConversationScript(
+			conversation,
+			agentConfig
+		);
 
 		expect(resolvedScript).toHaveLength(1);
 		const [message] = resolvedScript;
@@ -188,7 +190,14 @@ describe('JobPollerService helpers', () => {
 
 		await poller.executeConversationJob(job, agent, settings);
 
-		expect(poller.updateJobStatus).toHaveBeenCalledWith(job.id, JobStatus.COMPLETED, 100, undefined, undefined, 123);
+		expect(poller.updateJobStatus).toHaveBeenCalledWith(
+			job.id,
+			JobStatus.COMPLETED,
+			100,
+			undefined,
+			undefined,
+			123
+		);
 	});
 
 	it('executes legacy test jobs and updates status', async () => {
@@ -247,9 +256,7 @@ describe('JobPollerService helpers', () => {
 			required_response_map_capabilities: undefined,
 			messages: []
 		} as any;
-		const resolvedMessages = [
-			{ role: 'user', metadata: { request_capabilities: { name: 'other' } } }
-		];
+		const resolvedMessages = [{ role: 'user', metadata: { request_capabilities: { name: 'other' } } }];
 
 		expect(() => poller.validateConversationRequirements(conversation, resolvedMessages)).toThrow(
 			'Request template capabilities do not satisfy conversation requirements'
@@ -354,12 +361,16 @@ describe('JobPollerService helpers', () => {
 		poller.updateJobStatus = jest.fn();
 
 		mockedAxios.post.mockResolvedValue({ status: 200 } as any);
-		mockedAxios.get.mockResolvedValueOnce({ data: { id: 1, settings: JSON.stringify({ type: 'external_api' }) } } as any);
+		mockedAxios.get.mockResolvedValueOnce({
+			data: { id: 1, settings: JSON.stringify({ type: 'external_api' }) }
+		} as any);
 
 		await poller.executeJob({ id: 'job-9', agent_id: 1, conversation_id: 2 } as any);
 		expect(poller.executeConversationJob).toHaveBeenCalled();
 
-		mockedAxios.get.mockResolvedValueOnce({ data: { id: 1, settings: JSON.stringify({ type: 'external_api' }) } } as any);
+		mockedAxios.get.mockResolvedValueOnce({
+			data: { id: 1, settings: JSON.stringify({ type: 'external_api' }) }
+		} as any);
 		await poller.executeJob({ id: 'job-10', agent_id: 1, test_id: 3 } as any);
 		expect(poller.executeLegacyTestJob).toHaveBeenCalled();
 	});
@@ -385,7 +396,13 @@ describe('JobPollerService helpers', () => {
 
 		await poller.executeJob({ id: 'job-13', agent_id: 1, test_id: 2 } as any);
 
-		expect(poller.updateJobStatus).toHaveBeenCalledWith('job-13', JobStatus.FAILED, 0, undefined, expect.any(String));
+		expect(poller.updateJobStatus).toHaveBeenCalledWith(
+			'job-13',
+			JobStatus.FAILED,
+			0,
+			undefined,
+			expect.any(String)
+		);
 	});
 
 	it('handles empty agent settings', async () => {
@@ -396,7 +413,13 @@ describe('JobPollerService helpers', () => {
 
 		await poller.executeJob({ id: 'job-14', agent_id: 1, test_id: 2 } as any);
 
-		expect(poller.updateJobStatus).toHaveBeenCalledWith('job-14', JobStatus.FAILED, 0, undefined, expect.any(String));
+		expect(poller.updateJobStatus).toHaveBeenCalledWith(
+			'job-14',
+			JobStatus.FAILED,
+			0,
+			undefined,
+			expect.any(String)
+		);
 	});
 
 	it('handles conversation job errors', async () => {
@@ -406,7 +429,11 @@ describe('JobPollerService helpers', () => {
 		poller.getAgentConfig = jest.fn().mockResolvedValue({ templates: [], maps: [] });
 		mockedApiService.executeConversation.mockRejectedValueOnce(new Error('fail'));
 
-		await poller.executeConversationJob({ id: 'job-15', agent_id: 1, conversation_id: 2 } as any, { id: 1 } as any, { api_endpoint: 'http://example.test' } as any);
+		await poller.executeConversationJob(
+			{ id: 'job-15', agent_id: 1, conversation_id: 2 } as any,
+			{ id: 1 } as any,
+			{ api_endpoint: 'http://example.test' } as any
+		);
 
 		expect(poller.updateJobStatus).toHaveBeenCalledWith('job-15', JobStatus.FAILED, 0, undefined, 'fail');
 	});
@@ -419,7 +446,11 @@ describe('JobPollerService helpers', () => {
 		poller.getAgentConfig = jest.fn().mockRejectedValue(new Error('no defaults'));
 		mockedApiService.executeTest.mockRejectedValueOnce(new Error('fail'));
 
-		await poller.executeLegacyTestJob({ id: 'job-16', agent_id: 1, test_id: 6 } as any, { id: 1 } as any, { api_endpoint: 'http://example.test' } as any);
+		await poller.executeLegacyTestJob(
+			{ id: 'job-16', agent_id: 1, test_id: 6 } as any,
+			{ id: 1 } as any,
+			{ api_endpoint: 'http://example.test' } as any
+		);
 
 		expect(poller.updateJobStatus).toHaveBeenCalledWith('job-16', JobStatus.FAILED, 0, undefined, 'fail');
 	});
@@ -428,9 +459,7 @@ describe('JobPollerService helpers', () => {
 		const poller = new JobPollerService('http://example.com', 'test-service') as any;
 		const conversation = {
 			variables: '{}',
-			messages: [
-				{ id: 1, role: 'system', content: 'sys', metadata: '{"note":"x"}' }
-			]
+			messages: [{ id: 1, role: 'system', content: 'sys', metadata: '{"note":"x"}' }]
 		} as any;
 		const script = poller.resolveConversationScript(conversation, { templates: [], maps: [] });
 
@@ -530,9 +559,7 @@ describe('JobPollerService helpers', () => {
 			required_response_map_capabilities: '{"name":"response"}',
 			messages: []
 		} as any;
-		const resolvedMessages = [
-			{ role: 'user', metadata: { response_capabilities: { name: 'other' } } }
-		];
+		const resolvedMessages = [{ role: 'user', metadata: { response_capabilities: { name: 'other' } } }];
 
 		expect(() => poller.validateConversationRequirements(conversation, resolvedMessages)).toThrow(
 			'Response map capabilities do not satisfy conversation requirements'
@@ -541,25 +568,17 @@ describe('JobPollerService helpers', () => {
 
 	it('saves session results and messages', async () => {
 		const poller = new JobPollerService('http://example.com', 'test-service') as any;
-		mockedAxios.post
-			.mockResolvedValueOnce({ data: { id: 123 } } as any)
-			.mockResolvedValue({ data: {} } as any);
+		mockedAxios.post.mockResolvedValueOnce({ data: { id: 123 } } as any).mockResolvedValue({ data: {} } as any);
 
-		const sessionId = await poller.saveSessionResults(
-			1,
-			2,
-			'2024-01-01T00:00:00Z',
-			'2024-01-01T00:00:01Z',
-			{
-				success: true,
-				metrics: { input_tokens: 1, output_tokens: 2 },
-				intermediate_steps: [],
-				transcript: [
-					{ sequence: 1, role: 'user', content: 'hi', timestamp: 't1' },
-					{ sequence: 2, role: 'assistant', content: 'ok', timestamp: 't2' }
-				]
-			} as any
-		);
+		const sessionId = await poller.saveSessionResults(1, 2, '2024-01-01T00:00:00Z', '2024-01-01T00:00:01Z', {
+			success: true,
+			metrics: { input_tokens: 1, output_tokens: 2 },
+			intermediate_steps: [],
+			transcript: [
+				{ sequence: 1, role: 'user', content: 'hi', timestamp: 't1' },
+				{ sequence: 2, role: 'assistant', content: 'ok', timestamp: 't2' }
+			]
+		} as any);
 
 		expect(sessionId).toBe(123);
 		expect(mockedAxios.post).toHaveBeenCalledWith(

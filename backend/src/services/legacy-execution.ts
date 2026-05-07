@@ -27,10 +27,7 @@ export const createLegacyTestExecutionJob = async (
 ): Promise<LegacyExecutionJobResult> => {
 	const conversationId = testIdToConversationId(testId) ?? testId;
 
-	const [agent, conversation] = await Promise.all([
-		getAgentById(agentId),
-		getConversationById(conversationId)
-	]);
+	const [agent, conversation] = await Promise.all([getAgentById(agentId), getConversationById(conversationId)]);
 
 	if (!agent) {
 		throw new LegacyExecutionError(404, 'Agent not found');

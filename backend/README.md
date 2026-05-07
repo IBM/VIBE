@@ -14,23 +14,23 @@ and SQLite-backed persistence for tests, conversations, sessions, jobs, and suit
 1. **Install Dependencies**:
    Run `npm install` in the project root to link the workspace packages.
 
-   ```bash
-   # In project root
-   npm install
-   ```
+    ```bash
+    # In project root
+    npm install
+    ```
 
 2. **Configure Environment**:
    Copy `.env.example` to `.env` and adjust settings.
 
-   ```bash
-   cp .env.example .env
-   ```
+    ```bash
+    cp .env.example .env
+    ```
 
 3. **Run Service**:
 
-   ```bash
-   npm run dev
-   ```
+    ```bash
+    npm run dev
+    ```
 
 ## Environment loading behavior
 

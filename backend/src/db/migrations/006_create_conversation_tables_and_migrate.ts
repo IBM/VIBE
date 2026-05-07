@@ -4,8 +4,10 @@ const migration: Migration = {
 	version: 6,
 	name: 'Create conversation tables and migrate legacy data',
 	up: (db) => {
-		const conversationTablesInfo = db.prepare("PRAGMA table_info('conversations')").all() as Array<{ name: string }>;
-		if (conversationTablesInfo.some(col => col.name === 'id')) {
+		const conversationTablesInfo = db.prepare("PRAGMA table_info('conversations')").all() as Array<{
+			name: string;
+		}>;
+		if (conversationTablesInfo.some((col) => col.name === 'id')) {
 			return;
 		}
 
@@ -184,22 +186,26 @@ const migration: Migration = {
   `);
 
 		// 7. Add conversation_id column to suite_entries if the table exists
-		const suiteEntriesTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='suite_entries'").get() as
-			| { name?: string }
-			| undefined;
+		const suiteEntriesTable = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='suite_entries'")
+			.get() as { name?: string } | undefined;
 		if (suiteEntriesTable) {
-			const suiteEntriesColumns = db.prepare("PRAGMA table_info('suite_entries')").all() as Array<{ name: string }>;
-			if (!suiteEntriesColumns.some(col => col.name === 'conversation_id')) {
+			const suiteEntriesColumns = db.prepare("PRAGMA table_info('suite_entries')").all() as Array<{
+				name: string;
+			}>;
+			if (!suiteEntriesColumns.some((col) => col.name === 'conversation_id')) {
 				db.exec('ALTER TABLE suite_entries ADD COLUMN conversation_id INTEGER REFERENCES conversations(id);');
 			}
 		}
 
 		// 8. Update suite structure (only for existing suite tables)
-		const testSuitesTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='test_suites'").get() as
-			| { name?: string }
-			| undefined;
+		const testSuitesTable = db
+			.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='test_suites'")
+			.get() as { name?: string } | undefined;
 		if (testSuitesTable) {
-			db.exec("UPDATE test_suites SET description = COALESCE(description, '') || ' [Migrated to conversation testing]';");
+			db.exec(
+				"UPDATE test_suites SET description = COALESCE(description, '') || ' [Migrated to conversation testing]';"
+			);
 		}
 
 		if (suiteEntriesTable) {

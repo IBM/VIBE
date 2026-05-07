@@ -78,8 +78,7 @@ describe('JobQueueService', () => {
 		it('should throw error when agent not found', async () => {
 			(dbQueries.getAgentById as any).mockResolvedValue(null);
 
-			await expect(service.createJob(999, 100))
-				.rejects.toThrow('Agent 999 not found');
+			await expect(service.createJob(999, 100)).rejects.toThrow('Agent 999 not found');
 		});
 
 		it('should determine correct job type from agent settings', async () => {
@@ -124,8 +123,7 @@ describe('JobQueueService', () => {
 		it('should throw error when agent not found', async () => {
 			(dbQueries.getAgentById as any).mockResolvedValue(null);
 
-			await expect(service.createConversationJob(999, 200))
-				.rejects.toThrow('Agent 999 not found');
+			await expect(service.createConversationJob(999, 200)).rejects.toThrow('Agent 999 not found');
 		});
 	});
 
@@ -228,8 +226,9 @@ describe('JobQueueService', () => {
 		it('should throw error if job not found', async () => {
 			(dbQueries.getJobById as any).mockResolvedValue(null);
 
-			await expect(service.updateJob('nonexistent', { progress: 50 }))
-				.rejects.toThrow('Job nonexistent not found');
+			await expect(service.updateJob('nonexistent', { progress: 50 })).rejects.toThrow(
+				'Job nonexistent not found'
+			);
 		});
 
 		it('should update suite run progress for completed suite jobs', async () => {
@@ -329,7 +328,8 @@ describe('JobQueueService', () => {
 
 			expect(result).toBe(true);
 			expect(service['runningJobs'].has('job-1')).toBe(true);
-			expect(dbQueries.updateJob).toHaveBeenCalledWith('job-1',
+			expect(dbQueries.updateJob).toHaveBeenCalledWith(
+				'job-1',
 				expect.objectContaining({
 					status: JobStatus.RUNNING,
 					progress: 10,
@@ -494,9 +494,7 @@ describe('JobQueueService', () => {
 		});
 
 		it('creates external_api conversation jobs when configured', async () => {
-			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([
-				{ agent_id: 1, conversation_id: 200 }
-			]);
+			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([{ agent_id: 1, conversation_id: 200 }]);
 			(dbQueries.createSuiteRun as any).mockResolvedValue({ id: 20 });
 			(dbQueries.updateSuiteRun as any).mockResolvedValue();
 			(dbQueries.getAgentById as any).mockResolvedValue({ settings: JSON.stringify({ type: 'external_api' }) });
@@ -510,20 +508,18 @@ describe('JobQueueService', () => {
 		});
 
 		it('throws when external_api leaf lacks conversation id', async () => {
-			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([
-				{ agent_id: 1 }
-			]);
+			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([{ agent_id: 1 }]);
 			(dbQueries.createSuiteRun as any).mockResolvedValue({ id: 21 });
 			(dbQueries.getAgentById as any).mockResolvedValue({ settings: JSON.stringify({ type: 'external_api' }) });
 			(getAgentJobType as any).mockReturnValue('external_api');
 
-			await expect(service.createSuiteRun(1, 1)).rejects.toThrow('Missing conversation identifier for external_api job');
+			await expect(service.createSuiteRun(1, 1)).rejects.toThrow(
+				'Missing conversation identifier for external_api job'
+			);
 		});
 
 		it('creates conversation jobs for crewai leaves with conversation_id', async () => {
-			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([
-				{ agent_id: 1, conversation_id: 300 }
-			]);
+			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([{ agent_id: 1, conversation_id: 300 }]);
 			(dbQueries.createSuiteRun as any).mockResolvedValue({ id: 22 });
 			(dbQueries.updateSuiteRun as any).mockResolvedValue();
 			(dbQueries.getAgentById as any).mockResolvedValue({ settings: JSON.stringify({ type: 'crewai' }) });
@@ -537,9 +533,7 @@ describe('JobQueueService', () => {
 		});
 
 		it('throws when leaf lacks test and conversation identifiers', async () => {
-			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([
-				{ agent_id: 1 }
-			]);
+			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([{ agent_id: 1 }]);
 			(dbQueries.createSuiteRun as any).mockResolvedValue({ id: 23 });
 			(dbQueries.getAgentById as any).mockResolvedValue({ settings: JSON.stringify({ type: 'crewai' }) });
 			(getAgentJobType as any).mockReturnValue('crewai');
@@ -548,9 +542,7 @@ describe('JobQueueService', () => {
 		});
 
 		it('throws when agent for suite run leaf is missing', async () => {
-			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([
-				{ agent_id: 99, test_id: 100 }
-			]);
+			(suiteProcessingService.getFlattenedLeaves as any).mockReturnValue([{ agent_id: 99, test_id: 100 }]);
 			(dbQueries.createSuiteRun as any).mockResolvedValue({ id: 24 });
 			(dbQueries.getAgentById as any).mockResolvedValue(null);
 
@@ -603,9 +595,12 @@ describe('JobQueueService', () => {
 
 			await service.processQueue();
 
-			expect(updateSpy).toHaveBeenCalledWith('job-stale', expect.objectContaining({
-				status: JobStatus.PENDING
-			}));
+			expect(updateSpy).toHaveBeenCalledWith(
+				'job-stale',
+				expect.objectContaining({
+					status: JobStatus.PENDING
+				})
+			);
 		});
 
 		it('returns early when already processing', async () => {
@@ -621,9 +616,7 @@ describe('JobQueueService', () => {
 
 	describe('loadJobsFromDatabase', () => {
 		it('resets running jobs to pending', async () => {
-			(dbQueries.listJobs as any).mockResolvedValue([
-				{ id: 'job-1', status: JobStatus.RUNNING }
-			]);
+			(dbQueries.listJobs as any).mockResolvedValue([{ id: 'job-1', status: JobStatus.RUNNING }]);
 			(dbQueries.updateJob as any).mockResolvedValue();
 
 			await (service as any).loadJobsFromDatabase();
@@ -721,10 +714,13 @@ describe('JobQueueService', () => {
 
 			await service.updateSuiteRunProgress(5);
 
-			expect(dbQueries.updateSuiteRun).toHaveBeenCalledWith(5, expect.objectContaining({
-				progress: 50,
-				status: JobStatus.RUNNING
-			}));
+			expect(dbQueries.updateSuiteRun).toHaveBeenCalledWith(
+				5,
+				expect.objectContaining({
+					progress: 50,
+					status: JobStatus.RUNNING
+				})
+			);
 		});
 
 		it('throws when suite run is missing', async () => {
@@ -751,10 +747,13 @@ describe('JobQueueService', () => {
 
 			await service.updateSuiteRunProgress(6);
 
-			expect(dbQueries.updateSuiteRun).toHaveBeenCalledWith(6, expect.objectContaining({
-				status: JobStatus.COMPLETED,
-				progress: 100
-			}));
+			expect(dbQueries.updateSuiteRun).toHaveBeenCalledWith(
+				6,
+				expect.objectContaining({
+					status: JobStatus.COMPLETED,
+					progress: 100
+				})
+			);
 		});
 	});
 });

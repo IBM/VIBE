@@ -5,4 +5,3 @@ export interface Migration {
 	name: string;
 	up: (db: Database.Database) => void;
 }
-

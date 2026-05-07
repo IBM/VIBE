@@ -298,10 +298,12 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(200);
-			expect(mockedRepo.createRequestTemplate).toHaveBeenCalledWith(expect.objectContaining({
-				body: '{}',
-				capability: '{"name":"cap-1"}'
-			}));
+			expect(mockedRepo.createRequestTemplate).toHaveBeenCalledWith(
+				expect.objectContaining({
+					body: '{}',
+					capability: '{"name":"cap-1"}'
+				})
+			);
 			expect(mockedRepo.linkTemplateToAgent).toHaveBeenCalledWith(1, 88, false);
 			expect((response.body as any).is_default).toBe(0);
 		});
@@ -467,10 +469,12 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(200);
-			expect(mockedRepo.createResponseMap).toHaveBeenCalledWith(expect.objectContaining({
-				spec: '{"output":"z"}',
-				capability: '{"name":"cap-9"}'
-			}));
+			expect(mockedRepo.createResponseMap).toHaveBeenCalledWith(
+				expect.objectContaining({
+					spec: '{"output":"z"}',
+					capability: '{"name":"cap-9"}'
+				})
+			);
 			expect(mockedRepo.linkResponseMapToAgent).toHaveBeenCalledWith(1, 77, false);
 			expect((response.body as any).is_default).toBe(0);
 		});
@@ -748,9 +752,11 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(201);
-			expect(mockedRepo.createRequestTemplate).toHaveBeenCalledWith(expect.objectContaining({
-				capability: JSON.stringify({ name: 'cap-1' })
-			}));
+			expect(mockedRepo.createRequestTemplate).toHaveBeenCalledWith(
+				expect.objectContaining({
+					capability: JSON.stringify({ name: 'cap-1' })
+				})
+			);
 		});
 
 		it('POST /api/agents/:id/request-templates supports capabilities field', async () => {
@@ -770,9 +776,11 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(201);
-			expect(mockedRepo.createRequestTemplate).toHaveBeenCalledWith(expect.objectContaining({
-				capability: JSON.stringify({ name: 'cap-2' })
-			}));
+			expect(mockedRepo.createRequestTemplate).toHaveBeenCalledWith(
+				expect.objectContaining({
+					capability: JSON.stringify({ name: 'cap-2' })
+				})
+			);
 		});
 
 		it('PATCH /api/agents/:id/request-templates/:templateId returns 404 when agent missing', async () => {
@@ -881,9 +889,12 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(200);
-			expect(mockedRepo.updateRequestTemplate).toHaveBeenCalledWith(2, expect.objectContaining({
-				capability: JSON.stringify({ name: 'cap-2' })
-			}));
+			expect(mockedRepo.updateRequestTemplate).toHaveBeenCalledWith(
+				2,
+				expect.objectContaining({
+					capability: JSON.stringify({ name: 'cap-2' })
+				})
+			);
 		});
 
 		it('PATCH /api/agents/:id/request-templates/:templateId updates description', async () => {
@@ -909,9 +920,12 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(200);
-			expect(mockedRepo.updateRequestTemplate).toHaveBeenCalledWith(2, expect.objectContaining({
-				description: 'Updated'
-			}));
+			expect(mockedRepo.updateRequestTemplate).toHaveBeenCalledWith(
+				2,
+				expect.objectContaining({
+					description: 'Updated'
+				})
+			);
 		});
 
 		it('PATCH /api/agents/:id/request-templates/:templateId handles errors', async () => {
@@ -1083,9 +1097,11 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(201);
-			expect(mockedRepo.createResponseMap).toHaveBeenCalledWith(expect.objectContaining({
-				capability: JSON.stringify({ name: 'cap-3' })
-			}));
+			expect(mockedRepo.createResponseMap).toHaveBeenCalledWith(
+				expect.objectContaining({
+					capability: JSON.stringify({ name: 'cap-3' })
+				})
+			);
 		});
 
 		it('PATCH /api/agents/:id/response-maps/:mapId returns 404 when agent missing', async () => {
@@ -1194,9 +1210,12 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(200);
-			expect(mockedRepo.updateResponseMap).toHaveBeenCalledWith(2, expect.objectContaining({
-				capability: JSON.stringify({ name: 'cap-4' })
-			}));
+			expect(mockedRepo.updateResponseMap).toHaveBeenCalledWith(
+				2,
+				expect.objectContaining({
+					capability: JSON.stringify({ name: 'cap-4' })
+				})
+			);
 		});
 
 		it('PATCH /api/agents/:id/response-maps/:mapId updates description', async () => {
@@ -1222,9 +1241,12 @@ describe('agent legacy template routes (HTTP)', () => {
 			});
 
 			expect(response.statusCode).toBe(200);
-			expect(mockedRepo.updateResponseMap).toHaveBeenCalledWith(2, expect.objectContaining({
-				description: 'Updated'
-			}));
+			expect(mockedRepo.updateResponseMap).toHaveBeenCalledWith(
+				2,
+				expect.objectContaining({
+					description: 'Updated'
+				})
+			);
 		});
 
 		it('PATCH /api/agents/:id/response-maps/:mapId handles errors', async () => {

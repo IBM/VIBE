@@ -1,9 +1,4 @@
-import type {
-	NextFunction,
-	Request,
-	RequestHandler,
-	Response
-} from 'express';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 import type { ParsedQs } from 'qs';
 
@@ -31,4 +26,3 @@ export function asyncHandler<
 			next(err);
 		});
 }
-

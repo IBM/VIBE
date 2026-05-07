@@ -39,10 +39,12 @@ describe('conversationRepo - updateConversation stop_on_failure null/undefined b
 
 			conversationRepo.updateConversation(1, { stop_on_failure: null as any });
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				id: 1,
-				stop_on_failure: 0
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 1,
+					stop_on_failure: 0
+				})
+			);
 		});
 
 		it('converts undefined stop_on_failure to 0', () => {
@@ -61,10 +63,12 @@ describe('conversationRepo - updateConversation stop_on_failure null/undefined b
 
 			conversationRepo.updateConversation(1, { stop_on_failure: undefined as any });
 
-			expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-				id: 1,
-				stop_on_failure: 0
-			}));
+			expect(mockStmt.get).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 1,
+					stop_on_failure: 0
+				})
+			);
 		});
 	});
 });

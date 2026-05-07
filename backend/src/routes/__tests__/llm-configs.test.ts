@@ -11,16 +11,22 @@ import { llmConfigService } from '../../services/llm-config-service';
 import { hasPaginationParams, validatePaginationOrError } from '../../utils/pagination';
 
 // Type the mocked functions
-const mockGetLLMConfigsWithCount = queries.getLLMConfigsWithCount as jest.MockedFunction<typeof queries.getLLMConfigsWithCount>;
+const mockGetLLMConfigsWithCount = queries.getLLMConfigsWithCount as jest.MockedFunction<
+	typeof queries.getLLMConfigsWithCount
+>;
 const mockCreateLLMConfig = queries.createLLMConfig as jest.MockedFunction<typeof queries.createLLMConfig>;
 const mockUpdateLLMConfig = queries.updateLLMConfig as jest.MockedFunction<typeof queries.updateLLMConfig>;
 const mockDeleteLLMConfig = queries.deleteLLMConfig as jest.MockedFunction<typeof queries.deleteLLMConfig>;
 const mockGetConfigs = llmConfigService.getConfigs as jest.MockedFunction<typeof llmConfigService.getConfigs>;
 const mockGetConfigById = llmConfigService.getConfigById as jest.MockedFunction<typeof llmConfigService.getConfigById>;
 const mockCallLLM = llmConfigService.callLLM as jest.MockedFunction<typeof llmConfigService.callLLM>;
-const mockCallLLMWithFallback = llmConfigService.callLLMWithFallback as jest.MockedFunction<typeof llmConfigService.callLLMWithFallback>;
+const mockCallLLMWithFallback = llmConfigService.callLLMWithFallback as jest.MockedFunction<
+	typeof llmConfigService.callLLMWithFallback
+>;
 const mockHasPaginationParams = hasPaginationParams as jest.MockedFunction<typeof hasPaginationParams>;
-const mockValidatePaginationOrError = validatePaginationOrError as jest.MockedFunction<typeof validatePaginationOrError>;
+const mockValidatePaginationOrError = validatePaginationOrError as jest.MockedFunction<
+	typeof validatePaginationOrError
+>;
 
 describe('llm-configs routes', () => {
 	let mockReq: Partial<Request>;
@@ -245,9 +251,7 @@ describe('llm-configs routes', () => {
 
 			await callRoute('post', '/');
 
-			expect(mockCreateLLMConfig).toHaveBeenCalledWith(
-				expect.objectContaining({ priority: 100 })
-			);
+			expect(mockCreateLLMConfig).toHaveBeenCalledWith(expect.objectContaining({ priority: 100 }));
 		});
 
 		it('validates required name field', async () => {

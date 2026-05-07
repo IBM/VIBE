@@ -11,9 +11,7 @@ describe('session-results', () => {
 	});
 
 	it('creates a session and saves transcript messages', async () => {
-		mockedAxios.post
-			.mockResolvedValueOnce({ data: { id: 77 } } as any)
-			.mockResolvedValue({ data: {} } as any);
+		mockedAxios.post.mockResolvedValueOnce({ data: { id: 77 } } as any).mockResolvedValue({ data: {} } as any);
 
 		const sessionId = await saveSessionResults(
 			'http://backend',

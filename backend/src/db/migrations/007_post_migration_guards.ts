@@ -12,8 +12,10 @@ const migration: Migration = {
 	up: (db) => {
 		try {
 			// 1) Ensure conversation_messages exists
-			const convMsgInfo = db.prepare("PRAGMA table_info('conversation_messages')").all() as Array<{ name: string }>;
-			if (!convMsgInfo.some(col => col.name === 'id')) {
+			const convMsgInfo = db.prepare("PRAGMA table_info('conversation_messages')").all() as Array<{
+				name: string;
+			}>;
+			if (!convMsgInfo.some((col) => col.name === 'id')) {
 				db.exec(`
 			CREATE TABLE IF NOT EXISTS conversation_messages (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,7 +33,7 @@ const migration: Migration = {
 
 			// 2) Ensure execution_sessions exists
 			const execSessInfo = db.prepare("PRAGMA table_info('execution_sessions')").all() as Array<{ name: string }>;
-			if (!execSessInfo.some(col => col.name === 'id')) {
+			if (!execSessInfo.some((col) => col.name === 'id')) {
 				db.exec(`
 			CREATE TABLE IF NOT EXISTS execution_sessions (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,7 +53,7 @@ const migration: Migration = {
 
 			// 3) Ensure session_messages exists
 			const sessMsgInfo = db.prepare("PRAGMA table_info('session_messages')").all() as Array<{ name: string }>;
-			if (!sessMsgInfo.some(col => col.name === 'id')) {
+			if (!sessMsgInfo.some((col) => col.name === 'id')) {
 				db.exec(`
 			CREATE TABLE IF NOT EXISTS session_messages (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,22 +70,26 @@ const migration: Migration = {
 
 			// 4) Ensure jobs has conversation_id and session_id columns
 			const jobsCols = db.prepare("PRAGMA table_info('jobs')").all() as Array<{ name: string }>;
-			if (!jobsCols.some(col => col.name === 'conversation_id')) {
+			if (!jobsCols.some((col) => col.name === 'conversation_id')) {
 				db.exec('ALTER TABLE jobs ADD COLUMN conversation_id INTEGER REFERENCES conversations(id)');
 			}
-			if (!jobsCols.some(col => col.name === 'session_id')) {
+			if (!jobsCols.some((col) => col.name === 'session_id')) {
 				db.exec('ALTER TABLE jobs ADD COLUMN session_id INTEGER REFERENCES execution_sessions(id)');
 			}
 
 			// 5) Ensure suite_entries has conversation_id column
 			const suiteEntryCols = db.prepare("PRAGMA table_info('suite_entries')").all() as Array<{ name: string }>;
-			if (suiteEntryCols.length > 0 && !suiteEntryCols.some(col => col.name === 'conversation_id')) {
+			if (suiteEntryCols.length > 0 && !suiteEntryCols.some((col) => col.name === 'conversation_id')) {
 				db.exec('ALTER TABLE suite_entries ADD COLUMN conversation_id INTEGER REFERENCES conversations(id)');
 			}
 
 			// 6) Idempotent backfills where legacy tables still exist
-			const testsTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = 'tests'").get() as { name?: string } | undefined;
-			const resultsTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = 'results'").get() as { name?: string } | undefined;
+			const testsTable = db
+				.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = 'tests'")
+				.get() as { name?: string } | undefined;
+			const resultsTable = db
+				.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = 'results'")
+				.get() as { name?: string } | undefined;
 
 			if (suiteEntryCols.length > 0 && testsTable) {
 				db.exec(`

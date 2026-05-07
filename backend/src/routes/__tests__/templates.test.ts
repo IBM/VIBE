@@ -96,5 +96,3 @@ describe('Template-Capability Utils', () => {
 		});
 	});
 });
-
-

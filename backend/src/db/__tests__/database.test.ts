@@ -28,20 +28,18 @@ describe('database.ts branch coverage', () => {
 			fs.rmSync(tempDir, { recursive: true, force: true });
 		}
 		// Clear module cache
-		const modulePaths = Object.keys(require.cache).filter(key =>
-			key.includes('database') || key.includes('config') || key.includes('@ibm-vibe/config')
+		const modulePaths = Object.keys(require.cache).filter(
+			(key) => key.includes('database') || key.includes('config') || key.includes('@ibm-vibe/config')
 		);
-		modulePaths.forEach(key => delete require.cache[key]);
+		modulePaths.forEach((key) => delete require.cache[key]);
 	});
 
 	async function importDatabase() {
 		// Clear all related module caches
-		const modulePaths = Object.keys(require.cache).filter(key =>
-			key.includes('database') ||
-			key.includes('config') ||
-			key.includes('@ibm-vibe/config')
+		const modulePaths = Object.keys(require.cache).filter(
+			(key) => key.includes('database') || key.includes('config') || key.includes('@ibm-vibe/config')
 		);
-		modulePaths.forEach(key => delete require.cache[key]);
+		modulePaths.forEach((key) => delete require.cache[key]);
 		try {
 			delete require.cache[require.resolve('../config')];
 		} catch {}

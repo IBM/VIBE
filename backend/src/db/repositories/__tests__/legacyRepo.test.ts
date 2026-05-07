@@ -40,12 +40,14 @@ describe('legacyRepo', () => {
 
 				const result = legacyRepo.createTest(mockTest);
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					name: 'Test 1',
-					description: 'Test description',
-					input: 'Test input',
-					expected_output: 'Expected output'
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						name: 'Test 1',
+						description: 'Test description',
+						input: 'Test input',
+						expected_output: 'Expected output'
+					})
+				);
 				expect(result).toEqual(mockTest);
 			});
 
@@ -65,10 +67,12 @@ describe('legacyRepo', () => {
 
 				const result = legacyRepo.createTest({ name: 'Test 1', input: 'Test input' } as Test);
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					description: '',
-					expected_output: ''
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						description: '',
+						expected_output: ''
+					})
+				);
 				expect(result).toEqual(mockTest);
 			});
 		});
@@ -90,11 +94,13 @@ describe('legacyRepo', () => {
 
 				const result = legacyRepo.updateTest(1, { name: 'Updated Test', description: 'Updated description' });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					name: 'Updated Test',
-					description: 'Updated description'
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						name: 'Updated Test',
+						description: 'Updated description'
+					})
+				);
 				expect(result).toEqual(mockUpdated);
 			});
 
@@ -130,12 +136,16 @@ describe('legacyRepo', () => {
 
 				legacyRepo.updateTest(1, { name: 'Test 1', description: undefined });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					name: 'Test 1'
-				}));
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.not.objectContaining({
-					description: expect.anything()
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						name: 'Test 1'
+					})
+				);
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.not.objectContaining({
+						description: expect.anything()
+					})
+				);
 			});
 		});
 
@@ -210,9 +220,7 @@ describe('legacyRepo', () => {
 				const mockDataStmt = { all: jest.fn().mockReturnValue(mockTests) };
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 10 }) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockDataStmt)
-					.mockReturnValueOnce(mockCountStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 				const result = legacyRepo.getTestsWithCount();
 
@@ -223,9 +231,7 @@ describe('legacyRepo', () => {
 				const mockDataStmt = { all: jest.fn().mockReturnValue([]) };
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 0 }) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockDataStmt)
-					.mockReturnValueOnce(mockCountStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 				legacyRepo.getTestsWithCount({ limit: 10, offset: 20 });
 
@@ -261,53 +267,99 @@ describe('legacyRepo', () => {
 			});
 
 			it('throws error for invalid agent_id', () => {
-				expect(() => legacyRepo.createResult({ agent_id: 0, test_id: 1, output: 'test', success: true }))
-					.toThrow('Invalid agent_id: must be a positive number');
+				expect(() =>
+					legacyRepo.createResult({ agent_id: 0, test_id: 1, output: 'test', success: true })
+				).toThrow('Invalid agent_id: must be a positive number');
 			});
 
 			it('throws error for invalid test_id', () => {
-				expect(() => legacyRepo.createResult({ agent_id: 1, test_id: 0, output: 'test', success: true }))
-					.toThrow('Invalid test_id: must be a positive number');
+				expect(() =>
+					legacyRepo.createResult({ agent_id: 1, test_id: 0, output: 'test', success: true })
+				).toThrow('Invalid test_id: must be a positive number');
 			});
 
 			it('throws error for invalid success', () => {
-				expect(() => legacyRepo.createResult({ agent_id: 1, test_id: 1, output: 'test', success: 'true' as any }))
-					.toThrow('Invalid success: must be a boolean');
+				expect(() =>
+					legacyRepo.createResult({ agent_id: 1, test_id: 1, output: 'test', success: 'true' as any })
+				).toThrow('Invalid success: must be a boolean');
 			});
 
 			it('serializes non-string output', () => {
-				const mockStmt = { get: jest.fn().mockReturnValue({ id: 1, agent_id: 1, test_id: 1, output: '{"key":"value"}', success: 1, created_at: '2024-01-01' }) };
+				const mockStmt = {
+					get: jest.fn().mockReturnValue({
+						id: 1,
+						agent_id: 1,
+						test_id: 1,
+						output: '{"key":"value"}',
+						success: 1,
+						created_at: '2024-01-01'
+					})
+				};
 				(mockDb.prepare as any).mockReturnValue(mockStmt);
 
 				legacyRepo.createResult({ agent_id: 1, test_id: 1, output: { key: 'value' } as any, success: true });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					output: '{"key":"value"}'
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						output: '{"key":"value"}'
+					})
+				);
 			});
 
 			it('handles default values', () => {
-				const mockStmt = { get: jest.fn().mockReturnValue({ id: 1, agent_id: 1, test_id: 1, output: 'test', success: 1, execution_time: 0, created_at: '2024-01-01' }) };
+				const mockStmt = {
+					get: jest.fn().mockReturnValue({
+						id: 1,
+						agent_id: 1,
+						test_id: 1,
+						output: 'test',
+						success: 1,
+						execution_time: 0,
+						created_at: '2024-01-01'
+					})
+				};
 				(mockDb.prepare as any).mockReturnValue(mockStmt);
 
 				legacyRepo.createResult({ agent_id: 1, test_id: 1, output: 'test', success: true });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					intermediate_steps: '',
-					execution_time: 0
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						intermediate_steps: '',
+						execution_time: 0
+					})
+				);
 			});
 
 			it('floors token values', () => {
-				const mockStmt = { get: jest.fn().mockReturnValue({ id: 1, agent_id: 1, test_id: 1, output: 'test', success: 1, input_tokens: 50, output_tokens: 30, created_at: '2024-01-01' }) };
+				const mockStmt = {
+					get: jest.fn().mockReturnValue({
+						id: 1,
+						agent_id: 1,
+						test_id: 1,
+						output: 'test',
+						success: 1,
+						input_tokens: 50,
+						output_tokens: 30,
+						created_at: '2024-01-01'
+					})
+				};
 				(mockDb.prepare as any).mockReturnValue(mockStmt);
 
-				legacyRepo.createResult({ agent_id: 1, test_id: 1, output: 'test', success: true, input_tokens: 50.7, output_tokens: 30.3 });
+				legacyRepo.createResult({
+					agent_id: 1,
+					test_id: 1,
+					output: 'test',
+					success: true,
+					input_tokens: 50.7,
+					output_tokens: 30.3
+				});
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					input_tokens: 50,
-					output_tokens: 30
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						input_tokens: 50,
+						output_tokens: 30
+					})
+				);
 			});
 		});
 
@@ -364,9 +416,7 @@ describe('legacyRepo', () => {
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 5 }) };
 				const mockDataStmt = { all: jest.fn().mockReturnValue(mockResults) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockCountStmt)
-					.mockReturnValueOnce(mockDataStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockCountStmt).mockReturnValueOnce(mockDataStmt);
 
 				const result = legacyRepo.getResultsWithCount();
 
@@ -402,10 +452,12 @@ describe('legacyRepo', () => {
 
 				legacyRepo.updateResult(1, { similarity_score: 95 });
 
-				expect(mockStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					similarity_score: 95
-				}));
+				expect(mockStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						similarity_score: 95
+					})
+				);
 			});
 
 			it('does nothing when no fields to update', () => {

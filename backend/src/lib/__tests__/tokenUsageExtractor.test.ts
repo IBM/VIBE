@@ -1,8 +1,4 @@
-import {
-	extractTokenUsage,
-	validateTokenUsage,
-	getTokenUsageSummary
-} from '../tokenUsageExtractor';
+import { extractTokenUsage, validateTokenUsage, getTokenUsageSummary } from '../tokenUsageExtractor';
 
 describe('tokenUsageExtractor', () => {
 	describe('extractTokenUsage', () => {

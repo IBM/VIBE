@@ -73,65 +73,89 @@ const migration: Migration = {
 	`);
 
 			// Ensure linked_at columns exist on older tables
-			const templateLinkCols = db.prepare("PRAGMA table_info('agent_template_links')").all() as Array<{ name: string }>;
-			if (!templateLinkCols.some(col => col.name === 'linked_at')) {
+			const templateLinkCols = db.prepare("PRAGMA table_info('agent_template_links')").all() as Array<{
+				name: string;
+			}>;
+			if (!templateLinkCols.some((col) => col.name === 'linked_at')) {
 				db.exec('ALTER TABLE agent_template_links ADD COLUMN linked_at TIMESTAMP');
 				db.exec('UPDATE agent_template_links SET linked_at = CURRENT_TIMESTAMP WHERE linked_at IS NULL');
 			}
 
-			const mapLinkCols = db.prepare("PRAGMA table_info('agent_response_map_links')").all() as Array<{ name: string }>;
-			if (!mapLinkCols.some(col => col.name === 'linked_at')) {
+			const mapLinkCols = db.prepare("PRAGMA table_info('agent_response_map_links')").all() as Array<{
+				name: string;
+			}>;
+			if (!mapLinkCols.some((col) => col.name === 'linked_at')) {
 				db.exec('ALTER TABLE agent_response_map_links ADD COLUMN linked_at TIMESTAMP');
 				db.exec('UPDATE agent_response_map_links SET linked_at = CURRENT_TIMESTAMP WHERE linked_at IS NULL');
 			}
 
 			// Ensure only one default per agent before unique indexes
 			const cleanupDefaultsTx = db.transaction(() => {
-				const dupTemplateDefaults = db.prepare(`
+				const dupTemplateDefaults = db
+					.prepare(
+						`
 			SELECT agent_id FROM agent_template_links
 			WHERE is_default = 1
 			GROUP BY agent_id
 			HAVING COUNT(*) > 1
-		`).all() as Array<{ agent_id: number }>;
+		`
+					)
+					.all() as Array<{ agent_id: number }>;
 
 				for (const { agent_id } of dupTemplateDefaults) {
-					const keep = db.prepare(`
+					const keep = db
+						.prepare(
+							`
 				SELECT template_id FROM agent_template_links
 				WHERE agent_id = ? AND is_default = 1
 				ORDER BY linked_at DESC, template_id DESC
 				LIMIT 1
-			`).get(agent_id) as { template_id?: number } | undefined;
+			`
+						)
+						.get(agent_id) as { template_id?: number } | undefined;
 
 					if (keep?.template_id) {
-						db.prepare(`
+						db.prepare(
+							`
 					UPDATE agent_template_links
 					SET is_default = CASE WHEN template_id = ? THEN 1 ELSE 0 END
 					WHERE agent_id = ?
-				`).run(keep.template_id, agent_id);
+				`
+						).run(keep.template_id, agent_id);
 					}
 				}
 
-				const dupMapDefaults = db.prepare(`
+				const dupMapDefaults = db
+					.prepare(
+						`
 			SELECT agent_id FROM agent_response_map_links
 			WHERE is_default = 1
 			GROUP BY agent_id
 			HAVING COUNT(*) > 1
-		`).all() as Array<{ agent_id: number }>;
+		`
+					)
+					.all() as Array<{ agent_id: number }>;
 
 				for (const { agent_id } of dupMapDefaults) {
-					const keep = db.prepare(`
+					const keep = db
+						.prepare(
+							`
 				SELECT response_map_id FROM agent_response_map_links
 				WHERE agent_id = ? AND is_default = 1
 				ORDER BY linked_at DESC, response_map_id DESC
 				LIMIT 1
-			`).get(agent_id) as { response_map_id?: number } | undefined;
+			`
+						)
+						.get(agent_id) as { response_map_id?: number } | undefined;
 
 					if (keep?.response_map_id) {
-						db.prepare(`
+						db.prepare(
+							`
 					UPDATE agent_response_map_links
 					SET is_default = CASE WHEN response_map_id = ? THEN 1 ELSE 0 END
 					WHERE agent_id = ?
-				`).run(keep.response_map_id, agent_id);
+				`
+						).run(keep.response_map_id, agent_id);
 					}
 				}
 			});

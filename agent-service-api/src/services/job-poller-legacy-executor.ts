@@ -95,7 +95,8 @@ export async function executeLegacyTestJobWithApi(context: LegacyJobExecutorCont
 			input_tokens: result.metrics.input_tokens,
 			output_tokens: result.metrics.output_tokens,
 			token_mapping_metadata: JSON.stringify({
-				extraction_method: (result.metrics.input_tokens || result.metrics.output_tokens) ? 'external_api' : 'none',
+				extraction_method:
+					result.metrics.input_tokens || result.metrics.output_tokens ? 'external_api' : 'none',
 				agent_type: 'external_api'
 			}),
 			metrics: result.metrics

@@ -1,17 +1,17 @@
 {
-	"name": "@ibm-vibe/utils",
-	"version": "1.0.0",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "tsc -p tsconfig.json",
-		"typecheck": "tsc --noEmit",
-		"prepare": "npm run build"
-	},
-	"dependencies": {
-		"@ibm-vibe/types": "*"
-	},
-	"devDependencies": {
-		"typescript": "^5.7.3"
-	}
+  "name": "@ibm-vibe/utils",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@ibm-vibe/types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
 }

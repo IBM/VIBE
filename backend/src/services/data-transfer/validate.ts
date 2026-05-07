@@ -10,11 +10,7 @@ import {
 	buildSuiteReferenceKey
 } from './identity';
 
-const registerItemKey = (
-	itemKeys: Map<string, string>,
-	itemKey: string,
-	entityLabel: string
-): string | undefined => {
+const registerItemKey = (itemKeys: Map<string, string>, itemKey: string, entityLabel: string): string | undefined => {
 	const existing = itemKeys.get(itemKey);
 	if (existing) {
 		return `Duplicate bundle item identity detected for ${entityLabel} and ${existing}`;
@@ -29,7 +25,11 @@ export const validateBundleSemantics = (bundle: ExportBundle): string | undefine
 	const suiteByReferenceKey = new Map<string, NonNullable<ExportBundle['data']['test_suites']>[number]>();
 
 	for (const agent of bundle.data.agents || []) {
-		const duplicateKeyError = registerItemKey(itemKeys, buildAgentItemKey(agent), `agent "${agent.name}@${agent.version}"`);
+		const duplicateKeyError = registerItemKey(
+			itemKeys,
+			buildAgentItemKey(agent),
+			`agent "${agent.name}@${agent.version}"`
+		);
 		if (duplicateKeyError) {
 			return duplicateKeyError;
 		}
@@ -64,7 +64,11 @@ export const validateBundleSemantics = (bundle: ExportBundle): string | undefine
 	}
 
 	for (const config of bundle.data.llm_configs || []) {
-		const duplicateKeyError = registerItemKey(itemKeys, buildLLMConfigItemKey(config), `LLM config "${config.name}"`);
+		const duplicateKeyError = registerItemKey(
+			itemKeys,
+			buildLLMConfigItemKey(config),
+			`LLM config "${config.name}"`
+		);
 		if (duplicateKeyError) {
 			return duplicateKeyError;
 		}

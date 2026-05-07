@@ -44,11 +44,13 @@ describe('suiteRepo', () => {
 
 				const result = suiteRepo.createTestSuite(mockSuite);
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					name: 'Test Suite 1',
-					description: 'Test description',
-					tags: 'tag1,tag2'
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						name: 'Test Suite 1',
+						description: 'Test description',
+						tags: 'tag1,tag2'
+					})
+				);
 				expect(result).toEqual(mockSuite);
 			});
 
@@ -67,10 +69,12 @@ describe('suiteRepo', () => {
 
 				const result = suiteRepo.createTestSuite({ name: 'Test Suite 1' } as TestSuite);
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					description: '',
-					tags: ''
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						description: '',
+						tags: ''
+					})
+				);
 				expect(result).toEqual(mockSuite);
 			});
 		});
@@ -89,13 +93,18 @@ describe('suiteRepo', () => {
 				const mockStmt = { get: jest.fn().mockReturnValue(mockUpdated) };
 				(mockDb.prepare as any).mockReturnValue(mockStmt);
 
-				const result = suiteRepo.updateTestSuite(1, { name: 'Updated Suite', description: 'Updated description' });
-
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
+				const result = suiteRepo.updateTestSuite(1, {
 					name: 'Updated Suite',
 					description: 'Updated description'
-				}));
+				});
+
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						name: 'Updated Suite',
+						description: 'Updated description'
+					})
+				);
 				expect(result).toEqual(mockUpdated);
 			});
 
@@ -181,9 +190,7 @@ describe('suiteRepo', () => {
 				const mockDataStmt = { all: jest.fn().mockReturnValue(mockSuites) };
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 10 }) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockDataStmt)
-					.mockReturnValueOnce(mockCountStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 				const result = suiteRepo.getTestSuitesWithCount();
 
@@ -194,9 +201,7 @@ describe('suiteRepo', () => {
 				const mockDataStmt = { all: jest.fn().mockReturnValue([]) };
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 0 }) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockDataStmt)
-					.mockReturnValueOnce(mockCountStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockDataStmt).mockReturnValueOnce(mockCountStmt);
 
 				suiteRepo.getTestSuitesWithCount({ limit: 10, offset: 20 });
 
@@ -209,8 +214,20 @@ describe('suiteRepo', () => {
 		describe('getEntriesInSuite', () => {
 			it('returns entries ordered by sequence', () => {
 				const mockEntries: SuiteEntry[] = [
-					{ id: 1, parent_suite_id: 1, sequence: 1, test_id: 10, created_at: '2024-01-01T00:00:00Z' } as SuiteEntry,
-					{ id: 2, parent_suite_id: 1, sequence: 2, conversation_id: 20, created_at: '2024-01-01T00:00:00Z' } as SuiteEntry
+					{
+						id: 1,
+						parent_suite_id: 1,
+						sequence: 1,
+						test_id: 10,
+						created_at: '2024-01-01T00:00:00Z'
+					} as SuiteEntry,
+					{
+						id: 2,
+						parent_suite_id: 1,
+						sequence: 2,
+						conversation_id: 20,
+						created_at: '2024-01-01T00:00:00Z'
+					} as SuiteEntry
 				];
 
 				const mockStmt = { all: jest.fn().mockReturnValue(mockEntries) };
@@ -250,10 +267,12 @@ describe('suiteRepo', () => {
 
 				suiteRepo.updateSuiteEntryOrder(1, 5);
 
-				expect(mockStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					sequence: 5
-				}));
+				expect(mockStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						sequence: 5
+					})
+				);
 			});
 
 			it('updates agent_id_override', () => {
@@ -262,10 +281,12 @@ describe('suiteRepo', () => {
 
 				suiteRepo.updateSuiteEntryOrder(1, undefined, 10);
 
-				expect(mockStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					agent_id_override: 10
-				}));
+				expect(mockStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						agent_id_override: 10
+					})
+				);
 			});
 
 			it('does nothing when no fields to update', () => {
@@ -356,11 +377,13 @@ describe('suiteRepo', () => {
 
 				const result = suiteRepo.updateSuiteRun(1, { status: JobStatus.RUNNING, progress: 50 });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					status: JobStatus.RUNNING,
-					progress: 50
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						status: JobStatus.RUNNING,
+						progress: 50
+					})
+				);
 				expect(result).toEqual(mockUpdated);
 			});
 
@@ -489,9 +512,7 @@ describe('suiteRepo', () => {
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 5 }) };
 				const mockDataStmt = { all: jest.fn().mockReturnValue(mockRuns) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockCountStmt)
-					.mockReturnValueOnce(mockDataStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockCountStmt).mockReturnValueOnce(mockDataStmt);
 
 				const result = suiteRepo.listSuiteRunsWithCount();
 
@@ -518,10 +539,7 @@ describe('suiteRepo', () => {
 			});
 
 			it('handles null metadata', () => {
-				const mockSessions = [
-					{ metadata: null },
-					{ metadata: '{"input_tokens":100,"output_tokens":50}' }
-				];
+				const mockSessions = [{ metadata: null }, { metadata: '{"input_tokens":100,"output_tokens":50}' }];
 
 				const mockStmt = { all: jest.fn().mockReturnValue(mockSessions) };
 				(mockDb.prepare as any).mockReturnValue(mockStmt);

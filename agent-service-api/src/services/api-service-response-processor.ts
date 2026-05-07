@@ -1,8 +1,4 @@
-import type {
-	IntermediateStep,
-	ResponseMapping,
-	TestExecutionRequest
-} from '@ibm-vibe/types';
+import type { IntermediateStep, ResponseMapping, TestExecutionRequest } from '@ibm-vibe/types';
 import { tokenizePath as tokenizeSharedPath, traverseByTokens as traverseSharedTokens } from '@ibm-vibe/utils';
 import { compareValues as compareMappedValues } from './api-service-formatters';
 
@@ -21,7 +17,7 @@ export class ApiServiceResponseProcessor {
 		if (typeof metadata === 'string') {
 			try {
 				const parsed = JSON.parse(metadata);
-				return parsed && typeof parsed === 'object' ? parsed as Record<string, any> : {};
+				return parsed && typeof parsed === 'object' ? (parsed as Record<string, any>) : {};
 			} catch {
 				return {};
 			}
@@ -47,7 +43,9 @@ export class ApiServiceResponseProcessor {
 
 				output = mapping.output
 					? this.extractByPath(responseData, mapping.output)
-					: (typeof responseData === 'string' ? responseData : JSON.stringify(responseData));
+					: typeof responseData === 'string'
+						? responseData
+						: JSON.stringify(responseData);
 
 				if (mapping.intermediate_steps) {
 					const extractedSteps = this.extractByPath(responseData, mapping.intermediate_steps);
@@ -106,9 +104,10 @@ export class ApiServiceResponseProcessor {
 					}
 				}
 			} else {
-				output = typeof responseData === 'string'
-					? responseData
-					: (responseData.output || JSON.stringify(responseData));
+				output =
+					typeof responseData === 'string'
+						? responseData
+						: responseData.output || JSON.stringify(responseData);
 			}
 
 			steps.push({

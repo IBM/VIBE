@@ -20,9 +20,7 @@ export const createTestSuite = (testSuite: TestSuite) => {
 
 export const updateTestSuite = (id: number, testSuite: Partial<TestSuite>) => {
 	// Filter out undefined values to avoid SQL errors
-	const filteredTestSuite = Object.fromEntries(
-		Object.entries(testSuite).filter(([_, value]) => value !== undefined)
-	);
+	const filteredTestSuite = Object.fromEntries(Object.entries(testSuite).filter(([_, value]) => value !== undefined));
 
 	// If there are no fields to update, return the existing test suite
 	if (Object.keys(filteredTestSuite).length === 0) {
@@ -30,8 +28,8 @@ export const updateTestSuite = (id: number, testSuite: Partial<TestSuite>) => {
 	}
 
 	const updates = Object.keys(filteredTestSuite)
-		.filter(key => key !== 'id' && key !== 'created_at')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id' && key !== 'created_at')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	const statement = db.prepare(`
@@ -69,7 +67,9 @@ export const getTestSuiteById = (id: number) => {
 	return db.prepare('SELECT * FROM test_suites WHERE id = ?').get(id) as TestSuite;
 };
 
-export const getTestSuitesWithCount = (params: { limit?: number; offset?: number } = {}): { data: TestSuite[]; total: number } => {
+export const getTestSuitesWithCount = (
+	params: { limit?: number; offset?: number } = {}
+): { data: TestSuite[]; total: number } => {
 	const { limit, offset } = params;
 	let query = 'SELECT * FROM test_suites ORDER BY created_at DESC';
 	const queryParams: any[] = [];
@@ -120,11 +120,7 @@ export const addSuiteEntry = (entry: {
 	return statement.get(normalizedEntry) as SuiteEntry;
 };
 
-export const updateSuiteEntryOrder = (
-	entryId: number,
-	sequence?: number,
-	agent_id_override?: number
-): void => {
+export const updateSuiteEntryOrder = (entryId: number, sequence?: number, agent_id_override?: number): void => {
 	const fields: string[] = [];
 	const params: any = { id: entryId };
 
@@ -150,14 +146,9 @@ export const deleteSuiteEntry = (entryId: number): void => {
 	stmt.run(entryId);
 };
 
-export const reorderSuiteEntries = (
-	parentSuiteId: number,
-	entryOrders: { entry_id: number; sequence: number }[]
-) => {
+export const reorderSuiteEntries = (parentSuiteId: number, entryOrders: { entry_id: number; sequence: number }[]) => {
 	const transaction = db.transaction(() => {
-		const stmt = db.prepare(
-			'UPDATE suite_entries SET sequence = ? WHERE parent_suite_id = ? AND id = ?'
-		);
+		const stmt = db.prepare('UPDATE suite_entries SET sequence = ? WHERE parent_suite_id = ? AND id = ?');
 		for (const order of entryOrders) {
 			stmt.run(order.sequence, parentSuiteId, order.entry_id);
 		}
@@ -184,9 +175,7 @@ export const createSuiteRun = (suiteRun: SuiteRun) => {
 
 export const updateSuiteRun = (id: number, updates: Partial<SuiteRun>) => {
 	// Filter out undefined values
-	const filteredUpdates = Object.fromEntries(
-		Object.entries(updates).filter(([_, value]) => value !== undefined)
-	);
+	const filteredUpdates = Object.fromEntries(Object.entries(updates).filter(([_, value]) => value !== undefined));
 
 	// If there are no fields to update, return the existing suite run
 	if (Object.keys(filteredUpdates).length === 0) {
@@ -194,8 +183,8 @@ export const updateSuiteRun = (id: number, updates: Partial<SuiteRun>) => {
 	}
 
 	const updateFields = Object.keys(filteredUpdates)
-		.filter(key => key !== 'id' && key !== 'started_at')
-		.map(key => `${key} = @${key}`)
+		.filter((key) => key !== 'id' && key !== 'started_at')
+		.map((key) => `${key} = @${key}`)
 		.join(', ');
 
 	let completedField = '';
@@ -267,7 +256,9 @@ export const listSuiteRuns = (filters: SuiteRunFilters & { limit?: number; offse
 	return db.prepare(query).all(...params) as SuiteRun[];
 };
 
-export const listSuiteRunsWithCount = (filters: SuiteRunFilters & { limit?: number; offset?: number } = {}): { data: SuiteRun[], total: number } => {
+export const listSuiteRunsWithCount = (
+	filters: SuiteRunFilters & { limit?: number; offset?: number } = {}
+): { data: SuiteRun[]; total: number } => {
 	// First, get the total count without pagination
 	let countQuery = 'SELECT COUNT(*) as count FROM suite_runs WHERE 1=1';
 	const countParams: any[] = [];
@@ -309,16 +300,22 @@ export const listSuiteRunsWithCount = (filters: SuiteRunFilters & { limit?: numb
 /**
  * Get aggregated token usage for a suite run
  */
-export const getSuiteRunTokenUsage = (suiteRunId: number): { total_input_tokens: number; total_output_tokens: number } => {
+export const getSuiteRunTokenUsage = (
+	suiteRunId: number
+): { total_input_tokens: number; total_output_tokens: number } => {
 	// Sum tokens from execution session metadata for completed jobs in the suite run
-	const sessions = db.prepare(`
+	const sessions = db
+		.prepare(
+			`
 		SELECT es.metadata
 		FROM execution_sessions es
 		WHERE es.id IN (
 			SELECT j.session_id FROM jobs j
 			WHERE j.suite_run_id = ? AND j.status = 'completed' AND j.session_id IS NOT NULL
 		)
-	`).all(suiteRunId) as { metadata: string | null }[];
+	`
+		)
+		.all(suiteRunId) as { metadata: string | null }[];
 
 	let total_input_tokens = 0;
 	let total_output_tokens = 0;
@@ -329,7 +326,7 @@ export const getSuiteRunTokenUsage = (suiteRunId: number): { total_input_tokens:
 			const meta = JSON.parse(row.metadata);
 			if (typeof meta?.input_tokens === 'number') total_input_tokens += meta.input_tokens;
 			if (typeof meta?.output_tokens === 'number') total_output_tokens += meta.output_tokens;
-		} catch { }
+		} catch {}
 	}
 
 	return { total_input_tokens, total_output_tokens };

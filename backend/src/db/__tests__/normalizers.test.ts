@@ -1,7 +1,4 @@
-import {
-	normalizeConversationMessageInsert,
-	normalizeSuiteEntryInsert
-} from '../normalizers';
+import { normalizeConversationMessageInsert, normalizeSuiteEntryInsert } from '../normalizers';
 
 describe('normalizers', () => {
 	describe('normalizeConversationMessageInsert', () => {

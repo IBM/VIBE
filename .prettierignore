@@ -14,6 +14,8 @@ out/
 **/.turbo/
 coverage/
 **/coverage/
+venv/
+**/venv/
 
 package-lock.json
 **/package-lock.json

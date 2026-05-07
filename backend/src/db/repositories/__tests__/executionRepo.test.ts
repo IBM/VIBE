@@ -45,9 +45,7 @@ describe('executionRepo', () => {
 
 				const mockRunStmt = { run: jest.fn() };
 				const mockGetStmt = { get: jest.fn().mockReturnValue(mockJob) };
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockRunStmt)
-					.mockReturnValueOnce(mockGetStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockRunStmt).mockReturnValueOnce(mockGetStmt);
 
 				const result = await executionRepo.createJob(mockJob);
 
@@ -67,27 +65,26 @@ describe('executionRepo', () => {
 
 				const mockRunStmt = { run: jest.fn() };
 				const mockGetStmt = { get: jest.fn().mockReturnValue(mockJob) };
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockRunStmt)
-					.mockReturnValueOnce(mockGetStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockRunStmt).mockReturnValueOnce(mockGetStmt);
 
 				await executionRepo.createJob({ id: 'job-2', agent_id: 1, status: JobStatus.PENDING });
 
-				expect(mockRunStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					progress: 0,
-					job_type: 'crewai'
-				}));
+				expect(mockRunStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						progress: 0,
+						job_type: 'crewai'
+					})
+				);
 			});
 
 			it('throws error when job creation fails', async () => {
 				const mockRunStmt = { run: jest.fn() };
 				const mockGetStmt = { get: jest.fn().mockReturnValue(undefined) };
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockRunStmt)
-					.mockReturnValueOnce(mockGetStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockRunStmt).mockReturnValueOnce(mockGetStmt);
 
-				await expect(executionRepo.createJob({ id: 'job-3', agent_id: 1, status: JobStatus.PENDING }))
-					.rejects.toThrow('Failed to create job job-3');
+				await expect(
+					executionRepo.createJob({ id: 'job-3', agent_id: 1, status: JobStatus.PENDING })
+				).rejects.toThrow('Failed to create job job-3');
 			});
 		});
 
@@ -128,11 +125,13 @@ describe('executionRepo', () => {
 
 				await executionRepo.updateJob('job-1', { status: JobStatus.RUNNING, progress: 50 });
 
-				expect(mockStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					id: 'job-1',
-					status: 'running',
-					progress: 50
-				}));
+				expect(mockStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 'job-1',
+						status: 'running',
+						progress: 50
+					})
+				);
 			});
 
 			it('does nothing when no fields to update', async () => {
@@ -145,7 +144,11 @@ describe('executionRepo', () => {
 				const mockStmt = { run: jest.fn() };
 				(mockDb.prepare as any).mockReturnValue(mockStmt);
 
-				await executionRepo.updateJob('job-1', { status: JobStatus.RUNNING, id: 'other' as any, created_at: '2025-01-01' as any });
+				await executionRepo.updateJob('job-1', {
+					status: JobStatus.RUNNING,
+					id: 'other' as any,
+					created_at: '2025-01-01' as any
+				});
 
 				const query = (mockDb.prepare as any).mock.calls[0][0];
 				// The WHERE clause contains "id = @id" which is expected
@@ -223,9 +226,7 @@ describe('executionRepo', () => {
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 5 }) };
 				const mockDataStmt = { all: jest.fn().mockReturnValue(mockJobs) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockCountStmt)
-					.mockReturnValueOnce(mockDataStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockCountStmt).mockReturnValueOnce(mockDataStmt);
 
 				const result = await executionRepo.listJobsWithCount();
 
@@ -345,9 +346,11 @@ describe('executionRepo', () => {
 
 				executionRepo.createExecutionSession({ conversation_id: 10, agent_id: 5, success: true });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					success: 1
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						success: 1
+					})
+				);
 			});
 		});
 
@@ -404,9 +407,7 @@ describe('executionRepo', () => {
 				const mockCountStmt = { get: jest.fn().mockReturnValue({ count: 5 }) };
 				const mockDataStmt = { all: jest.fn().mockReturnValue(mockSessions) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockCountStmt)
-					.mockReturnValueOnce(mockDataStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockCountStmt).mockReturnValueOnce(mockDataStmt);
 
 				const result = executionRepo.getExecutionSessionsWithCount();
 
@@ -472,11 +473,13 @@ describe('executionRepo', () => {
 
 				const result = executionRepo.updateExecutionSession(1, { status: 'completed', success: true });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					status: 'completed',
-					success: true
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						status: 'completed',
+						success: true
+					})
+				);
 				expect(result).toEqual(mockUpdated);
 			});
 
@@ -536,9 +539,11 @@ describe('executionRepo', () => {
 
 				executionRepo.addSessionMessage({ session_id: 10, sequence: 1, role: 'user', content: 'Test' });
 
-				expect(mockStmt.get).toHaveBeenCalledWith(expect.objectContaining({
-					metadata: null
-				}));
+				expect(mockStmt.get).toHaveBeenCalledWith(
+					expect.objectContaining({
+						metadata: null
+					})
+				);
 			});
 		});
 
@@ -549,10 +554,12 @@ describe('executionRepo', () => {
 
 				executionRepo.updateSessionMessage(1, { content: 'Updated content' });
 
-				expect(mockStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					content: 'Updated content'
-				}));
+				expect(mockStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						content: 'Updated content'
+					})
+				);
 			});
 
 			it('does nothing when no fields to update', () => {
@@ -565,8 +572,22 @@ describe('executionRepo', () => {
 		describe('getSessionMessages', () => {
 			it('returns messages ordered by sequence', () => {
 				const mockMessages: SessionMessage[] = [
-					{ id: 1, session_id: 10, sequence: 1, role: 'user', content: 'Message 1', timestamp: '2024-01-01T00:00:00Z' },
-					{ id: 2, session_id: 10, sequence: 2, role: 'assistant', content: 'Message 2', timestamp: '2024-01-01T00:00:01Z' }
+					{
+						id: 1,
+						session_id: 10,
+						sequence: 1,
+						role: 'user',
+						content: 'Message 1',
+						timestamp: '2024-01-01T00:00:00Z'
+					},
+					{
+						id: 2,
+						session_id: 10,
+						sequence: 2,
+						role: 'assistant',
+						content: 'Message 2',
+						timestamp: '2024-01-01T00:00:01Z'
+					}
 				];
 
 				const mockStmt = { all: jest.fn().mockReturnValue(mockMessages) };
@@ -589,15 +610,20 @@ describe('executionRepo', () => {
 				} as ExecutionSession;
 
 				const mockMessages: SessionMessage[] = [
-					{ id: 1, session_id: 10, sequence: 1, role: 'user', content: 'Test', timestamp: '2024-01-01T00:00:00Z' }
+					{
+						id: 1,
+						session_id: 10,
+						sequence: 1,
+						role: 'user',
+						content: 'Test',
+						timestamp: '2024-01-01T00:00:00Z'
+					}
 				];
 
 				const mockSessionStmt = { get: jest.fn().mockReturnValue(mockSession) };
 				const mockMessagesStmt = { all: jest.fn().mockReturnValue(mockMessages) };
 
-				(mockDb.prepare as any)
-					.mockReturnValueOnce(mockSessionStmt)
-					.mockReturnValueOnce(mockMessagesStmt);
+				(mockDb.prepare as any).mockReturnValueOnce(mockSessionStmt).mockReturnValueOnce(mockMessagesStmt);
 
 				const result = executionRepo.getFullSessionTranscript(10);
 
@@ -639,11 +665,13 @@ describe('executionRepo', () => {
 					similarity_scoring_status: 'completed'
 				});
 
-				expect(mockStmt.run).toHaveBeenCalledWith(expect.objectContaining({
-					id: 1,
-					similarity_score: 95,
-					similarity_scoring_status: 'completed'
-				}));
+				expect(mockStmt.run).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: 1,
+						similarity_score: 95,
+						similarity_scoring_status: 'completed'
+					})
+				);
 			});
 
 			it('does nothing when no fields to update', () => {

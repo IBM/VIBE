@@ -17,7 +17,9 @@ import { scoreSimilarityText } from '../../services/scoring-service';
 const mockAddSessionMessage = addSessionMessage as jest.MockedFunction<typeof addSessionMessage>;
 const mockCountUserTurnsUpTo = countUserTurnsUpTo as jest.MockedFunction<typeof countUserTurnsUpTo>;
 const mockGetExecutionSessionById = getExecutionSessionById as jest.MockedFunction<typeof getExecutionSessionById>;
-const mockGetConversationTurnTarget = getConversationTurnTarget as jest.MockedFunction<typeof getConversationTurnTarget>;
+const mockGetConversationTurnTarget = getConversationTurnTarget as jest.MockedFunction<
+	typeof getConversationTurnTarget
+>;
 const mockUpdateSessionMessage = updateSessionMessage as jest.MockedFunction<typeof updateSessionMessage>;
 const mockGetSessionMessageById = getSessionMessageById as jest.MockedFunction<typeof getSessionMessageById>;
 const mockScoreSimilarityText = scoreSimilarityText as jest.MockedFunction<typeof scoreSimilarityText>;
@@ -91,12 +93,14 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				session_id: 1,
-				role: 'user',
-				content: 'test message',
-				sequence: 1
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					session_id: 1,
+					role: 'user',
+					content: 'test message',
+					sequence: 1
+				})
+			);
 			expect(statusMock).toHaveBeenCalledWith(201);
 			expect(jsonMock).toHaveBeenCalledWith(mockMessage);
 		});
@@ -154,7 +158,7 @@ describe('Session Messages Routes', () => {
 			expect(jsonMock).toHaveBeenCalledWith(mockMessage);
 
 			// Wait for async scoring to complete
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 		});
 
 		it('should skip scoring if session_id is missing', async () => {
@@ -277,10 +281,12 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				session_id: 1,
-				sequence: 1
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					session_id: 1,
+					sequence: 1
+				})
+			);
 		});
 
 		it('should default role to assistant if missing', async () => {
@@ -304,9 +310,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				role: 'assistant'
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					role: 'assistant'
+				})
+			);
 		});
 
 		it('should default content to empty string if missing', async () => {
@@ -330,9 +338,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				content: ''
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					content: ''
+				})
+			);
 		});
 
 		it('should convert non-string role to string', async () => {
@@ -357,9 +367,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				role: '123'
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					role: '123'
+				})
+			);
 		});
 
 		it('should convert non-string content to string', async () => {
@@ -384,9 +396,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				content: '456'
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					content: '456'
+				})
+			);
 		});
 
 		it('should convert timestamp to ISO string if not string', async () => {
@@ -413,9 +427,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				timestamp: '2024-01-01T12:00:00.000Z'
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					timestamp: '2024-01-01T12:00:00.000Z'
+				})
+			);
 		});
 
 		it('should stringify metadata object', async () => {
@@ -442,9 +458,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				metadata: '{"key":"value"}'
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					metadata: '{"key":"value"}'
+				})
+			);
 		});
 
 		it('should set metadata to null if undefined', async () => {
@@ -470,9 +488,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				metadata: null
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					metadata: null
+				})
+			);
 		});
 
 		it('should handle metadata stringify errors gracefully', async () => {
@@ -502,9 +522,11 @@ describe('Session Messages Routes', () => {
 			const handler = getRouteHandler('post', '/');
 			await callRoute(handler, mockReq, mockRes);
 
-			expect(mockAddSessionMessage).toHaveBeenCalledWith(expect.objectContaining({
-				metadata: null
-			}));
+			expect(mockAddSessionMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					metadata: null
+				})
+			);
 		});
 
 		it('should handle errors gracefully', async () => {
@@ -605,7 +627,7 @@ describe('Session Messages Routes', () => {
 			});
 
 			// Wait for async scoring to complete
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 		});
 
 		it('should return 400 for invalid message ID', async () => {

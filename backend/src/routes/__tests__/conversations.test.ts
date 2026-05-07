@@ -277,9 +277,7 @@ describe('conversation routes', () => {
 				params: { id: '1' },
 				body: {
 					name: 'Test',
-					messages: [
-						{ sequence: 1, role: 'user', content: 'new message' }
-					]
+					messages: [{ sequence: 1, role: 'user', content: 'new message' }]
 				}
 			});
 

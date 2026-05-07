@@ -38,8 +38,8 @@ describe('ApiServiceResponseProcessor', () => {
 		expect(result.output).toBe('done');
 		expect(result.success).toBe(true);
 		expect(result.extractedVariables).toEqual({ requestId: 'req-1' });
-		expect(result.steps.some(step => step.action === 'Step 1')).toBe(true);
-		expect(result.steps.some(step => step.action === 'Processing Complete')).toBe(true);
+		expect(result.steps.some((step) => step.action === 'Step 1')).toBe(true);
+		expect(result.steps.some((step) => step.action === 'Processing Complete')).toBe(true);
 	});
 
 	it('evaluates json_match success criteria with operators', () => {
@@ -56,11 +56,7 @@ describe('ApiServiceResponseProcessor', () => {
 			})
 		} as TestExecutionRequest;
 
-		const result = processor.processResponse(
-			{ metrics: { score: 95, label: 'great' } },
-			request,
-			[]
-		);
+		const result = processor.processResponse({ metrics: { score: 95, label: 'great' } }, request, []);
 
 		expect(result.output).toBe('great');
 		expect(result.success).toBe(true);
@@ -75,7 +71,7 @@ describe('ApiServiceResponseProcessor', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.output).toContain('Error processing response');
-		expect(result.steps.some(step => step.action === 'Processing Error')).toBe(true);
+		expect(result.steps.some((step) => step.action === 'Processing Error')).toBe(true);
 	});
 
 	it('resolves pointers and path extraction safely', () => {
