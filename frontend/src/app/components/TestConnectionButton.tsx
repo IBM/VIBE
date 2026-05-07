@@ -9,11 +9,7 @@ interface TestConnectionButtonProps {
 	disabled?: boolean;
 }
 
-export function TestConnectionButton({
-	status,
-	onTestConnection,
-	disabled = false
-}: TestConnectionButtonProps) {
+export function TestConnectionButton({ status, onTestConnection, disabled = false }: TestConnectionButtonProps) {
 	return (
 		<div className={styles.testConnection}>
 			<Button

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SideNav, SideNavItems, SideNavLink, SideNavMenu } from '@carbon/react';
 import { useRouter, usePathname } from 'next/navigation';
 import {
@@ -40,75 +40,67 @@ export default function AppSideNav() {
 			className={styles.sideNav}
 		>
 			<SideNavItems>
-				<SideNavLink
-					renderIcon={Dashboard}
-					isActive={activeItem === ''}
-					onClick={() => handleNavChange('')}
-				>
-                    Dashboard
+				<SideNavLink renderIcon={Dashboard} isActive={activeItem === ''} onClick={() => handleNavChange('')}>
+					Dashboard
 				</SideNavLink>
 				<SideNavLink
 					renderIcon={Chat}
 					isActive={activeItem === 'conversations'}
 					onClick={() => handleNavChange('conversations')}
 				>
-                    Conversations
+					Conversations
 				</SideNavLink>
-			<SideNavLink
-				renderIcon={Bot}
-				isActive={activeItem === 'agents'}
-				onClick={() => handleNavChange('agents')}
-			>
-                    Agents
-			</SideNavLink>
-			<SideNavLink
-				renderIcon={DocumentMultiple_01}
-				isActive={activeItem === 'sessions'}
-				onClick={() => handleNavChange('sessions')}
-			>
-                    Sessions
-			</SideNavLink>
-			<SideNavLink
-				renderIcon={Task}
-				isActive={activeItem === 'jobs'}
-				onClick={() => handleNavChange('jobs')}
-			>
-                    Jobs
-			</SideNavLink>
+				<SideNavLink
+					renderIcon={Bot}
+					isActive={activeItem === 'agents'}
+					onClick={() => handleNavChange('agents')}
+				>
+					Agents
+				</SideNavLink>
+				<SideNavLink
+					renderIcon={DocumentMultiple_01}
+					isActive={activeItem === 'sessions'}
+					onClick={() => handleNavChange('sessions')}
+				>
+					Sessions
+				</SideNavLink>
+				<SideNavLink renderIcon={Task} isActive={activeItem === 'jobs'} onClick={() => handleNavChange('jobs')}>
+					Jobs
+				</SideNavLink>
 				<SideNavLink
 					renderIcon={Play}
 					isActive={activeItem === 'execute'}
 					onClick={() => handleNavChange('execute')}
 				>
-                    Quick execute
+					Quick execute
 				</SideNavLink>
-			<SideNavLink
-				renderIcon={Folder}
-				isActive={activeItem === 'test-suites'}
-				onClick={() => handleNavChange('test-suites')}
-			>
-                    Suites
-			</SideNavLink>
+				<SideNavLink
+					renderIcon={Folder}
+					isActive={activeItem === 'test-suites'}
+					onClick={() => handleNavChange('test-suites')}
+				>
+					Suites
+				</SideNavLink>
 				<SideNavLink
 					renderIcon={Rocket}
 					isActive={activeItem === 'suite-runs'}
 					onClick={() => handleNavChange('suite-runs')}
 				>
-                    Suite runs
+					Suite runs
 				</SideNavLink>
 				<SideNavLink
 					renderIcon={CloudServices}
 					isActive={activeItem === 'llm-configs'}
 					onClick={() => handleNavChange('llm-configs')}
 				>
-                    LLM configs
+					LLM configs
 				</SideNavLink>
 				<SideNavLink
 					renderIcon={DocumentMultiple_01}
 					isActive={activeItem === 'data-transfer'}
 					onClick={() => handleNavChange('data-transfer')}
 				>
-                    Data transfer
+					Data transfer
 				</SideNavLink>
 
 				{/* Legacy (Deprecated) Section */}
@@ -118,21 +110,21 @@ export default function AppSideNav() {
 						isActive={activeItem === 'tests'}
 						onClick={() => handleNavChange('tests')}
 					>
-                        Tests
+						Tests
 					</SideNavLink>
 					<SideNavLink
 						renderIcon={Report}
 						isActive={activeItem === 'results'}
 						onClick={() => handleNavChange('results')}
 					>
-                        Results
+						Results
 					</SideNavLink>
 					<SideNavLink
 						renderIcon={Play}
 						isActive={activeItem === 'run'}
 						onClick={() => handleNavChange('run')}
 					>
-                        Run test
+						Run test
 					</SideNavLink>
 				</SideNavMenu>
 			</SideNavItems>

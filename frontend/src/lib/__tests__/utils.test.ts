@@ -395,10 +395,7 @@ describe('utils', () => {
 		});
 
 		it('loads messages for sessions', async () => {
-			const sessions: ExecutionSession[] = [
-				{ id: 1 } as any,
-				{ id: 2 } as any
-			];
+			const sessions: ExecutionSession[] = [{ id: 1 } as any, { id: 2 } as any];
 			(api.getSessionTranscript as jest.Mock)
 				.mockResolvedValueOnce([{ id: 1, content: 'msg1' }])
 				.mockResolvedValueOnce([{ id: 2, content: 'msg2' }]);

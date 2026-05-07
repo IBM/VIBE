@@ -62,9 +62,7 @@ export function AvailableItemsTable({
 										<div>
 											<div className={styles.entryName}>{item.name}</div>
 											{item.description && (
-												<div className={styles.itemDescription}>
-													{item.description}
-												</div>
+												<div className={styles.itemDescription}>{item.description}</div>
 											)}
 										</div>
 									</TableCell>
@@ -74,18 +72,19 @@ export function AvailableItemsTable({
 											labelText=""
 											size="sm"
 											className={styles.agentOverrideSelect}
-											value={availableItemAgents[itemKey] ? String(availableItemAgents[itemKey]) : 'default'}
+											value={
+												availableItemAgents[itemKey]
+													? String(availableItemAgents[itemKey])
+													: 'default'
+											}
 											onChange={(e) => {
-												const value = e.target.value === 'default' ? null : parseInt(e.target.value, 10);
+												const value =
+													e.target.value === 'default' ? null : parseInt(e.target.value, 10);
 												onAgentChange(itemKey, value);
 											}}
 										>
-											{agentSelectOptions.map(option => (
-												<SelectItem
-													key={option.id}
-													value={option.id}
-													text={option.label}
-												/>
+											{agentSelectOptions.map((option) => (
+												<SelectItem key={option.id} value={option.id} text={option.label} />
 											))}
 										</Select>
 									</TableCell>

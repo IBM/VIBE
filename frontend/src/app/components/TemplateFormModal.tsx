@@ -1,14 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-	Modal,
-	TextInput,
-	TextArea,
-	ComboBox,
-	Stack,
-	InlineNotification
-} from '@carbon/react';
+import { useState, useEffect } from 'react';
+import { Modal, TextInput, TextArea, ComboBox, Stack, InlineNotification } from '@carbon/react';
 import { api, RequestTemplate, ResponseMap } from '../../lib/api';
 
 type TemplateType = 'request' | 'response';
@@ -32,13 +25,7 @@ interface FormData {
 /**
  * Modal for creating/editing global request templates or response maps.
  */
-export default function TemplateFormModal({
-	isOpen,
-	onClose,
-	onSave,
-	type,
-	template = null
-}: TemplateFormModalProps) {
+export default function TemplateFormModal({ isOpen, onClose, onSave, type, template = null }: TemplateFormModalProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [capabilityNames, setCapabilityNames] = useState<string[]>([]);
@@ -97,7 +84,7 @@ export default function TemplateFormModal({
 	}, [template, isRequestTemplate]);
 
 	const handleInputChange = (field: keyof FormData, value: string) => {
-		setFormData(prev => ({ ...prev, [field]: value }));
+		setFormData((prev) => ({ ...prev, [field]: value }));
 		setError(null);
 	};
 
@@ -183,14 +170,7 @@ export default function TemplateFormModal({
 			size="lg"
 		>
 			<Stack gap={5}>
-				{error && (
-					<InlineNotification
-						kind="error"
-						title="Error"
-						subtitle={error}
-						hideCloseButton
-					/>
-				)}
+				{error && <InlineNotification kind="error" title="Error" subtitle={error} hideCloseButton />}
 
 				<TextInput
 					id="template-name"
@@ -253,18 +233,24 @@ export default function TemplateFormModal({
 // Helper functions
 
 function getDefaultRequestTemplateBody(): string {
-	return JSON.stringify({
-		model: 'gpt-4',
-		messages: [
-			{ role: 'user', content: '{{input}}' }
-		]
-	}, null, 2);
+	return JSON.stringify(
+		{
+			model: 'gpt-4',
+			messages: [{ role: 'user', content: '{{input}}' }]
+		},
+		null,
+		2
+	);
 }
 
 function getDefaultResponseMapSpec(): string {
-	return JSON.stringify({
-		output: 'choices.0.message.content'
-	}, null, 2);
+	return JSON.stringify(
+		{
+			output: 'choices.0.message.content'
+		},
+		null,
+		2
+	);
 }
 
 function extractCapabilityName(capability: string | undefined | null): string | null {

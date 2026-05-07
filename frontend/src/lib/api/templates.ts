@@ -27,7 +27,11 @@ export const templatesApi = {
 	async getTemplates(capability?: string): Promise<RequestTemplate[]> {
 		const params = new URLSearchParams();
 		if (capability) params.append('capability', capability);
-		return fetchJson<RequestTemplate[]>(`${API_URL}/api/templates?${params}`, undefined, 'Failed to fetch templates');
+		return fetchJson<RequestTemplate[]>(
+			`${API_URL}/api/templates?${params}`,
+			undefined,
+			'Failed to fetch templates'
+		);
 	},
 
 	async getTemplateById(id: number): Promise<RequestTemplate> {
@@ -46,7 +50,10 @@ export const templatesApi = {
 		);
 	},
 
-	async updateTemplate(id: number, updates: Partial<Omit<RequestTemplate, 'id' | 'created_at'>>): Promise<RequestTemplate> {
+	async updateTemplate(
+		id: number,
+		updates: Partial<Omit<RequestTemplate, 'id' | 'created_at'>>
+	): Promise<RequestTemplate> {
 		return fetchJson<RequestTemplate>(
 			`${API_URL}/api/templates/${id}`,
 			{
@@ -66,7 +73,11 @@ export const templatesApi = {
 	async getResponseMaps(capability?: string): Promise<ResponseMap[]> {
 		const params = new URLSearchParams();
 		if (capability) params.append('capability', capability);
-		return fetchJson<ResponseMap[]>(`${API_URL}/api/response-maps?${params}`, undefined, 'Failed to fetch response maps');
+		return fetchJson<ResponseMap[]>(
+			`${API_URL}/api/response-maps?${params}`,
+			undefined,
+			'Failed to fetch response maps'
+		);
 	},
 
 	async getResponseMapById(id: number): Promise<ResponseMap> {
@@ -85,7 +96,10 @@ export const templatesApi = {
 		);
 	},
 
-	async updateResponseMap(id: number, updates: Partial<Omit<ResponseMap, 'id' | 'created_at'>>): Promise<ResponseMap> {
+	async updateResponseMap(
+		id: number,
+		updates: Partial<Omit<ResponseMap, 'id' | 'created_at'>>
+	): Promise<ResponseMap> {
 		return fetchJson<ResponseMap>(
 			`${API_URL}/api/response-maps/${id}`,
 			{
@@ -98,6 +112,10 @@ export const templatesApi = {
 	},
 
 	async deleteResponseMap(id: number): Promise<void> {
-		await fetchJson<void>(`${API_URL}/api/response-maps/${id}`, { method: 'DELETE' }, 'Failed to delete response map');
+		await fetchJson<void>(
+			`${API_URL}/api/response-maps/${id}`,
+			{ method: 'DELETE' },
+			'Failed to delete response map'
+		);
 	}
 };

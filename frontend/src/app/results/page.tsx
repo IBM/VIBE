@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useResultOperations } from '@/lib/AppDataContext';
 import { TestResult } from '@/lib/api';

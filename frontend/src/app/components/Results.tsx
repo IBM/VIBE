@@ -12,10 +12,7 @@ interface ResultsProps {
 	onAddTestClick: () => void;
 }
 
-export default function Results({
-	onViewResult,
-	onAddTestClick
-}: ResultsProps) {
+export default function Results({ onViewResult, onAddTestClick }: ResultsProps) {
 	const [results, setResults] = useState<TestResult[]>([]);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [pageSize, setPageSize] = useState(50);
@@ -28,7 +25,7 @@ export default function Results({
 	useEffect(() => {
 		fetchAgents();
 		fetchTests();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const fetchResults = async () => {
@@ -47,12 +44,12 @@ export default function Results({
 
 	useEffect(() => {
 		fetchResults();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentPage, pageSize]);
 
 	const resultRows = useMemo(() => {
-		const agentMap = new Map(agents.map(agent => [agent.id, agent]));
-		const testMap = new Map(tests.map(test => [test.id, test]));
+		const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
+		const testMap = new Map(tests.map((test) => [test.id, test]));
 
 		return results.map((result) => {
 			const inputTokens = result.input_tokens || 0;
@@ -105,12 +102,7 @@ export default function Results({
 			</div>
 			{resultRows.length > 0 ? (
 				<>
-					<TableRenderer
-						headers={resultHeaders}
-						rows={resultRows}
-						type="result"
-						onView={onViewResult}
-					/>
+					<TableRenderer headers={resultHeaders} rows={resultRows} type="result" onView={onViewResult} />
 
 					{/* Pagination */}
 					{totalItems > 0 && (

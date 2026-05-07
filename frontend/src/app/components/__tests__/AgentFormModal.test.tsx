@@ -55,9 +55,9 @@ describe('AgentFormModal capability inputs', () => {
 			expect(fetch).toHaveBeenCalledWith(expect.stringContaining('response-maps/capability-names'));
 		});
 
-		const addTemplateButton = screen.getAllByRole('button').find(btn =>
-			btn.textContent?.toLowerCase().includes('add new template')
-		);
+		const addTemplateButton = screen
+			.getAllByRole('button')
+			.find((btn) => btn.textContent?.toLowerCase().includes('add new template'));
 		expect(addTemplateButton).toBeDefined();
 		fireEvent.click(addTemplateButton!);
 
@@ -82,6 +82,3 @@ describe('AgentFormModal capability inputs', () => {
 		expect(await screen.findByText('Invalid JSON in settings field')).toBeInTheDocument();
 	});
 });
-
-
-

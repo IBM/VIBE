@@ -14,19 +14,25 @@ export default function RootLayout({
 }>) {
 	const instanceName = frontendConfig.instanceName;
 	return (
-		<html lang='en'>
+		<html lang="en">
 			<head>
 				<title>IBM VIBE - Validation & Insights for Behavioral Evaluation</title>
-				<meta name="description" content="IBM VIBE (Validation & Insights for Behavioral Evaluation) - A platform for testing and evaluating AI agents' behavior and performance." />
+				<meta
+					name="description"
+					content="IBM VIBE (Validation & Insights for Behavioral Evaluation) - A platform for testing and evaluating AI agents' behavior and performance."
+				/>
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<meta property="og:title" content="IBM VIBE - Validation & Insights for Behavioral Evaluation" />
-				<meta property="og:description" content="A platform for testing and evaluating AI agents' behavior and performance." />
+				<meta
+					property="og:description"
+					content="A platform for testing and evaluating AI agents' behavior and performance."
+				/>
 				<meta property="og:type" content="website" />
 			</head>
 			<body>
-				<Theme theme='g100'>
-					<Header aria-label='IBM VIBE - Validation & Insights for Behavioral Evaluation'>
-						<HeaderName prefix='IBM'>
+				<Theme theme="g100">
+					<Header aria-label="IBM VIBE - Validation & Insights for Behavioral Evaluation">
+						<HeaderName prefix="IBM">
 							VIBE - Validation & Insights for Behavioral Evaluation
 							{instanceName ? (
 								<span style={{ fontWeight: 200, marginLeft: '0.5rem' }}>({instanceName})</span>

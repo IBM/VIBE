@@ -3,7 +3,12 @@ import { API_URL, fetchJson } from './fetchJson';
 
 export const sessionsApi = {
 	// Execution sessions
-	async getExecutionSessions(filters?: { conversation_id?: number; agent_id?: number; limit?: number; offset?: number }): Promise<PaginatedResponse<ExecutionSession>> {
+	async getExecutionSessions(filters?: {
+		conversation_id?: number;
+		agent_id?: number;
+		limit?: number;
+		offset?: number;
+	}): Promise<PaginatedResponse<ExecutionSession>> {
 		const params = new URLSearchParams();
 		if (filters?.conversation_id) {
 			params.append('conversation_id', filters.conversation_id.toString());
@@ -42,7 +47,9 @@ export const sessionsApi = {
 		return data.messages;
 	},
 
-	async getSessionTranscriptWithSession(sessionId: number): Promise<{ session: ExecutionSession; messages: SessionMessage[] }> {
+	async getSessionTranscriptWithSession(
+		sessionId: number
+	): Promise<{ session: ExecutionSession; messages: SessionMessage[] }> {
 		const data = await fetchJson<{ session: ExecutionSession; messages?: SessionMessage[] }>(
 			`${API_URL}/api/sessions/${sessionId}/transcript`,
 			undefined,

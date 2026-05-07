@@ -30,7 +30,15 @@ export const suitesApi = {
 	executeSuite,
 
 	// Suite runs
-	async getSuiteRuns(filters?: { limit?: number; offset?: number; suite_id?: number; agent_id?: number; status?: JobStatus; after?: Date; before?: Date }): Promise<SuiteRun[]> {
+	async getSuiteRuns(filters?: {
+		limit?: number;
+		offset?: number;
+		suite_id?: number;
+		agent_id?: number;
+		status?: JobStatus;
+		after?: Date;
+		before?: Date;
+	}): Promise<SuiteRun[]> {
 		const params = new URLSearchParams();
 		if (filters?.limit !== undefined) {
 			params.append('limit', filters.limit.toString());
@@ -60,7 +68,15 @@ export const suitesApi = {
 		return Array.isArray(result) ? result : result.data;
 	},
 
-	async getSuiteRunsWithCount(filters?: { limit?: number; offset?: number; suite_id?: number; agent_id?: number; status?: JobStatus; after?: Date; before?: Date }): Promise<PaginatedResponse<SuiteRun>> {
+	async getSuiteRunsWithCount(filters?: {
+		limit?: number;
+		offset?: number;
+		suite_id?: number;
+		agent_id?: number;
+		status?: JobStatus;
+		after?: Date;
+		before?: Date;
+	}): Promise<PaginatedResponse<SuiteRun>> {
 		const params = new URLSearchParams();
 		if (filters?.limit !== undefined) {
 			params.append('limit', filters.limit.toString());
@@ -165,7 +181,10 @@ export const suitesApi = {
 		);
 	},
 
-	async addSuiteEntry(suite_id: number, entry: { sequence?: number; test_id?: number; child_suite_id?: number; agent_id_override?: number }): Promise<SuiteEntry> {
+	async addSuiteEntry(
+		suite_id: number,
+		entry: { sequence?: number; test_id?: number; child_suite_id?: number; agent_id_override?: number }
+	): Promise<SuiteEntry> {
 		return fetchJson<SuiteEntry>(
 			`${API_URL}/api/test-suites/${suite_id}/entries`,
 			{
@@ -177,7 +196,11 @@ export const suitesApi = {
 		);
 	},
 
-	async updateSuiteEntry(suite_id: number, entry_id: number, updates: { sequence?: number; agent_id_override?: number | null }): Promise<void> {
+	async updateSuiteEntry(
+		suite_id: number,
+		entry_id: number,
+		updates: { sequence?: number; agent_id_override?: number | null }
+	): Promise<void> {
 		await fetchJson<void>(
 			`${API_URL}/api/test-suites/${suite_id}/entries/${entry_id}`,
 			{
@@ -197,7 +220,10 @@ export const suitesApi = {
 		);
 	},
 
-	async reorderSuiteEntries(suite_id: number, entry_orders: { entry_id: number; sequence: number }[]): Promise<{ success: boolean }> {
+	async reorderSuiteEntries(
+		suite_id: number,
+		entry_orders: { entry_id: number; sequence: number }[]
+	): Promise<{ success: boolean }> {
 		return fetchJson<{ success: boolean }>(
 			`${API_URL}/api/test-suites/${suite_id}/entries/reorder`,
 			{

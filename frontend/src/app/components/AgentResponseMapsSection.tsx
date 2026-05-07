@@ -1,15 +1,5 @@
 import type React from 'react';
-import {
-	AccordionItem,
-	Button,
-	Checkbox,
-	CodeSnippet,
-	ComboBox,
-	Stack,
-	Tag,
-	TextArea,
-	TextInput
-} from '@carbon/react';
+import { AccordionItem, Button, Checkbox, CodeSnippet, ComboBox, Stack, Tag, TextArea, TextInput } from '@carbon/react';
 import { Add, Edit, TrashCan } from '@carbon/icons-react';
 import { extractCapabilityName } from '../../lib/capabilities';
 import styles from './AgentFormModal.module.scss';
@@ -42,106 +32,122 @@ export function AgentResponseMapsSection({
 		<AccordionItem title="Response maps (recommended)" open>
 			<div className={styles.templatesSection}>
 				<p className={styles.sectionDescription}>
-					Response maps define how to extract data from API responses. At least one map is needed to execute conversations.
+					Response maps define how to extract data from API responses. At least one map is needed to execute
+					conversations.
 				</p>
 
-				{responseMaps.filter(m => !m._isDeleted).map((map, idx) => (
-					<div key={map.id || `new-${idx}`} className={styles.mapItem}>
-						<div className={styles.mapHeader}>
-							<div className={styles.mapTitle}>
-								<strong>{map.name}</strong>
-								{map.is_default && <Tag type="green" size="sm">default</Tag>}
+				{responseMaps
+					.filter((m) => !m._isDeleted)
+					.map((map, idx) => (
+						<div key={map.id || `new-${idx}`} className={styles.mapItem}>
+							<div className={styles.mapHeader}>
+								<div className={styles.mapTitle}>
+									<strong>{map.name}</strong>
+									{map.is_default && (
+										<Tag type="green" size="sm">
+											default
+										</Tag>
+									)}
+								</div>
+								<div className={styles.mapActions}>
+									<Button
+										kind="ghost"
+										size="sm"
+										renderIcon={Edit}
+										onClick={() => {
+											setResponseMaps(
+												responseMaps.map((m) =>
+													m.id === map.id ? { ...m, _isEditing: !m._isEditing } : m
+												)
+											);
+										}}
+									>
+										{map._isEditing ? 'Cancel' : 'Edit'}
+									</Button>
+									<Button
+										kind="danger--ghost"
+										size="sm"
+										renderIcon={TrashCan}
+										onClick={() => {
+											setResponseMaps(
+												responseMaps.map((m) =>
+													m.id === map.id ? { ...m, _isDeleted: true } : m
+												)
+											);
+										}}
+									>
+										Delete
+									</Button>
+								</div>
 							</div>
-							<div className={styles.mapActions}>
-								<Button
-									kind="ghost"
-									size="sm"
-									renderIcon={Edit}
-									onClick={() => {
-										setResponseMaps(responseMaps.map(m =>
-											m.id === map.id ? { ...m, _isEditing: !m._isEditing } : m
-										));
-									}}
-								>
-									{map._isEditing ? 'Cancel' : 'Edit'}
-								</Button>
-								<Button
-									kind="danger--ghost"
-									size="sm"
-									renderIcon={TrashCan}
-									onClick={() => {
-										setResponseMaps(responseMaps.map(m =>
-											m.id === map.id ? { ...m, _isDeleted: true } : m
-										));
-									}}
-								>
-									Delete
-								</Button>
-							</div>
+							{map._isEditing ? (
+								<Stack gap={4}>
+									<TextInput
+										id={`map-name-${idx}`}
+										labelText="Name"
+										value={map.name}
+										onChange={(e) => {
+											setResponseMaps(
+												responseMaps.map((m) =>
+													m.id === map.id ? { ...m, name: e.target.value } : m
+												)
+											);
+										}}
+									/>
+									<TextArea
+										id={`map-spec-${idx}`}
+										labelText="Spec (JSON)"
+										value={map.spec}
+										onChange={(e) => {
+											setResponseMaps(
+												responseMaps.map((m) =>
+													m.id === map.id ? { ...m, spec: e.target.value } : m
+												)
+											);
+										}}
+										rows={4}
+									/>
+									<ComboBox
+										id={`map-capabilities-${idx}`}
+										titleText="Capability"
+										placeholder="Select or type a capability name"
+										items={mapCapabilityNames}
+										selectedItem={extractCapabilityName(map.capabilities)}
+										onChange={(e) => {
+											setResponseMaps(
+												responseMaps.map((m) =>
+													m.id === map.id ? { ...m, capabilities: e.selectedItem || '' } : m
+												)
+											);
+										}}
+										allowCustomValue
+										helperText="Tag this response map with a capability name for matching"
+									/>
+									<Checkbox
+										id={`map-default-${idx}`}
+										labelText="Set as default"
+										checked={!!map.is_default}
+										onChange={(_evt, { checked }) => {
+											setResponseMaps(
+												responseMaps.map((m) =>
+													m.id === map.id
+														? { ...m, is_default: checked }
+														: { ...m, is_default: false }
+												)
+											);
+										}}
+									/>
+								</Stack>
+							) : (
+								<CodeSnippet type="multi" feedback="Copied to clipboard">
+									{map.spec}
+								</CodeSnippet>
+							)}
 						</div>
-						{map._isEditing ? (
-							<Stack gap={4}>
-								<TextInput
-									id={`map-name-${idx}`}
-									labelText="Name"
-									value={map.name}
-									onChange={(e) => {
-										setResponseMaps(responseMaps.map(m =>
-											m.id === map.id ? { ...m, name: e.target.value } : m
-										));
-									}}
-								/>
-								<TextArea
-									id={`map-spec-${idx}`}
-									labelText="Spec (JSON)"
-									value={map.spec}
-									onChange={(e) => {
-										setResponseMaps(responseMaps.map(m =>
-											m.id === map.id ? { ...m, spec: e.target.value } : m
-										));
-									}}
-									rows={4}
-								/>
-								<ComboBox
-									id={`map-capabilities-${idx}`}
-									titleText="Capability"
-									placeholder="Select or type a capability name"
-									items={mapCapabilityNames}
-									selectedItem={extractCapabilityName(map.capabilities)}
-									onChange={(e) => {
-										setResponseMaps(responseMaps.map(m =>
-											m.id === map.id ? { ...m, capabilities: e.selectedItem || '' } : m
-										));
-									}}
-									allowCustomValue
-									helperText="Tag this response map with a capability name for matching"
-								/>
-								<Checkbox
-									id={`map-default-${idx}`}
-									labelText="Set as default"
-									checked={!!map.is_default}
-									onChange={(_evt, { checked }) => {
-										setResponseMaps(responseMaps.map(m =>
-											m.id === map.id ? { ...m, is_default: checked } : { ...m, is_default: false }
-										));
-									}}
-								/>
-							</Stack>
-						) : (
-							<CodeSnippet type="multi" feedback="Copied to clipboard">
-								{map.spec}
-							</CodeSnippet>
-						)}
-					</div>
-				))}
+					))}
 
 				{!shouldShowNewMapForm && (
-					<Button
-						kind="tertiary"
-						size="sm"
-						renderIcon={Add}
-						onClick={() => setShouldShowNewMapForm(true)}
-					>
+					<Button kind="tertiary" size="sm" renderIcon={Add} onClick={() => setShouldShowNewMapForm(true)}>
 						Add new response map
 					</Button>
 				)}
@@ -199,7 +205,9 @@ export function AgentResponseMapsSection({
 										try {
 											JSON.parse(newMap.spec || '');
 										} catch (err) {
-											setError(`Invalid JSON in response map spec: ${err instanceof Error ? err.message : 'Unknown error'}`);
+											setError(
+												`Invalid JSON in response map spec: ${err instanceof Error ? err.message : 'Unknown error'}`
+											);
 											return;
 										}
 

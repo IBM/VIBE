@@ -34,14 +34,7 @@ beforeEach(() => {
 describe('TemplateFormModal', () => {
 	it('shows error when name is missing', async () => {
 		const user = userEvent.setup();
-		render(
-			<TemplateFormModal
-				isOpen
-				onClose={jest.fn()}
-				onSave={jest.fn()}
-				type="request"
-			/>
-		);
+		render(<TemplateFormModal isOpen onClose={jest.fn()} onSave={jest.fn()} type="request" />);
 
 		await user.click(screen.getByRole('button', { name: 'Create' }));
 		expect(await screen.findByText('Name is required')).toBeInTheDocument();
@@ -54,14 +47,7 @@ describe('TemplateFormModal', () => {
 
 		mockedApi.createTemplate.mockResolvedValue({ id: 1, name: 'My Template' } as any);
 
-		render(
-			<TemplateFormModal
-				isOpen
-				onClose={onClose}
-				onSave={onSave}
-				type="request"
-			/>
-		);
+		render(<TemplateFormModal isOpen onClose={onClose} onSave={onSave} type="request" />);
 
 		await user.type(screen.getByLabelText('Name'), 'My Template');
 		await user.click(screen.getByRole('button', { name: 'Create' }));
@@ -75,14 +61,7 @@ describe('TemplateFormModal', () => {
 
 	it('validates JSON for response map spec', async () => {
 		const user = userEvent.setup();
-		render(
-			<TemplateFormModal
-				isOpen
-				onClose={jest.fn()}
-				onSave={jest.fn()}
-				type="response"
-			/>
-		);
+		render(<TemplateFormModal isOpen onClose={jest.fn()} onSave={jest.fn()} type="response" />);
 
 		await user.type(screen.getByLabelText('Name'), 'Response Map');
 		const specInput = screen.getByLabelText('Spec (JSON)');

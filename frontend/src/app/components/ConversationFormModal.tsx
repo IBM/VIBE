@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
 	Modal,
 	TextInput,
@@ -61,12 +61,7 @@ interface ConversationFormData {
 	required_response_map_capabilities?: string;
 }
 
-export default function ConversationFormModal({
-	isOpen,
-	conversation,
-	onClose,
-	onSave
-}: ConversationFormModalProps) {
+export default function ConversationFormModal({ isOpen, conversation, onClose, onSave }: ConversationFormModalProps) {
 	const [formData, setFormData] = useState<ConversationFormData>({
 		name: '',
 		description: '',
@@ -94,8 +89,7 @@ export default function ConversationFormModal({
 		}
 	}, [isOpen]);
 
-
-/**
+	/**
 	 * Normalizes capability requirement to JSON format for storage.
 	 * Input can be a capability name or JSON.
 	 */
@@ -112,7 +106,9 @@ export default function ConversationFormModal({
 				description: conversation.description || '',
 				tags: conversation.tags ? JSON.parse(conversation.tags) : [],
 				variables: conversation.variables || '',
-				stop_on_failure: Boolean((conversation as Conversation & { stop_on_failure?: boolean }).stop_on_failure),
+				stop_on_failure: Boolean(
+					(conversation as Conversation & { stop_on_failure?: boolean }).stop_on_failure
+				),
 				required_request_template_capabilities: conversation.required_request_template_capabilities || '',
 				required_response_map_capabilities: conversation.required_response_map_capabilities || ''
 			});
@@ -121,9 +117,9 @@ export default function ConversationFormModal({
 			// Load turn targets
 			if (conversation.id) {
 				api.getConversationTurnTargets(conversation.id)
-					.then(targets => {
+					.then((targets) => {
 						const targetMap: TurnTargetMap = {};
-						targets.forEach(t => {
+						targets.forEach((t) => {
 							targetMap[t.user_sequence] = {
 								target_reply: t.target_reply,
 								threshold: t.threshold,
@@ -166,8 +162,12 @@ export default function ConversationFormModal({
 			setLoading(true);
 
 			// Convert capability names to JSON format for storage
-			const normalizedTemplateRequirement = normalizeRequirementField(formData.required_request_template_capabilities);
-			const normalizedResponseRequirement = normalizeRequirementField(formData.required_response_map_capabilities);
+			const normalizedTemplateRequirement = normalizeRequirementField(
+				formData.required_request_template_capabilities
+			);
+			const normalizedResponseRequirement = normalizeRequirementField(
+				formData.required_response_map_capabilities
+			);
 
 			const conversationData = {
 				name: formData.name,
@@ -194,7 +194,7 @@ export default function ConversationFormModal({
 			if (savedConversation.id) {
 				const userMessages = messages
 					.map((msg, index) => ({ ...msg, sequence: index + 1 }))
-					.filter(msg => msg.role === 'user');
+					.filter((msg) => msg.role === 'user');
 
 				for (const userMsg of userMessages) {
 					const target = turnTargets[userMsg.sequence];
@@ -221,7 +221,7 @@ export default function ConversationFormModal({
 
 	const addTag = () => {
 		if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-			setFormData(prev => ({
+			setFormData((prev) => ({
 				...prev,
 				tags: [...prev.tags, newTag.trim()]
 			}));
@@ -230,9 +230,9 @@ export default function ConversationFormModal({
 	};
 
 	const removeTag = (tagToRemove: string) => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
-			tags: prev.tags.filter(tag => tag !== tagToRemove)
+			tags: prev.tags.filter((tag) => tag !== tagToRemove)
 		}));
 	};
 
@@ -246,9 +246,7 @@ export default function ConversationFormModal({
 	};
 
 	const updateMessage = (index: number, updates: Partial<ExtendedConversationMessage>) => {
-		const updatedMessages = messages.map((msg, i) =>
-			i === index ? { ...msg, ...updates } : msg,
-		);
+		const updatedMessages = messages.map((msg, i) => (i === index ? { ...msg, ...updates } : msg));
 		setMessages(updatedMessages);
 	};
 
@@ -258,10 +256,7 @@ export default function ConversationFormModal({
 	};
 
 	const moveMessage = (index: number, direction: 'up' | 'down') => {
-		if (
-			(direction === 'up' && index === 0) ||
-            (direction === 'down' && index === messages.length - 1)
-		) {
+		if ((direction === 'up' && index === 0) || (direction === 'down' && index === messages.length - 1)) {
 			return;
 		}
 
@@ -313,7 +308,7 @@ export default function ConversationFormModal({
 								selectedItem={extractCapabilityName(formData.required_request_template_capabilities)}
 								onChange={(e) => {
 									const capName = e.selectedItem || '';
-									setFormData(prev => ({
+									setFormData((prev) => ({
 										...prev,
 										required_request_template_capabilities: capName
 									}));
@@ -326,7 +321,10 @@ export default function ConversationFormModal({
 								<div style={{ marginTop: '1rem' }}>
 									<TemplatePreviewSelector
 										type="request"
-										capability={extractCapabilityName(formData.required_request_template_capabilities) || undefined}
+										capability={
+											extractCapabilityName(formData.required_request_template_capabilities) ||
+											undefined
+										}
 										label="Matching templates"
 										helperText="Templates that match the required capability"
 									/>
@@ -344,7 +342,7 @@ export default function ConversationFormModal({
 								selectedItem={extractCapabilityName(formData.required_response_map_capabilities)}
 								onChange={(e) => {
 									const capName = e.selectedItem || '';
-									setFormData(prev => ({
+									setFormData((prev) => ({
 										...prev,
 										required_response_map_capabilities: capName
 									}));
@@ -357,7 +355,10 @@ export default function ConversationFormModal({
 								<div style={{ marginTop: '1rem' }}>
 									<TemplatePreviewSelector
 										type="response"
-										capability={extractCapabilityName(formData.required_response_map_capabilities) || undefined}
+										capability={
+											extractCapabilityName(formData.required_response_map_capabilities) ||
+											undefined
+										}
 										label="Matching response maps"
 										helperText="Response maps that match the required capability"
 									/>
@@ -378,7 +379,7 @@ export default function ConversationFormModal({
 							id="name"
 							labelText="Name"
 							value={formData.name}
-							onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+							onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
 							placeholder="Enter conversation name"
 							required
 						/>
@@ -388,7 +389,7 @@ export default function ConversationFormModal({
 							id="description"
 							labelText="Description"
 							value={formData.description}
-							onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+							onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
 							placeholder="Describe what this conversation tests"
 							rows={3}
 						/>
@@ -410,16 +411,13 @@ export default function ConversationFormModal({
 										}
 									}}
 								/>
-								<Button size="sm" onClick={addTag}>Add</Button>
+								<Button size="sm" onClick={addTag}>
+									Add
+								</Button>
 							</div>
 							<div className={styles.tagsContainer}>
-								{formData.tags.map(tag => (
-									<Tag
-										key={tag}
-										type="blue"
-										size="sm"
-										onClose={() => removeTag(tag)}
-									>
+								{formData.tags.map((tag) => (
+									<Tag key={tag} type="blue" size="sm" onClose={() => removeTag(tag)}>
 										{tag}
 									</Tag>
 								))}
@@ -440,13 +438,8 @@ export default function ConversationFormModal({
 				<div className={styles.messagesSection}>
 					<div className={styles.messagesHeader}>
 						<h4>Conversation script</h4>
-						<Button
-							kind="tertiary"
-							size="sm"
-							renderIcon={Add}
-							onClick={addMessage}
-						>
-                            Add message
+						<Button kind="tertiary" size="sm" renderIcon={Add} onClick={addMessage}>
+							Add message
 						</Button>
 					</div>
 
@@ -468,7 +461,9 @@ export default function ConversationFormModal({
 										id={`role-${index}`}
 										labelText="Role"
 										value={message.role}
-										onChange={(e) => updateMessage(index, { role: e.target.value as 'user' | 'system' })}
+										onChange={(e) =>
+											updateMessage(index, { role: e.target.value as 'user' | 'system' })
+										}
 									>
 										<SelectItem value="user" text="User" />
 										<SelectItem value="system" text="System" />
@@ -488,10 +483,7 @@ export default function ConversationFormModal({
 										>
 											<ArrowDown />
 										</IconButton>
-										<IconButton
-											label="Delete message"
-											onClick={() => removeMessage(index)}
-										>
+										<IconButton label="Delete message" onClick={() => removeMessage(index)}>
 											<TrashCan />
 										</IconButton>
 									</div>
@@ -511,13 +503,15 @@ export default function ConversationFormModal({
 											id={`target-${index}`}
 											labelText=""
 											value={turnTarget?.target_reply || ''}
-											onChange={(e) => setTurnTargets(prev => ({
-												...prev,
-												[messageSequence]: {
-													...prev[messageSequence],
-													target_reply: e.target.value
-												}
-											}))}
+											onChange={(e) =>
+												setTurnTargets((prev) => ({
+													...prev,
+													[messageSequence]: {
+														...prev[messageSequence],
+														target_reply: e.target.value
+													}
+												}))
+											}
 											placeholder="Enter the expected assistant response for similarity scoring"
 											rows={2}
 										/>
@@ -538,13 +532,15 @@ export default function ConversationFormModal({
 												min={0}
 												max={100}
 												value={turnTarget?.threshold?.toString() || ''}
-												onChange={(e) => setTurnTargets(prev => ({
-													...prev,
-													[messageSequence]: {
-														...prev[messageSequence],
-														threshold: e.target.value ? Number(e.target.value) : null
-													}
-												}))}
+												onChange={(e) =>
+													setTurnTargets((prev) => ({
+														...prev,
+														[messageSequence]: {
+															...prev[messageSequence],
+															threshold: e.target.value ? Number(e.target.value) : null
+														}
+													}))
+												}
 												placeholder="70"
 											/>
 											<TextInput
@@ -554,13 +550,15 @@ export default function ConversationFormModal({
 												min={0}
 												step={0.1}
 												value={turnTarget?.weight?.toString() || ''}
-												onChange={(e) => setTurnTargets(prev => ({
-													...prev,
-													[messageSequence]: {
-														...prev[messageSequence],
-														weight: e.target.value ? Number(e.target.value) : null
-													}
-												}))}
+												onChange={(e) =>
+													setTurnTargets((prev) => ({
+														...prev,
+														[messageSequence]: {
+															...prev[messageSequence],
+															weight: e.target.value ? Number(e.target.value) : null
+														}
+													}))
+												}
 												placeholder="1.0"
 											/>
 										</div>
@@ -578,7 +576,7 @@ export default function ConversationFormModal({
 							placeholder='{"sessionId":"abc-123", "tenantId":"org_456"}'
 							rows={3}
 							value={formData.variables}
-							onChange={(e) => setFormData(prev => ({ ...prev, variables: e.target.value }))}
+							onChange={(e) => setFormData((prev) => ({ ...prev, variables: e.target.value }))}
 							helperText="Optional: Seed variables available from turn 1. Variables extracted from response mappings (via response_mapping.variables) are automatically available in subsequent turns."
 						/>
 					</Column>
@@ -589,7 +587,7 @@ export default function ConversationFormModal({
 								labelText="Stop conversation on response failure"
 								checked={formData.stop_on_failure}
 								onChange={(_evt, data: { checked: boolean }) => {
-									setFormData(prev => ({ ...prev, stop_on_failure: data.checked }));
+									setFormData((prev) => ({ ...prev, stop_on_failure: data.checked }));
 								}}
 							/>
 						</div>

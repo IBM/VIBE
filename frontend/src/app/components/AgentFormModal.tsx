@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-	Modal,
-	TextArea,
-	Form,
-	Stack,
-	InlineNotification
-} from '@carbon/react';
+import { Modal, TextArea, Form, Stack, InlineNotification } from '@carbon/react';
 import { api } from '@/lib/api';
 import { capabilityNameToJson } from '../../lib/capabilities';
 import { AgentCoreFields } from './AgentCoreFields';
@@ -13,11 +7,7 @@ import { AgentCrewAIFields } from './AgentCrewAIFields';
 import { AgentExternalApiFields } from './AgentExternalApiFields';
 import { AgentFormHelpPanel } from './AgentFormHelpPanel';
 import { TestConnectionButton } from './TestConnectionButton';
-import type {
-	RequestTemplate,
-	ResponseMap,
-	TestConnectionStatus
-} from './AgentFormModal.types';
+import type { RequestTemplate, ResponseMap, TestConnectionStatus } from './AgentFormModal.types';
 import styles from './AgentFormModal.module.scss';
 
 interface AgentFormModalProps {
@@ -41,10 +31,20 @@ export default function AgentFormModal({
 	const [error, setError] = useState<string | null>(null);
 
 	// State for templates and maps
-const [requestTemplates, setRequestTemplates] = useState<RequestTemplate[]>([]);
-const [responseMaps, setResponseMaps] = useState<ResponseMap[]>([]);
-const [newTemplate, setNewTemplate] = useState<Partial<RequestTemplate>>({ name: '', body: '', capabilities: '', is_default: false });
-const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ name: '', spec: '', capabilities: '', is_default: false });
+	const [requestTemplates, setRequestTemplates] = useState<RequestTemplate[]>([]);
+	const [responseMaps, setResponseMaps] = useState<ResponseMap[]>([]);
+	const [newTemplate, setNewTemplate] = useState<Partial<RequestTemplate>>({
+		name: '',
+		body: '',
+		capabilities: '',
+		is_default: false
+	});
+	const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({
+		name: '',
+		spec: '',
+		capabilities: '',
+		is_default: false
+	});
 	const [shouldShowNewTemplateForm, setShouldShowNewTemplateForm] = useState(false);
 	const [shouldShowNewMapForm, setShouldShowNewMapForm] = useState(false);
 
@@ -76,24 +76,30 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 						api.getAgentResponseMaps(editingId)
 					]);
 					// Convert is_default from number (0/1) to boolean
-					setRequestTemplates((templates || []).map(t => ({
-						...t,
-						is_default: Number(t.is_default) === 1,
-						capabilities: typeof t.capabilities === 'string'
-							? t.capabilities
-							: t.capabilities
-								? JSON.stringify(t.capabilities)
-								: ''
-					})));
-					setResponseMaps((maps || []).map(m => ({
-						...m,
-						is_default: Number(m.is_default) === 1,
-						capabilities: typeof m.capabilities === 'string'
-							? m.capabilities
-							: m.capabilities
-								? JSON.stringify(m.capabilities)
-								: ''
-					})));
+					setRequestTemplates(
+						(templates || []).map((t) => ({
+							...t,
+							is_default: Number(t.is_default) === 1,
+							capabilities:
+								typeof t.capabilities === 'string'
+									? t.capabilities
+									: t.capabilities
+										? JSON.stringify(t.capabilities)
+										: ''
+						}))
+					);
+					setResponseMaps(
+						(maps || []).map((m) => ({
+							...m,
+							is_default: Number(m.is_default) === 1,
+							capabilities:
+								typeof m.capabilities === 'string'
+									? m.capabilities
+									: m.capabilities
+										? JSON.stringify(m.capabilities)
+										: ''
+						}))
+					);
 				} catch {
 					// Best-effort: templates/maps are optional for editing UI
 					setRequestTemplates([]);
@@ -328,8 +334,8 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 			// For external API agents, save templates and maps
 			if (settings.type === 'external_api') {
 				// Warn if no templates/maps but allow saving
-				const activeTemplates = requestTemplates.filter(t => !t._isDeleted);
-				const activeMaps = responseMaps.filter(m => !m._isDeleted);
+				const activeTemplates = requestTemplates.filter((t) => !t._isDeleted);
+				const activeMaps = responseMaps.filter((m) => !m._isDeleted);
 
 				if (activeTemplates.length === 0 || activeMaps.length === 0) {
 					// Best-effort: allow saving, but execution will require templates/maps
@@ -353,7 +359,9 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 								is_default: template.is_default
 							});
 						} catch (err) {
-							setError(`Invalid JSON in template "${template.name}": ${err instanceof Error ? err.message : 'Unknown error'}`);
+							setError(
+								`Invalid JSON in template "${template.name}": ${err instanceof Error ? err.message : 'Unknown error'}`
+							);
 							setIsSaving(false);
 							return;
 						}
@@ -371,7 +379,9 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 								is_default: template.is_default
 							});
 						} catch (err) {
-							setError(`Invalid JSON in template "${template.name}": ${err instanceof Error ? err.message : 'Unknown error'}`);
+							setError(
+								`Invalid JSON in template "${template.name}": ${err instanceof Error ? err.message : 'Unknown error'}`
+							);
 							setIsSaving(false);
 							return;
 						}
@@ -396,7 +406,9 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 								is_default: map.is_default
 							});
 						} catch (err) {
-							setError(`Invalid JSON in response map "${map.name}": ${err instanceof Error ? err.message : 'Unknown error'}`);
+							setError(
+								`Invalid JSON in response map "${map.name}": ${err instanceof Error ? err.message : 'Unknown error'}`
+							);
 							setIsSaving(false);
 							return;
 						}
@@ -414,7 +426,9 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 								is_default: map.is_default
 							});
 						} catch (err) {
-							setError(`Invalid JSON in response map "${map.name}": ${err instanceof Error ? err.message : 'Unknown error'}`);
+							setError(
+								`Invalid JSON in response map "${map.name}": ${err instanceof Error ? err.message : 'Unknown error'}`
+							);
 							setIsSaving(false);
 							return;
 						}
@@ -539,16 +553,10 @@ const [newResponseMap, setNewResponseMap] = useState<Partial<ResponseMap>>({ nam
 			)}
 			<Form>
 				<Stack gap={7}>
-					<AgentCoreFields
-						formData={formData}
-						onInputChange={handleInputChange}
-					/>
+					<AgentCoreFields formData={formData} onInputChange={handleInputChange} />
 
-					{(formData['agent-type'] !== 'external_api') ? (
-						<AgentCrewAIFields
-							formData={formData}
-							onInputChange={handleInputChange}
-						/>
+					{formData['agent-type'] !== 'external_api' ? (
+						<AgentCrewAIFields formData={formData} onInputChange={handleInputChange} />
 					) : (
 						<AgentExternalApiFields
 							formData={formData}

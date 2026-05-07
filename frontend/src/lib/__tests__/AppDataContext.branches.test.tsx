@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppDataProvider, useAppData } from '../AppDataContext';
@@ -80,28 +80,84 @@ function FullContextHarness() {
 			<div data-testid="llm-by-id">{getLLMConfigById(1)?.name || ''}</div>
 			<div data-testid="result-by-id">{getResultById(1)?.id || ''}</div>
 
-			<button type="button" onClick={() => fetchAgents()}>Fetch agents</button>
-			<button type="button" onClick={() => fetchTests()}>Fetch tests</button>
-			<button type="button" onClick={() => fetchLLMConfigs()}>Fetch llm</button>
-			<button type="button" onClick={() => fetchResults()}>Fetch results</button>
-			<button type="button" onClick={() => fetchAllData()}>Fetch all</button>
-			<button type="button" onClick={() => createAgent({ name: 'New', version: '1', prompt: 'p', settings: '{}' } as any)}>Create agent</button>
-			<button type="button" onClick={() => updateAgent(1, { name: 'Updated' } as any)}>Update agent</button>
-			<button type="button" onClick={() => deleteAgent(1)}>Delete agent</button>
-			<button type="button" onClick={() => createTest({ name: 'New', description: '', input: 'i', expected_output: 'o' } as any)}>Create test</button>
-			<button type="button" onClick={() => updateTest(1, { name: 'Updated' } as any)}>Update test</button>
-			<button type="button" onClick={() => deleteTest(1)}>Delete test</button>
-			<button type="button" onClick={() => createLLMConfig({ name: 'New', provider: 'x', config: '{}', priority: 1 } as any)}>Create llm</button>
-			<button type="button" onClick={() => updateLLMConfig(1, { name: 'Updated' } as any)}>Update llm</button>
-			<button type="button" onClick={() => deleteLLMConfig(1)}>Delete llm</button>
-			<button type="button" onClick={() => callLLM(1, { prompt: 'test' } as LLMRequestOptions)}>Call llm</button>
-			<button type="button" onClick={() => callLLMWithFallback({ prompt: 'test' } as LLMRequestOptions)}>Call llm fallback</button>
+			<button type="button" onClick={() => fetchAgents()}>
+				Fetch agents
+			</button>
+			<button type="button" onClick={() => fetchTests()}>
+				Fetch tests
+			</button>
+			<button type="button" onClick={() => fetchLLMConfigs()}>
+				Fetch llm
+			</button>
+			<button type="button" onClick={() => fetchResults()}>
+				Fetch results
+			</button>
+			<button type="button" onClick={() => fetchAllData()}>
+				Fetch all
+			</button>
+			<button
+				type="button"
+				onClick={() => createAgent({ name: 'New', version: '1', prompt: 'p', settings: '{}' } as any)}
+			>
+				Create agent
+			</button>
+			<button type="button" onClick={() => updateAgent(1, { name: 'Updated' } as any)}>
+				Update agent
+			</button>
+			<button type="button" onClick={() => deleteAgent(1)}>
+				Delete agent
+			</button>
+			<button
+				type="button"
+				onClick={() => createTest({ name: 'New', description: '', input: 'i', expected_output: 'o' } as any)}
+			>
+				Create test
+			</button>
+			<button type="button" onClick={() => updateTest(1, { name: 'Updated' } as any)}>
+				Update test
+			</button>
+			<button type="button" onClick={() => deleteTest(1)}>
+				Delete test
+			</button>
+			<button
+				type="button"
+				onClick={() => createLLMConfig({ name: 'New', provider: 'x', config: '{}', priority: 1 } as any)}
+			>
+				Create llm
+			</button>
+			<button type="button" onClick={() => updateLLMConfig(1, { name: 'Updated' } as any)}>
+				Update llm
+			</button>
+			<button type="button" onClick={() => deleteLLMConfig(1)}>
+				Delete llm
+			</button>
+			<button type="button" onClick={() => callLLM(1, { prompt: 'test' } as LLMRequestOptions)}>
+				Call llm
+			</button>
+			<button type="button" onClick={() => callLLMWithFallback({ prompt: 'test' } as LLMRequestOptions)}>
+				Call llm fallback
+			</button>
 		</div>
 	);
 }
 
 function ErrorHarness() {
-	const { errors, fetchAgents, fetchTests, fetchLLMConfigs, fetchResults, createAgent, updateAgent, deleteAgent, createTest, updateTest, deleteTest, createLLMConfig, updateLLMConfig, deleteLLMConfig } = useAppData();
+	const {
+		errors,
+		fetchAgents,
+		fetchTests,
+		fetchLLMConfigs,
+		fetchResults,
+		createAgent,
+		updateAgent,
+		deleteAgent,
+		createTest,
+		updateTest,
+		deleteTest,
+		createLLMConfig,
+		updateLLMConfig,
+		deleteLLMConfig
+	} = useAppData();
 	const [caught, setCaught] = useState<string>('');
 
 	const handleError = async (fn: () => Promise<any>) => {
@@ -119,25 +175,83 @@ function ErrorHarness() {
 			<div data-testid="llm-error-state">{errors.llmConfigs || ''}</div>
 			<div data-testid="results-error-state">{errors.results || ''}</div>
 			<div data-testid="caught-error">{caught}</div>
-			<button type="button" onClick={() => fetchAgents()}>Fetch agents error</button>
-			<button type="button" onClick={() => fetchTests()}>Fetch tests error</button>
-			<button type="button" onClick={() => fetchLLMConfigs()}>Fetch llm error</button>
-			<button type="button" onClick={() => fetchResults()}>Fetch results error</button>
-			<button type="button" onClick={() => handleError(() => createAgent({ name: 'New', version: '1', prompt: 'p', settings: '{}' } as any))}>Create agent error</button>
-			<button type="button" onClick={() => handleError(() => updateAgent(1, { name: 'Updated' } as any))}>Update agent error</button>
-			<button type="button" onClick={() => handleError(() => deleteAgent(1))}>Delete agent error</button>
-			<button type="button" onClick={() => handleError(() => createTest({ name: 'New', description: '', input: 'i', expected_output: 'o' } as any))}>Create test error</button>
-			<button type="button" onClick={() => handleError(() => updateTest(1, { name: 'Updated' } as any))}>Update test error</button>
-			<button type="button" onClick={() => handleError(() => deleteTest(1))}>Delete test error</button>
-			<button type="button" onClick={() => handleError(() => createLLMConfig({ name: 'New', provider: 'x', config: '{}', priority: 1 } as any))}>Create llm error</button>
-			<button type="button" onClick={() => handleError(() => updateLLMConfig(1, { name: 'Updated' } as any))}>Update llm error</button>
-			<button type="button" onClick={() => handleError(() => deleteLLMConfig(1))}>Delete llm error</button>
+			<button type="button" onClick={() => fetchAgents()}>
+				Fetch agents error
+			</button>
+			<button type="button" onClick={() => fetchTests()}>
+				Fetch tests error
+			</button>
+			<button type="button" onClick={() => fetchLLMConfigs()}>
+				Fetch llm error
+			</button>
+			<button type="button" onClick={() => fetchResults()}>
+				Fetch results error
+			</button>
+			<button
+				type="button"
+				onClick={() =>
+					handleError(() => createAgent({ name: 'New', version: '1', prompt: 'p', settings: '{}' } as any))
+				}
+			>
+				Create agent error
+			</button>
+			<button type="button" onClick={() => handleError(() => updateAgent(1, { name: 'Updated' } as any))}>
+				Update agent error
+			</button>
+			<button type="button" onClick={() => handleError(() => deleteAgent(1))}>
+				Delete agent error
+			</button>
+			<button
+				type="button"
+				onClick={() =>
+					handleError(() =>
+						createTest({ name: 'New', description: '', input: 'i', expected_output: 'o' } as any)
+					)
+				}
+			>
+				Create test error
+			</button>
+			<button type="button" onClick={() => handleError(() => updateTest(1, { name: 'Updated' } as any))}>
+				Update test error
+			</button>
+			<button type="button" onClick={() => handleError(() => deleteTest(1))}>
+				Delete test error
+			</button>
+			<button
+				type="button"
+				onClick={() =>
+					handleError(() => createLLMConfig({ name: 'New', provider: 'x', config: '{}', priority: 1 } as any))
+				}
+			>
+				Create llm error
+			</button>
+			<button type="button" onClick={() => handleError(() => updateLLMConfig(1, { name: 'Updated' } as any))}>
+				Update llm error
+			</button>
+			<button type="button" onClick={() => handleError(() => deleteLLMConfig(1))}>
+				Delete llm error
+			</button>
 		</div>
 	);
 }
 
 function NonErrorHarness() {
-	const { errors, fetchAgents, fetchTests, fetchLLMConfigs, fetchResults, createAgent, updateAgent, deleteAgent, createTest, updateTest, deleteTest, createLLMConfig, updateLLMConfig, deleteLLMConfig } = useAppData();
+	const {
+		errors,
+		fetchAgents,
+		fetchTests,
+		fetchLLMConfigs,
+		fetchResults,
+		createAgent,
+		updateAgent,
+		deleteAgent,
+		createTest,
+		updateTest,
+		deleteTest,
+		createLLMConfig,
+		updateLLMConfig,
+		deleteLLMConfig
+	} = useAppData();
 	const [caught, setCaught] = useState<string>('');
 
 	const handleError = async (fn: () => Promise<any>) => {
@@ -155,25 +269,69 @@ function NonErrorHarness() {
 			<div data-testid="llm-error-state">{errors.llmConfigs || ''}</div>
 			<div data-testid="results-error-state">{errors.results || ''}</div>
 			<div data-testid="caught-error">{caught}</div>
-			<button type="button" onClick={() => fetchAgents()}>Fetch agents non-error</button>
-			<button type="button" onClick={() => fetchTests()}>Fetch tests non-error</button>
-			<button type="button" onClick={() => fetchLLMConfigs()}>Fetch llm non-error</button>
-			<button type="button" onClick={() => fetchResults()}>Fetch results non-error</button>
-			<button type="button" onClick={() => handleError(() => createAgent({ name: 'New', version: '1', prompt: 'p', settings: '{}' } as any))}>Create agent non-error</button>
-			<button type="button" onClick={() => handleError(() => updateAgent(1, { name: 'Updated' } as any))}>Update agent non-error</button>
-			<button type="button" onClick={() => handleError(() => deleteAgent(1))}>Delete agent non-error</button>
-			<button type="button" onClick={() => handleError(() => createTest({ name: 'New', description: '', input: 'i', expected_output: 'o' } as any))}>Create test non-error</button>
-			<button type="button" onClick={() => handleError(() => updateTest(1, { name: 'Updated' } as any))}>Update test non-error</button>
-			<button type="button" onClick={() => handleError(() => deleteTest(1))}>Delete test non-error</button>
-			<button type="button" onClick={() => handleError(() => createLLMConfig({ name: 'New', provider: 'x', config: '{}', priority: 1 } as any))}>Create llm non-error</button>
-			<button type="button" onClick={() => handleError(() => updateLLMConfig(1, { name: 'Updated' } as any))}>Update llm non-error</button>
-			<button type="button" onClick={() => handleError(() => deleteLLMConfig(1))}>Delete llm non-error</button>
+			<button type="button" onClick={() => fetchAgents()}>
+				Fetch agents non-error
+			</button>
+			<button type="button" onClick={() => fetchTests()}>
+				Fetch tests non-error
+			</button>
+			<button type="button" onClick={() => fetchLLMConfigs()}>
+				Fetch llm non-error
+			</button>
+			<button type="button" onClick={() => fetchResults()}>
+				Fetch results non-error
+			</button>
+			<button
+				type="button"
+				onClick={() =>
+					handleError(() => createAgent({ name: 'New', version: '1', prompt: 'p', settings: '{}' } as any))
+				}
+			>
+				Create agent non-error
+			</button>
+			<button type="button" onClick={() => handleError(() => updateAgent(1, { name: 'Updated' } as any))}>
+				Update agent non-error
+			</button>
+			<button type="button" onClick={() => handleError(() => deleteAgent(1))}>
+				Delete agent non-error
+			</button>
+			<button
+				type="button"
+				onClick={() =>
+					handleError(() =>
+						createTest({ name: 'New', description: '', input: 'i', expected_output: 'o' } as any)
+					)
+				}
+			>
+				Create test non-error
+			</button>
+			<button type="button" onClick={() => handleError(() => updateTest(1, { name: 'Updated' } as any))}>
+				Update test non-error
+			</button>
+			<button type="button" onClick={() => handleError(() => deleteTest(1))}>
+				Delete test non-error
+			</button>
+			<button
+				type="button"
+				onClick={() =>
+					handleError(() => createLLMConfig({ name: 'New', provider: 'x', config: '{}', priority: 1 } as any))
+				}
+			>
+				Create llm non-error
+			</button>
+			<button type="button" onClick={() => handleError(() => updateLLMConfig(1, { name: 'Updated' } as any))}>
+				Update llm non-error
+			</button>
+			<button type="button" onClick={() => handleError(() => deleteLLMConfig(1))}>
+				Delete llm non-error
+			</button>
 		</div>
 	);
 }
 
 function EmptyDataHarness() {
-	const { agents, tests, llmConfigs, results, getAgentById, getTestById, getLLMConfigById, getResultById } = useAppData();
+	const { agents, tests, llmConfigs, results, getAgentById, getTestById, getLLMConfigById, getResultById } =
+		useAppData();
 
 	return (
 		<div>
@@ -250,7 +408,9 @@ describe('AppDataContext branch coverage', () => {
 			const user = userEvent.setup();
 			mockedApi.getAgents.mockResolvedValue([{ id: 1, name: 'Agent' }] as any);
 			mockedApi.getTests.mockResolvedValue([{ id: 1, name: 'Test' }] as any);
-			mockedApi.getLLMConfigs.mockResolvedValue([{ id: 1, name: 'LLM', provider: 'x', config: '{}', priority: 1 }] as any);
+			mockedApi.getLLMConfigs.mockResolvedValue([
+				{ id: 1, name: 'LLM', provider: 'x', config: '{}', priority: 1 }
+			] as any);
 			mockedApi.getResults.mockResolvedValue([{ id: 1 }] as any);
 
 			render(
@@ -704,7 +864,13 @@ describe('AppDataContext branch coverage', () => {
 	describe('CRUD operations with empty initial state', () => {
 		it('creates agent when list is empty', async () => {
 			const user = userEvent.setup();
-			mockedApi.createAgent.mockResolvedValue({ id: 1, name: 'First Agent', version: '1', prompt: 'p', settings: '{}' } as any);
+			mockedApi.createAgent.mockResolvedValue({
+				id: 1,
+				name: 'First Agent',
+				version: '1',
+				prompt: 'p',
+				settings: '{}'
+			} as any);
 
 			render(
 				<AppDataProvider>
@@ -721,8 +887,16 @@ describe('AppDataContext branch coverage', () => {
 
 		it('updates agent when list has items', async () => {
 			const user = userEvent.setup();
-			mockedApi.getAgents.mockResolvedValue([{ id: 1, name: 'Original', version: '1', prompt: 'p', settings: '{}' }] as any);
-			mockedApi.updateAgent.mockResolvedValue({ id: 1, name: 'Updated', version: '1', prompt: 'p', settings: '{}' } as any);
+			mockedApi.getAgents.mockResolvedValue([
+				{ id: 1, name: 'Original', version: '1', prompt: 'p', settings: '{}' }
+			] as any);
+			mockedApi.updateAgent.mockResolvedValue({
+				id: 1,
+				name: 'Updated',
+				version: '1',
+				prompt: 'p',
+				settings: '{}'
+			} as any);
 
 			render(
 				<AppDataProvider>
@@ -760,7 +934,13 @@ describe('AppDataContext branch coverage', () => {
 
 		it('creates test when list is empty', async () => {
 			const user = userEvent.setup();
-			mockedApi.createTest.mockResolvedValue({ id: 1, name: 'First Test', description: '', input: 'i', expected_output: 'o' } as any);
+			mockedApi.createTest.mockResolvedValue({
+				id: 1,
+				name: 'First Test',
+				description: '',
+				input: 'i',
+				expected_output: 'o'
+			} as any);
 
 			render(
 				<AppDataProvider>
@@ -816,7 +996,13 @@ describe('AppDataContext branch coverage', () => {
 
 		it('creates LLM config when list is empty', async () => {
 			const user = userEvent.setup();
-			mockedApi.createLLMConfig.mockResolvedValue({ id: 1, name: 'First LLM', provider: 'x', config: '{}', priority: 1 } as any);
+			mockedApi.createLLMConfig.mockResolvedValue({
+				id: 1,
+				name: 'First LLM',
+				provider: 'x',
+				config: '{}',
+				priority: 1
+			} as any);
 
 			render(
 				<AppDataProvider>
@@ -833,8 +1019,16 @@ describe('AppDataContext branch coverage', () => {
 
 		it('updates LLM config when list has items', async () => {
 			const user = userEvent.setup();
-			mockedApi.getLLMConfigs.mockResolvedValue([{ id: 1, name: 'Original', provider: 'x', config: '{}', priority: 1 }] as any);
-			mockedApi.updateLLMConfig.mockResolvedValue({ id: 1, name: 'Updated', provider: 'x', config: '{}', priority: 1 } as any);
+			mockedApi.getLLMConfigs.mockResolvedValue([
+				{ id: 1, name: 'Original', provider: 'x', config: '{}', priority: 1 }
+			] as any);
+			mockedApi.updateLLMConfig.mockResolvedValue({
+				id: 1,
+				name: 'Updated',
+				provider: 'x',
+				config: '{}',
+				priority: 1
+			} as any);
 
 			render(
 				<AppDataProvider>

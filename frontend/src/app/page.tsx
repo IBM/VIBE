@@ -68,7 +68,7 @@ export default function Home() {
 	// Calculate agent performance metrics whenever results or agents change
 	useEffect(() => {
 		calculateAgentMetrics();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [results, agents]);
 
 	const calculateAgentMetrics = () => {
@@ -92,21 +92,22 @@ export default function Home() {
 		const metrics: AgentPerformanceMetrics[] = [];
 
 		agentResultMap.forEach((agentResults, agentId) => {
-			const agent = agents.find(a => a.id === agentId);
+			const agent = agents.find((a) => a.id === agentId);
 			if (!agent) return;
 
 			const totalTests = agentResults.length;
-			const successfulTests = agentResults.filter(r => r.success).length;
+			const successfulTests = agentResults.filter((r) => r.success).length;
 			const successRate = totalTests > 0 ? ((successfulTests / totalTests) * 100).toFixed(1) : '0.0';
 
 			// Calculate average execution time
 			const executionTimes = agentResults
-				.filter(r => r.execution_time !== undefined)
-				.map(r => r.execution_time as number);
+				.filter((r) => r.execution_time !== undefined)
+				.map((r) => r.execution_time as number);
 
-			const avgExecutionTime = executionTimes.length > 0
-				? ((executionTimes.reduce((sum, time) => sum + time, 0) / executionTimes.length) / 1000).toFixed(3)
-				: 'N/A';
+			const avgExecutionTime =
+				executionTimes.length > 0
+					? (executionTimes.reduce((sum, time) => sum + time, 0) / executionTimes.length / 1000).toFixed(3)
+					: 'N/A';
 
 			// Extract token usage metrics
 			let tokenUsage: number | undefined;
@@ -114,7 +115,7 @@ export default function Home() {
 			let toolCalls: number | undefined;
 
 			// Aggregate token usage from database fields
-			agentResults.forEach(result => {
+			agentResults.forEach((result) => {
 				if (result.input_tokens || result.output_tokens) {
 					const inputTokens = result.input_tokens || 0;
 					const outputTokens = result.output_tokens || 0;
@@ -157,17 +158,18 @@ export default function Home() {
 	};
 
 	// Calculate metrics
-	const activeJobs = jobs.filter(job => job.status === 'running').length;
-	const pendingJobs = jobs.filter(job => job.status === 'pending').length;
-	const completedJobs = jobs.filter(job => job.status === 'completed').length;
-	const failedJobs = jobs.filter(job => job.status === 'failed').length;
+	const activeJobs = jobs.filter((job) => job.status === 'running').length;
+	const pendingJobs = jobs.filter((job) => job.status === 'pending').length;
+	const completedJobs = jobs.filter((job) => job.status === 'completed').length;
+	const failedJobs = jobs.filter((job) => job.status === 'failed').length;
 
 	const recentSuiteRuns = suiteRuns.slice(0, 5);
 
 	// Success rate calculation
-	const testSuccessRate = results.length > 0
-		? (results.filter((r: ResultWithStatus) => r.success).length / results.length * 100).toFixed(1)
-		: '0.0';
+	const testSuccessRate =
+		results.length > 0
+			? ((results.filter((r: ResultWithStatus) => r.success).length / results.length) * 100).toFixed(1)
+			: '0.0';
 
 	// Average similarity score calculation
 	const avgSimilarityScore = calculateOverallAverageSimilarityScore(results as TestResult[]);
@@ -221,9 +223,7 @@ export default function Home() {
 							{avgSimilarityScore !== 'N/A' ? `${avgSimilarityScore}%` : avgSimilarityScore}
 						</div>
 						{scoredResults.length > 0 && (
-							<div className={styles.metricSubtext}>
-								Based on {scoredResults.length} scored results
-							</div>
+							<div className={styles.metricSubtext}>Based on {scoredResults.length} scored results</div>
 						)}
 					</TileWrapper>
 				</Column>
@@ -239,8 +239,7 @@ export default function Home() {
 				<Column sm={4} md={8} lg={8}>
 					<TileWrapper title="Active Jobs">
 						<div>
-							<Tag type="green">Running: {activeJobs}</Tag>{' '}
-							<Tag type="blue">Pending: {pendingJobs}</Tag>{' '}
+							<Tag type="green">Running: {activeJobs}</Tag> <Tag type="blue">Pending: {pendingJobs}</Tag>{' '}
 							<Tag type="purple">Completed: {completedJobs}</Tag>{' '}
 							<Tag type="red">Failed: {failedJobs}</Tag>
 						</div>
@@ -254,15 +253,26 @@ export default function Home() {
 							<ProgressIndicator />
 						) : recentSuiteRuns.length > 0 ? (
 							<div>
-								{recentSuiteRuns.map(run => (
+								{recentSuiteRuns.map((run) => (
 									<div key={run.id} className={styles.runRow}>
-										<Tag type={run.status === 'completed' ? 'green' :
-											run.status === 'running' ? 'blue' :
-											run.status === 'failed' ? 'red' : 'gray'}>
+										<Tag
+											type={
+												run.status === 'completed'
+													? 'green'
+													: run.status === 'running'
+														? 'blue'
+														: run.status === 'failed'
+															? 'red'
+															: 'gray'
+											}
+										>
 											{run.status}
 										</Tag>
 										<span className={styles.runLabel}>
-											<Link href={`/suite-runs/${run.id}`}>Run #{run.id}</Link>: <Link href={`/test-suites/${run.suite_id}`}>Suite #{run.suite_id}</Link> with <Link href={`/agents/${run.agent_id}`}>Agent #{run.agent_id}</Link> - {run.successful_tests}/{run.total_tests} tests passed
+											<Link href={`/suite-runs/${run.id}`}>Run #{run.id}</Link>:{' '}
+											<Link href={`/test-suites/${run.suite_id}`}>Suite #{run.suite_id}</Link>{' '}
+											with <Link href={`/agents/${run.agent_id}`}>Agent #{run.agent_id}</Link> -{' '}
+											{run.successful_tests}/{run.total_tests} tests passed
 										</span>
 									</div>
 								))}
@@ -293,37 +303,49 @@ export default function Home() {
 										<TableHeader>Success rate</TableHeader>
 										<TableHeader>Tests</TableHeader>
 										<TableHeader>Avg. time</TableHeader>
-										{agentMetrics.some(m => m.tokenUsage !== undefined) && (
+										{agentMetrics.some((m) => m.tokenUsage !== undefined) && (
 											<TableHeader>Token usage</TableHeader>
 										)}
-										{agentMetrics.some(m => m.modelCalls !== undefined) && (
+										{agentMetrics.some((m) => m.modelCalls !== undefined) && (
 											<TableHeader>Model calls</TableHeader>
 										)}
-										{agentMetrics.some(m => m.toolCalls !== undefined) && (
+										{agentMetrics.some((m) => m.toolCalls !== undefined) && (
 											<TableHeader>Tool calls</TableHeader>
 										)}
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{agentMetrics.map(metric => (
+									{agentMetrics.map((metric) => (
 										<TableRow key={metric.agentId}>
 											<TableCell>{metric.agentName}</TableCell>
 											<TableCell>
-												<Tag type={parseFloat(metric.successRate) > 75 ? 'green' :
-													parseFloat(metric.successRate) > 50 ? 'blue' :
-													parseFloat(metric.successRate) > 25 ? 'purple' : 'red'}>
+												<Tag
+													type={
+														parseFloat(metric.successRate) > 75
+															? 'green'
+															: parseFloat(metric.successRate) > 50
+																? 'blue'
+																: parseFloat(metric.successRate) > 25
+																	? 'purple'
+																	: 'red'
+													}
+												>
 													{metric.successRate}%
 												</Tag>
 											</TableCell>
-											<TableCell>{metric.successfulTests}/{metric.totalTests}</TableCell>
+											<TableCell>
+												{metric.successfulTests}/{metric.totalTests}
+											</TableCell>
 											<TableCell>{metric.avgExecutionTime}</TableCell>
-											{agentMetrics.some(m => m.tokenUsage !== undefined) && (
-												<TableCell>{metric.tokenUsage ? metric.tokenUsage.toLocaleString() : 'N/A'}</TableCell>
+											{agentMetrics.some((m) => m.tokenUsage !== undefined) && (
+												<TableCell>
+													{metric.tokenUsage ? metric.tokenUsage.toLocaleString() : 'N/A'}
+												</TableCell>
 											)}
-											{agentMetrics.some(m => m.modelCalls !== undefined) && (
+											{agentMetrics.some((m) => m.modelCalls !== undefined) && (
 												<TableCell>{metric.modelCalls || 'N/A'}</TableCell>
 											)}
-											{agentMetrics.some(m => m.toolCalls !== undefined) && (
+											{agentMetrics.some((m) => m.toolCalls !== undefined) && (
 												<TableCell>{metric.toolCalls || 'N/A'}</TableCell>
 											)}
 										</TableRow>

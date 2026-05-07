@@ -238,9 +238,7 @@ export default function TableRenderer({
 										const rowId = parseInt(row.id);
 										return (
 											<TableCell key={`${cell.id}-${cellIndex}`}>
-												<Link href={`/agents/${rowId}`}>
-													{String(cell.value)}
-												</Link>
+												<Link href={`/agents/${rowId}`}>{String(cell.value)}</Link>
 											</TableCell>
 										);
 									}
@@ -251,9 +249,7 @@ export default function TableRenderer({
 										return (
 											<TableCell key={`${cell.id}-${cellIndex}`}>
 												{agentId ? (
-													<Link href={`/agents/${agentId}`}>
-														{String(cell.value)}
-													</Link>
+													<Link href={`/agents/${agentId}`}>{String(cell.value)}</Link>
 												) : (
 													String(cell.value)
 												)}
@@ -263,12 +259,14 @@ export default function TableRenderer({
 									if (cell.info.header === 'agent_name' && !agentIdMap) {
 										// Fallback: if no agentIdMap is provided, don't link
 										return (
-											<TableCell key={`${cell.id}-${cellIndex}`}>
-												{String(cell.value)}
-											</TableCell>
+											<TableCell key={`${cell.id}-${cellIndex}`}>{String(cell.value)}</TableCell>
 										);
 									}
-									if (cell.info.header === 'conversation_name' && type === 'result' && conversationIdMap) {
+									if (
+										cell.info.header === 'conversation_name' &&
+										type === 'result' &&
+										conversationIdMap
+									) {
 										const rowId = parseInt(row.id);
 										const conversationId = conversationIdMap.get(rowId);
 
@@ -289,18 +287,24 @@ export default function TableRenderer({
 											<TableCell key={`${cell.id}-${cellIndex}`}>
 												{Array.isArray(cell.value)
 													? (cell.value as string[]).map((tag, index) => (
-														<Tag key={index} type="blue" size="sm" className={styles.tag}>
-															{tag}
-														</Tag>
-													))
-													: String(cell.value || '')
-												}
+															<Tag
+																key={index}
+																type="blue"
+																size="sm"
+																className={styles.tag}
+															>
+																{tag}
+															</Tag>
+														))
+													: String(cell.value || '')}
 											</TableCell>
 										);
 									}
 									return (
 										<TableCell key={`${cell.id}-${cellIndex}`}>
-											{typeof cell.value === 'object' && !Array.isArray(cell.value) ? JSON.stringify(cell.value) : String(cell.value)}
+											{typeof cell.value === 'object' && !Array.isArray(cell.value)
+												? JSON.stringify(cell.value)
+												: String(cell.value)}
 										</TableCell>
 									);
 								})}

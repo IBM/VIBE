@@ -69,9 +69,10 @@ export async function fetchJson<T>(url: string, options?: RequestInit, fallbackM
 			}
 		}
 
-		const errorMessage = typeof errorJson?.error === 'string' && errorJson.error
-			? errorJson.error
-			: `${fallbackMessage} (Status: ${response.status})`;
+		const errorMessage =
+			typeof errorJson?.error === 'string' && errorJson.error
+				? errorJson.error
+				: `${fallbackMessage} (Status: ${response.status})`;
 		throw new Error(errorMessage);
 	}
 

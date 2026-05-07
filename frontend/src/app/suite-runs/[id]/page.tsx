@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppData } from '@/lib/AppDataContext';
 import {
@@ -21,13 +20,7 @@ import {
 	OverflowMenuItem
 } from '@carbon/react';
 import Link from 'next/link';
-import {
-	ViewFilled,
-	ChartLine,
-	CheckmarkFilled,
-	Warning,
-	ArrowLeft
-} from '@carbon/icons-react';
+import { ViewFilled, ChartLine, CheckmarkFilled, Warning, ArrowLeft } from '@carbon/icons-react';
 import styles from './page.module.scss';
 import SimilarityScoreDisplay from '../../components/SimilarityScoreDisplay';
 import TokenUsageTile from '../../components/TokenUsageTile';
@@ -37,17 +30,9 @@ import { useSuiteRunDetailData } from './useSuiteRunDetailData';
 export default function SuiteRunDetailPage() {
 	const params = useParams();
 	const router = useRouter();
-	const rawId = Array.isArray(params.id) ? params.id[0] : params.id ?? '';
+	const rawId = Array.isArray(params.id) ? params.id[0] : (params.id ?? '');
 	const runId = parseInt(rawId, 10);
-	const {
-		suiteRun,
-		jobs,
-		conversations,
-		loading,
-		error,
-		freshResults,
-		metrics
-	} = useSuiteRunDetailData(runId);
+	const { suiteRun, jobs, conversations, loading, error, freshResults, metrics } = useSuiteRunDetailData(runId);
 	const { getTestById, getResultById: getResultByIdFromCache, getAgentById } = useAppData();
 
 	const handleViewSession = (sessionId: number) => {
@@ -78,24 +63,24 @@ export default function SuiteRunDetailPage() {
 		{ key: 'actions', header: 'Actions' }
 	];
 
-    const rows = jobs.map((job) => {
-        let testName = job.test_id ? getTestById(job.test_id)?.name : undefined;
-        if (!testName) {
-            if (job.conversation_id) {
-                const conversation = conversations.get(job.conversation_id);
-                testName = conversation
-                    ? `${conversation.name} (#${conversation.id})`
-                    : `Conversation #${job.conversation_id}`;
-            } else {
-                testName = `Test #${job.test_id}`;
-            }
-        }
+	const rows = jobs.map((job) => {
+		let testName = job.test_id ? getTestById(job.test_id)?.name : undefined;
+		if (!testName) {
+			if (job.conversation_id) {
+				const conversation = conversations.get(job.conversation_id);
+				testName = conversation
+					? `${conversation.name} (#${conversation.id})`
+					: `Conversation #${job.conversation_id}`;
+			} else {
+				testName = `Test #${job.test_id}`;
+			}
+		}
 		const agent = getAgentById(job.agent_id);
 		const agentName = agent ? `${agent.name} (v${agent.version})` : `Agent #${job.agent_id}`;
 		// Use fresh results if available, otherwise fall back to cache
 		// Check both session_id and result_id for backwards compatibility
 		const resultId = getJobId(job);
-		const result = resultId ? (freshResults.get(resultId) || getResultByIdFromCache(resultId)) : null;
+		const result = resultId ? freshResults.get(resultId) || getResultByIdFromCache(resultId) : null;
 
 		// Calculate token usage display
 		const tokenDisplay = formatTokenUsage(result || null);
@@ -139,7 +124,6 @@ export default function SuiteRunDetailPage() {
 		};
 	});
 
-
 	return (
 		<div className={styles.container}>
 			{/* Enhanced Header */}
@@ -153,7 +137,10 @@ export default function SuiteRunDetailPage() {
 						<Tag type="blue" size="sm">
 							{metrics.totalJobs} jobs
 						</Tag>
-						<Tag type={metrics.successRate >= 80 ? 'green' : metrics.successRate >= 60 ? 'cool-gray' : 'red'} size="sm">
+						<Tag
+							type={metrics.successRate >= 80 ? 'green' : metrics.successRate >= 60 ? 'cool-gray' : 'red'}
+							size="sm"
+						>
 							{metrics.successRate.toFixed(0)}% success
 						</Tag>
 						{metrics.avgSimilarityScore > 0 && (
@@ -164,7 +151,8 @@ export default function SuiteRunDetailPage() {
 					</div>
 					<div className={styles.metadata}>
 						<span className={styles.metaItem}>
-							<strong>Started:</strong> {suiteRun.started_at ? new Date(suiteRun.started_at).toLocaleString() : 'Unknown'}
+							<strong>Started:</strong>{' '}
+							{suiteRun.started_at ? new Date(suiteRun.started_at).toLocaleString() : 'Unknown'}
 						</span>
 						{suiteRun.completed_at && (
 							<span className={styles.metaItem}>
@@ -233,7 +221,7 @@ export default function SuiteRunDetailPage() {
 			</div>
 
 			{/* Progress Section */}
-			{(suiteRun.status === 'running') && (
+			{suiteRun.status === 'running' && (
 				<div className={styles.progressSection}>
 					<Tile className={styles.progressTile}>
 						<div className={styles.progressHeader}>
@@ -281,92 +269,90 @@ export default function SuiteRunDetailPage() {
 					/>
 				) : (
 					<div className={styles.tableContainer}>
-					<DataTable rows={rows} headers={headers}>
-						{({ rows, headers, getHeaderProps, getTableProps }) => (
-							<Table {...getTableProps()}>
-								<TableHead>
-									<TableRow>
-										{headers.map((header) => {
-											const headerProps = getHeaderProps({ header });
-											// eslint-disable-next-line @typescript-eslint/no-unused-vars
-											const { key: _key, ...otherProps } = headerProps;
-											return (
-												<TableHeader key={header.key} {...otherProps}>
-													{header.header}
-												</TableHeader>
-											);
-										})}
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{rows.map((row) => (
-										<TableRow key={row.id}>
-											{row.cells.map((cell) => {
-												// Handle status cell with Tag component and error message
-												if (cell.info.header === 'status') {
-													const tagType = getStatusTagType(cell.value.value);
-													return (
-														<TableCell key={cell.id}>
-															<Tag type={tagType}>{cell.value.value}</Tag>
-															{cell.value.error && cell.value.error}
-														</TableCell>
-													);
-												}
-												// Handle agent cell with link
-												if (cell.info.header === 'agent') {
-													return (
-														<TableCell key={cell.id}>
-															{cell.value && cell.value.id ? (
-																<Link href={`/agents/${cell.value.id}`}>
-																	{cell.value.name}
-																</Link>
-															) : (
-																cell.value?.name || cell.value
-															)}
-														</TableCell>
-													);
-												}
-												// Handle progress cell with ProgressBar component
-												if (cell.info.header === 'progress') {
-													return (
-														<TableCell key={cell.id}>
-															<div style={{ width: '100%' }}>
-																<ProgressBar
-																	value={cell.value}
-																	max={100}
-																	label=""
-																	hideLabel
-																/>
-															</div>
-															{cell.value}%
-														</TableCell>
-													);
-												}
-												// Handle similarity score cell
-												if (cell.info.header === 'similarity_score') {
-													return (
-														<TableCell key={cell.id}>
-															<SimilarityScoreDisplay result={cell.value} />
-														</TableCell>
-													);
-												}
-												// For the actions cell, render the cell value directly
-												if (cell.info.header === 'actions') {
-													return (
-														<TableCell key={cell.id}>
-															{cell.value || '--'}
-														</TableCell>
-													);
-												}
-												// Default cell rendering
-												return <TableCell key={cell.id}>{cell.value}</TableCell>;
+						<DataTable rows={rows} headers={headers}>
+							{({ rows, headers, getHeaderProps, getTableProps }) => (
+								<Table {...getTableProps()}>
+									<TableHead>
+										<TableRow>
+											{headers.map((header) => {
+												const headerProps = getHeaderProps({ header });
+												// eslint-disable-next-line @typescript-eslint/no-unused-vars
+												const { key: _key, ...otherProps } = headerProps;
+												return (
+													<TableHeader key={header.key} {...otherProps}>
+														{header.header}
+													</TableHeader>
+												);
 											})}
 										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						)}
-					</DataTable>
+									</TableHead>
+									<TableBody>
+										{rows.map((row) => (
+											<TableRow key={row.id}>
+												{row.cells.map((cell) => {
+													// Handle status cell with Tag component and error message
+													if (cell.info.header === 'status') {
+														const tagType = getStatusTagType(cell.value.value);
+														return (
+															<TableCell key={cell.id}>
+																<Tag type={tagType}>{cell.value.value}</Tag>
+																{cell.value.error && cell.value.error}
+															</TableCell>
+														);
+													}
+													// Handle agent cell with link
+													if (cell.info.header === 'agent') {
+														return (
+															<TableCell key={cell.id}>
+																{cell.value && cell.value.id ? (
+																	<Link href={`/agents/${cell.value.id}`}>
+																		{cell.value.name}
+																	</Link>
+																) : (
+																	cell.value?.name || cell.value
+																)}
+															</TableCell>
+														);
+													}
+													// Handle progress cell with ProgressBar component
+													if (cell.info.header === 'progress') {
+														return (
+															<TableCell key={cell.id}>
+																<div style={{ width: '100%' }}>
+																	<ProgressBar
+																		value={cell.value}
+																		max={100}
+																		label=""
+																		hideLabel
+																	/>
+																</div>
+																{cell.value}%
+															</TableCell>
+														);
+													}
+													// Handle similarity score cell
+													if (cell.info.header === 'similarity_score') {
+														return (
+															<TableCell key={cell.id}>
+																<SimilarityScoreDisplay result={cell.value} />
+															</TableCell>
+														);
+													}
+													// For the actions cell, render the cell value directly
+													if (cell.info.header === 'actions') {
+														return (
+															<TableCell key={cell.id}>{cell.value || '--'}</TableCell>
+														);
+													}
+													// Default cell rendering
+													return <TableCell key={cell.id}>{cell.value}</TableCell>;
+												})}
+											</TableRow>
+										))}
+									</TableBody>
+								</Table>
+							)}
+						</DataTable>
 					</div>
 				)}
 			</div>

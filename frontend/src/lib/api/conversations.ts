@@ -22,7 +22,9 @@ export const conversationsApi = {
 		return fetchJson<Conversation>(`${API_URL}/api/conversations/${id}`, undefined, 'Failed to fetch conversation');
 	},
 
-	async createConversation(conversation: Omit<Conversation, 'id' | 'created_at' | 'updated_at'>): Promise<Conversation> {
+	async createConversation(
+		conversation: Omit<Conversation, 'id' | 'created_at' | 'updated_at'>
+	): Promise<Conversation> {
 		return fetchJson<Conversation>(
 			`${API_URL}/api/conversations`,
 			{
@@ -47,7 +49,11 @@ export const conversationsApi = {
 	},
 
 	async deleteConversation(id: number): Promise<void> {
-		await fetchJson<void>(`${API_URL}/api/conversations/${id}`, { method: 'DELETE' }, 'Failed to delete conversation');
+		await fetchJson<void>(
+			`${API_URL}/api/conversations/${id}`,
+			{ method: 'DELETE' },
+			'Failed to delete conversation'
+		);
 	},
 
 	async addMessageToConversation(
@@ -89,7 +95,10 @@ export const conversationsApi = {
 		);
 	},
 
-	async reorderConversationMessages(conversationId: number, messages: { id: number; sequence: number }[]): Promise<void> {
+	async reorderConversationMessages(
+		conversationId: number,
+		messages: { id: number; sequence: number }[]
+	): Promise<void> {
 		await fetchJson<void>(
 			`${API_URL}/api/conversations/${conversationId}/messages/reorder`,
 			{
@@ -115,14 +124,15 @@ export const conversationsApi = {
 			} catch {
 				errorPayload = null;
 			}
-			const errorObj = errorPayload && typeof errorPayload === 'object'
-				? (errorPayload as Record<string, unknown>)
-				: null;
+			const errorObj =
+				errorPayload && typeof errorPayload === 'object' ? (errorPayload as Record<string, unknown>) : null;
 			const rawDetails = errorObj?.details;
 			const rawError = errorObj?.error;
 			const details = Array.isArray(rawDetails)
 				? rawDetails.filter((d): d is string => typeof d === 'string').join('\n')
-				: (typeof rawDetails === 'string' ? rawDetails : '');
+				: typeof rawDetails === 'string'
+					? rawDetails
+					: '';
 			const message = typeof rawError === 'string' && rawError ? rawError : 'Failed to execute conversation';
 			throw new Error(details ? `${message}\n${details}` : message);
 		}
@@ -138,7 +148,9 @@ export const conversationsApi = {
 		);
 	},
 
-	async saveConversationTurnTarget(target: Omit<ConversationTurnTarget, 'id' | 'created_at' | 'updated_at'>): Promise<ConversationTurnTarget> {
+	async saveConversationTurnTarget(
+		target: Omit<ConversationTurnTarget, 'id' | 'created_at' | 'updated_at'>
+	): Promise<ConversationTurnTarget> {
 		return fetchJson<ConversationTurnTarget>(
 			`${API_URL}/api/conversation-turn-targets`,
 			{

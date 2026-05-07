@@ -1,11 +1,4 @@
-import {
-	Modal,
-	Stack,
-	CodeSnippet,
-	Tag,
-	Button,
-	InlineNotification
-} from '@carbon/react';
+import { Modal, Stack, CodeSnippet, Tag, Button, InlineNotification } from '@carbon/react';
 import { Restart, Edit } from '@carbon/icons-react';
 import { TestResult, api, Test } from '@/lib/api';
 import { useState, useEffect } from 'react';
@@ -22,12 +15,7 @@ interface ResultViewModalProps {
 	onClose: () => void;
 }
 
-export default function ResultViewModal({
-	isOpen,
-	result,
-	error,
-	onClose
-}: ResultViewModalProps) {
+export default function ResultViewModal({ isOpen, result, error, onClose }: ResultViewModalProps) {
 	const [rescoring, setRescoring] = useState(false);
 	const [rescoreError, setRescoreError] = useState<string | null>(null);
 	const [rescoreSuccess, setRescoreSuccess] = useState(false);
@@ -73,7 +61,7 @@ export default function ResultViewModal({
 			// Regenerate score for the assistant message within this session (legacy result id == session id)
 			// Fetch the transcript, then trigger per-message rescoring for assistant messages
 			const transcript = await api.getSessionTranscriptWithSession(result.id);
-			const assistantMessages = (transcript.messages || []).filter(m => m.role === 'assistant' && m.id);
+			const assistantMessages = (transcript.messages || []).filter((m) => m.role === 'assistant' && m.id);
 			for (const m of assistantMessages) {
 				await api.regenerateSimilarityScore(m.id!);
 			}
@@ -107,11 +95,11 @@ export default function ResultViewModal({
 	// Prepare initial form data for TestFormModal
 	const initialFormData: Record<string, string> = testData
 		? {
-			'test-name': testData.name || '',
-			'test-description': testData.description || '',
-			'test-input': testData.input || '',
-			'test-expected-output': testData.expected_output || ''
-		}
+				'test-name': testData.name || '',
+				'test-description': testData.description || '',
+				'test-input': testData.input || '',
+				'test-expected-output': testData.expected_output || ''
+			}
 		: {};
 
 	const canScore = result && result.similarity_scoring_status !== undefined;
@@ -128,11 +116,7 @@ export default function ResultViewModal({
 				className="result-view-modal"
 			>
 				<Stack gap={5}>
-					{error && (
-						<div className="error-message">
-							{error}
-						</div>
-					)}
+					{error && <div className="error-message">{error}</div>}
 
 					{rescoreSuccess && (
 						<InlineNotification
@@ -187,7 +171,12 @@ export default function ResultViewModal({
 									<h4 className="section-heading section-heading--with-top-margin">
 										Intermediate steps
 									</h4>
-									<CodeSnippet type="multi" feedback="Copied to clipboard" wrapText maxCollapsedNumberOfRows={20}>
+									<CodeSnippet
+										type="multi"
+										feedback="Copied to clipboard"
+										wrapText
+										maxCollapsedNumberOfRows={20}
+									>
 										{result.intermediate_steps}
 									</CodeSnippet>
 								</div>
@@ -202,18 +191,14 @@ export default function ResultViewModal({
 								{result.execution_time && (
 									<div className="metadata-item">
 										<strong>Execution Time:</strong>{' '}
-										<span className="execution-time">
-											{result.execution_time.toFixed(3)}s
-										</span>
+										<span className="execution-time">{result.execution_time.toFixed(3)}s</span>
 									</div>
 								)}
 								{/* Token usage section */}
 								{formatTokenUsageDetailed(result) && (
 									<div className="metadata-item">
 										<strong>Token usage:</strong>{' '}
-										<span className="token-details">
-											{formatTokenUsageDetailed(result)}
-										</span>
+										<span className="token-details">{formatTokenUsageDetailed(result)}</span>
 									</div>
 								)}
 							</div>

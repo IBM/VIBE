@@ -1,15 +1,5 @@
 import type React from 'react';
-import {
-	AccordionItem,
-	Button,
-	Checkbox,
-	CodeSnippet,
-	ComboBox,
-	Stack,
-	Tag,
-	TextArea,
-	TextInput
-} from '@carbon/react';
+import { AccordionItem, Button, Checkbox, CodeSnippet, ComboBox, Stack, Tag, TextArea, TextInput } from '@carbon/react';
 import { Add, Edit, TrashCan } from '@carbon/icons-react';
 import { extractCapabilityName } from '../../lib/capabilities';
 import styles from './AgentFormModal.module.scss';
@@ -42,98 +32,121 @@ export function AgentRequestTemplatesSection({
 		<AccordionItem title="Request templates (recommended)" open>
 			<div className={styles.templatesSection}>
 				<p className={styles.sectionDescription}>
-					Templates define how to format requests to your API. At least one template is needed to execute conversations.
+					Templates define how to format requests to your API. At least one template is needed to execute
+					conversations.
 				</p>
 
-				{requestTemplates.filter(t => !t._isDeleted).map((template, idx) => (
-					<div key={template.id || `new-${idx}`} className={styles.templateItem}>
-						<div className={styles.templateHeader}>
-							<div className={styles.templateTitle}>
-								<strong>{template.name}</strong>
-								{template.is_default && <Tag type="green" size="sm">default</Tag>}
+				{requestTemplates
+					.filter((t) => !t._isDeleted)
+					.map((template, idx) => (
+						<div key={template.id || `new-${idx}`} className={styles.templateItem}>
+							<div className={styles.templateHeader}>
+								<div className={styles.templateTitle}>
+									<strong>{template.name}</strong>
+									{template.is_default && (
+										<Tag type="green" size="sm">
+											default
+										</Tag>
+									)}
+								</div>
+								<div className={styles.templateActions}>
+									<Button
+										kind="ghost"
+										size="sm"
+										renderIcon={Edit}
+										onClick={() => {
+											setRequestTemplates(
+												requestTemplates.map((t) =>
+													t.id === template.id ? { ...t, _isEditing: !t._isEditing } : t
+												)
+											);
+										}}
+									>
+										{template._isEditing ? 'Cancel' : 'Edit'}
+									</Button>
+									<Button
+										kind="danger--ghost"
+										size="sm"
+										renderIcon={TrashCan}
+										onClick={() => {
+											setRequestTemplates(
+												requestTemplates.map((t) =>
+													t.id === template.id ? { ...t, _isDeleted: true } : t
+												)
+											);
+										}}
+									>
+										Delete
+									</Button>
+								</div>
 							</div>
-							<div className={styles.templateActions}>
-								<Button
-									kind="ghost"
-									size="sm"
-									renderIcon={Edit}
-									onClick={() => {
-										setRequestTemplates(requestTemplates.map(t =>
-											t.id === template.id ? { ...t, _isEditing: !t._isEditing } : t
-										));
-									}}
-								>
-									{template._isEditing ? 'Cancel' : 'Edit'}
-								</Button>
-								<Button
-									kind="danger--ghost"
-									size="sm"
-									renderIcon={TrashCan}
-									onClick={() => {
-										setRequestTemplates(requestTemplates.map(t =>
-											t.id === template.id ? { ...t, _isDeleted: true } : t
-										));
-									}}
-								>
-									Delete
-								</Button>
-							</div>
+							{template._isEditing ? (
+								<Stack gap={4}>
+									<TextInput
+										id={`template-name-${idx}`}
+										labelText="Name"
+										value={template.name}
+										onChange={(e) => {
+											setRequestTemplates(
+												requestTemplates.map((t) =>
+													t.id === template.id ? { ...t, name: e.target.value } : t
+												)
+											);
+										}}
+									/>
+									<TextArea
+										id={`template-body-${idx}`}
+										labelText="Body (JSON)"
+										value={template.body}
+										onChange={(e) => {
+											setRequestTemplates(
+												requestTemplates.map((t) =>
+													t.id === template.id ? { ...t, body: e.target.value } : t
+												)
+											);
+										}}
+										rows={4}
+									/>
+									<ComboBox
+										id={`template-capabilities-${idx}`}
+										titleText="Capability"
+										placeholder="Select or type a capability name"
+										items={templateCapabilityNames}
+										selectedItem={extractCapabilityName(template.capabilities)}
+										onChange={(e) => {
+											setRequestTemplates(
+												requestTemplates.map((t) =>
+													t.id === template.id
+														? { ...t, capabilities: e.selectedItem || '' }
+														: t
+												)
+											);
+										}}
+										allowCustomValue
+										helperText="Tag this template with a capability name for matching"
+									/>
+									<Checkbox
+										id={`template-default-${idx}`}
+										labelText="Set as default"
+										checked={!!template.is_default}
+										onChange={(_evt, { checked }) => {
+											setRequestTemplates(
+												requestTemplates.map((t) =>
+													t.id === template.id
+														? { ...t, is_default: checked }
+														: { ...t, is_default: false }
+												)
+											);
+										}}
+									/>
+								</Stack>
+							) : (
+								<CodeSnippet type="multi" feedback="Copied to clipboard">
+									{template.body}
+								</CodeSnippet>
+							)}
 						</div>
-						{template._isEditing ? (
-							<Stack gap={4}>
-								<TextInput
-									id={`template-name-${idx}`}
-									labelText="Name"
-									value={template.name}
-									onChange={(e) => {
-										setRequestTemplates(requestTemplates.map(t =>
-											t.id === template.id ? { ...t, name: e.target.value } : t
-										));
-									}}
-								/>
-								<TextArea
-									id={`template-body-${idx}`}
-									labelText="Body (JSON)"
-									value={template.body}
-									onChange={(e) => {
-										setRequestTemplates(requestTemplates.map(t =>
-											t.id === template.id ? { ...t, body: e.target.value } : t
-										));
-									}}
-									rows={4}
-								/>
-								<ComboBox
-									id={`template-capabilities-${idx}`}
-									titleText="Capability"
-									placeholder="Select or type a capability name"
-									items={templateCapabilityNames}
-									selectedItem={extractCapabilityName(template.capabilities)}
-									onChange={(e) => {
-										setRequestTemplates(requestTemplates.map(t =>
-											t.id === template.id ? { ...t, capabilities: e.selectedItem || '' } : t
-										));
-									}}
-									allowCustomValue
-									helperText="Tag this template with a capability name for matching"
-								/>
-								<Checkbox
-									id={`template-default-${idx}`}
-									labelText="Set as default"
-									checked={!!template.is_default}
-									onChange={(_evt, { checked }) => {
-										setRequestTemplates(requestTemplates.map(t =>
-											t.id === template.id ? { ...t, is_default: checked } : { ...t, is_default: false }
-										));
-									}}
-								/>
-							</Stack>
-						) : (
-							<CodeSnippet type="multi" feedback="Copied to clipboard">
-								{template.body}
-							</CodeSnippet>
-						)}
-					</div>
-				))}
+					))}
 
 				{!shouldShowNewTemplateForm && (
 					<Button
@@ -180,7 +193,9 @@ export function AgentRequestTemplatesSection({
 								id="new-template-default"
 								labelText="Set as default"
 								checked={!!newTemplate.is_default}
-								onChange={(_evt, { checked }) => setNewTemplate({ ...newTemplate, is_default: checked })}
+								onChange={(_evt, { checked }) =>
+									setNewTemplate({ ...newTemplate, is_default: checked })
+								}
 							/>
 							<div className={styles.formActions}>
 								<Button
@@ -200,7 +215,9 @@ export function AgentRequestTemplatesSection({
 										try {
 											JSON.parse(newTemplate.body || '');
 										} catch (err) {
-											setError(`Invalid JSON in template body: ${err instanceof Error ? err.message : 'Unknown error'}`);
+											setError(
+												`Invalid JSON in template body: ${err instanceof Error ? err.message : 'Unknown error'}`
+											);
 											return;
 										}
 

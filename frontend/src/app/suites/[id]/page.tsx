@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation';
 
 interface SuitesAliasDetailPageProps {
-	params: {
+	params: Promise<{
 		id: string;
-	};
+	}>;
 }
 
-export default function SuitesAliasDetailPage({ params }: SuitesAliasDetailPageProps) {
-	redirect(`/test-suites/${params.id}`);
+export default async function SuitesAliasDetailPage({ params }: SuitesAliasDetailPageProps) {
+	const { id } = await params;
+	redirect(`/test-suites/${id}`);
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Checkbox, InlineLoading, InlineNotification } from '@carbon/react';
 import type { ExportBundle, ExportableDataType as ExportableDataTypeType } from '@ibm-vibe/types';
 import { ExportableDataType } from '@ibm-vibe/types';
@@ -36,9 +36,9 @@ const getStoredSelectedTypes = (): ExportableDataTypeType[] => {
 			return allExportTypes;
 		}
 
-		const valid = parsed.filter((value): value is ExportableDataTypeType => (
+		const valid = parsed.filter((value): value is ExportableDataTypeType =>
 			allExportTypes.includes(value as ExportableDataTypeType)
-		));
+		);
 		return valid.length > 0 ? valid : allExportTypes;
 	} catch {
 		return allExportTypes;

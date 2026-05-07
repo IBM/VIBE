@@ -16,6 +16,7 @@ cp .env.example .env.local
 ```
 
 Next.js automatically loads `.env.local` files. The frontend expects:
+
 - `NEXT_PUBLIC_API_URL` - API base URL for backend requests (default: `http://localhost:5000`)
 - `NEXT_PUBLIC_INSTANCE_NAME` - Optional instance name for multi-instance deployments
 

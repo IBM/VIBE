@@ -237,7 +237,9 @@ describe('api client', () => {
 				json: async () => template
 			} as Response);
 
-			await expect(api.createTemplate({ name: 'New', body: 'test' } as Omit<any, 'id' | 'created_at'>)).resolves.toEqual(template);
+			await expect(
+				api.createTemplate({ name: 'New', body: 'test' } as Omit<any, 'id' | 'created_at'>)
+			).resolves.toEqual(template);
 		});
 
 		it('updateTemplate updates template', async () => {
@@ -299,7 +301,9 @@ describe('api client', () => {
 				json: async () => map
 			} as Response);
 
-			await expect(api.createResponseMap({ name: 'New', spec: '{}' } as Omit<any, 'id' | 'created_at'>)).resolves.toEqual(map);
+			await expect(
+				api.createResponseMap({ name: 'New', spec: '{}' } as Omit<any, 'id' | 'created_at'>)
+			).resolves.toEqual(map);
 		});
 
 		it('updateResponseMap updates map', async () => {
@@ -420,7 +424,9 @@ describe('api client', () => {
 				json: async () => agent
 			} as Response);
 
-			await expect(api.createAgent({ name: 'New Agent' } as Omit<any, 'id' | 'created_at'>)).resolves.toEqual(agent);
+			await expect(api.createAgent({ name: 'New Agent' } as Omit<any, 'id' | 'created_at'>)).resolves.toEqual(
+				agent
+			);
 		});
 
 		it('updateAgent updates agent', async () => {
@@ -447,7 +453,9 @@ describe('api client', () => {
 				ok: false,
 				status: 500,
 				headers: new Headers({ 'content-type': 'text/plain' }),
-				json: async () => { throw new Error('Not JSON'); }
+				json: async () => {
+					throw new Error('Not JSON');
+				}
 			} as unknown as Response);
 
 			await expect(api.deleteAgent(1)).rejects.toThrow('Failed to delete agent (Status: 500)');
@@ -482,7 +490,9 @@ describe('api client', () => {
 				json: async () => test
 			} as Response);
 
-			await expect(api.createTest({ name: 'New Test' } as Omit<any, 'id' | 'created_at' | 'updated_at'>)).resolves.toEqual(test);
+			await expect(
+				api.createTest({ name: 'New Test' } as Omit<any, 'id' | 'created_at' | 'updated_at'>)
+			).resolves.toEqual(test);
 		});
 
 		it('updateTest updates test', async () => {
@@ -509,7 +519,9 @@ describe('api client', () => {
 				ok: false,
 				status: 404,
 				headers: new Headers({ 'content-type': 'text/html' }),
-				json: async () => { throw new Error('Not JSON'); }
+				json: async () => {
+					throw new Error('Not JSON');
+				}
 			} as unknown as Response);
 
 			await expect(api.deleteTest(1)).rejects.toThrow('Failed to delete test (Status: 404)');
@@ -690,9 +702,7 @@ describe('api client', () => {
 			} as Response);
 
 			await api.getSuiteRuns({ after, before });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('after=2024-01-01')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('after=2024-01-01'));
 		});
 
 		it('getSuiteRunsWithCount returns paginated response', async () => {
@@ -737,7 +747,9 @@ describe('api client', () => {
 		it('deleteSuiteRun handles error gracefully', async () => {
 			global.fetch = jest.fn().mockResolvedValue({
 				ok: false,
-				json: async () => { throw new Error('Not JSON'); }
+				json: async () => {
+					throw new Error('Not JSON');
+				}
 			} as unknown as Response);
 
 			await expect(api.deleteSuiteRun(1)).rejects.toThrow('Failed to delete suite run');
@@ -746,7 +758,8 @@ describe('api client', () => {
 		it('rerunSuiteRun reruns a suite', async () => {
 			const run = { id: 1, suite_id: 2, agent_id: 3 };
 			const result = { suite_run_id: 456 };
-			global.fetch = jest.fn()
+			global.fetch = jest
+				.fn()
 				.mockResolvedValueOnce({
 					ok: true,
 					json: async () => run
@@ -813,7 +826,9 @@ describe('api client', () => {
 		it('cancelJob handles error gracefully', async () => {
 			global.fetch = jest.fn().mockResolvedValue({
 				ok: false,
-				json: async () => { throw new Error('Not JSON'); }
+				json: async () => {
+					throw new Error('Not JSON');
+				}
 			} as unknown as Response);
 
 			await expect(api.cancelJob('job1')).rejects.toThrow('Failed to cancel job');
@@ -857,7 +872,9 @@ describe('api client', () => {
 				json: async () => config
 			} as Response);
 
-			await expect(api.createLLMConfig({ name: 'New Config' } as Omit<any, 'id' | 'created_at' | 'updated_at'>)).resolves.toEqual(config);
+			await expect(
+				api.createLLMConfig({ name: 'New Config' } as Omit<any, 'id' | 'created_at' | 'updated_at'>)
+			).resolves.toEqual(config);
 		});
 
 		it('updateLLMConfig updates config', async () => {
@@ -884,7 +901,9 @@ describe('api client', () => {
 				ok: false,
 				status: 500,
 				headers: new Headers({ 'content-type': 'text/plain' }),
-				json: async () => { throw new Error('Not JSON'); }
+				json: async () => {
+					throw new Error('Not JSON');
+				}
 			} as unknown as Response);
 
 			await expect(api.deleteLLMConfig(1)).rejects.toThrow('Failed to delete LLM config (Status: 500)');
@@ -989,7 +1008,9 @@ describe('api client', () => {
 				json: async () => conv
 			} as Response);
 
-			await expect(api.createConversation({ name: 'New' } as Omit<any, 'id' | 'created_at' | 'updated_at'>)).resolves.toEqual(conv);
+			await expect(
+				api.createConversation({ name: 'New' } as Omit<any, 'id' | 'created_at' | 'updated_at'>)
+			).resolves.toEqual(conv);
 		});
 
 		it('updateConversation updates conversation', async () => {
@@ -1018,7 +1039,12 @@ describe('api client', () => {
 				json: async () => message
 			} as Response);
 
-			await expect(api.addMessageToConversation(1, { role: 'user', content: 'Hello' } as Omit<any, 'id' | 'conversation_id' | 'created_at'>)).resolves.toEqual(message);
+			await expect(
+				api.addMessageToConversation(1, { role: 'user', content: 'Hello' } as Omit<
+					any,
+					'id' | 'conversation_id' | 'created_at'
+				>)
+			).resolves.toEqual(message);
 		});
 
 		it('updateConversationMessage updates message', async () => {
@@ -1166,7 +1192,12 @@ describe('api client', () => {
 				json: async () => target
 			} as Response);
 
-			await expect(api.saveConversationTurnTarget({ conversation_id: 1, turn_number: 1 } as Omit<any, 'id' | 'created_at' | 'updated_at'>)).resolves.toEqual(target);
+			await expect(
+				api.saveConversationTurnTarget({ conversation_id: 1, turn_number: 1 } as Omit<
+					any,
+					'id' | 'created_at' | 'updated_at'
+				>)
+			).resolves.toEqual(target);
 		});
 
 		it('deleteConversationTurnTarget deletes target', async () => {

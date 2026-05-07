@@ -1,7 +1,10 @@
 export function parseLLMVariations(raw: string): string[] {
 	let str = raw.trim();
 	// Strip markdown fences if present
-	str = str.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim();
+	str = str
+		.replace(/^```(?:json)?\s*/, '')
+		.replace(/\s*```$/, '')
+		.trim();
 	// Extract first [ ... ] block if exists
 	const firstBracket = str.indexOf('[');
 	const lastBracket = str.lastIndexOf(']');
@@ -11,7 +14,7 @@ export function parseLLMVariations(raw: string): string[] {
 	// Try JSON parse
 	try {
 		const parsed = JSON.parse(str);
-		if (Array.isArray(parsed) && parsed.every(item => typeof item === 'string')) {
+		if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
 			return parsed;
 		}
 		throw new Error('Parsed result is not an array of strings');
@@ -20,7 +23,7 @@ export function parseLLMVariations(raw: string): string[] {
 		const inner = str.replace(/^\[|\]$/g, '');
 		return inner
 			.split(',')
-			.map(s => s.trim().replace(/^['"]|['"]$/g, ''))
-			.filter(s => s.length > 0);
+			.map((s) => s.trim().replace(/^['"]|['"]$/g, ''))
+			.filter((s) => s.length > 0);
 	}
 }

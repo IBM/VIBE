@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-	Modal,
-	TextInput,
-	TextArea,
-	Form,
-	Stack
-} from '@carbon/react';
+import { Modal, TextInput, TextArea, Form, Stack } from '@carbon/react';
 import { api } from '@/lib/api';
 import noticeStyles from './Notice.module.scss';
 
@@ -17,13 +11,7 @@ interface TestFormModalProps {
 	onSuccess: () => void;
 }
 
-export default function TestFormModal({
-	isOpen,
-	editingId,
-	initialData,
-	onClose,
-	onSuccess
-}: TestFormModalProps) {
+export default function TestFormModal({ isOpen, editingId, initialData, onClose, onSuccess }: TestFormModalProps) {
 	const [formData, setFormData] = useState<Record<string, string>>({});
 	const [isSaving, setIsSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -81,11 +69,7 @@ export default function TestFormModal({
 			onRequestSubmit={handleSubmit}
 			primaryButtonDisabled={isSaving}
 		>
-			{error && (
-				<div className={noticeStyles.errorBox}>
-					{error}
-				</div>
-			)}
+			{error && <div className={noticeStyles.errorBox}>{error}</div>}
 			<Form>
 				<Stack gap={7}>
 					<TextInput

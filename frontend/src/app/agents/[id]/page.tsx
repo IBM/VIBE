@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
 	Button,
@@ -15,10 +15,7 @@ import {
 	TextArea,
 	Checkbox
 } from '@carbon/react';
-import {
-	Edit,
-	ArrowLeft
-} from '@carbon/icons-react';
+import { Edit, ArrowLeft } from '@carbon/icons-react';
 import { api } from '../../../lib/api';
 import { getRequestTemplateCapabilitySummary, getResponseMapCapabilitySummary } from '../../../lib/capabilities';
 import { agentToFormData, extractByPath } from '../../../lib/utils';
@@ -48,12 +45,32 @@ export default function AgentDetailPage() {
 	} = useAgentDetailData(Number.isNaN(agentId) ? null : agentId);
 	const [editModalOpen, setEditModalOpen] = useState(false);
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-	const [newTemplate, setNewTemplate] = useState<{ name: string; body: string; capabilities: string; is_default: boolean }>({ name: '', body: '', capabilities: '', is_default: false });
-	const [newResponseMap, setNewResponseMap] = useState<{ name: string; spec: string; capabilities: string; is_default: boolean }>({ name: '', spec: '', capabilities: '', is_default: false });
+	const [newTemplate, setNewTemplate] = useState<{
+		name: string;
+		body: string;
+		capabilities: string;
+		is_default: boolean;
+	}>({ name: '', body: '', capabilities: '', is_default: false });
+	const [newResponseMap, setNewResponseMap] = useState<{
+		name: string;
+		spec: string;
+		capabilities: string;
+		is_default: boolean;
+	}>({ name: '', spec: '', capabilities: '', is_default: false });
 	const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
 	const [editingMapId, setEditingMapId] = useState<number | null>(null);
-	const [editTemplateData, setEditTemplateData] = useState<{ name: string; body: string; capabilities: string; is_default: boolean }>({ name: '', body: '', capabilities: '', is_default: false });
-	const [editMapData, setEditMapData] = useState<{ name: string; spec: string; capabilities: string; is_default: boolean }>({ name: '', spec: '', capabilities: '', is_default: false });
+	const [editTemplateData, setEditTemplateData] = useState<{
+		name: string;
+		body: string;
+		capabilities: string;
+		is_default: boolean;
+	}>({ name: '', body: '', capabilities: '', is_default: false });
+	const [editMapData, setEditMapData] = useState<{
+		name: string;
+		spec: string;
+		capabilities: string;
+		is_default: boolean;
+	}>({ name: '', spec: '', capabilities: '', is_default: false });
 	const [commError, setCommError] = useState<string | null>(null);
 	const [previewTemplateId, setPreviewTemplateId] = useState<number | null>(null);
 	const [previewInput, setPreviewInput] = useState<string>('');
@@ -114,12 +131,7 @@ export default function AgentDetailPage() {
 	if (error || !agent) {
 		return (
 			<div className={styles.container}>
-				<InlineNotification
-					kind="error"
-					title="Error"
-					subtitle={error || 'Agent not found'}
-					hideCloseButton
-				/>
+				<InlineNotification kind="error" title="Error" subtitle={error || 'Agent not found'} hideCloseButton />
 				<Button onClick={handleBackClick} renderIcon={ArrowLeft}>
 					Back to agents
 				</Button>
@@ -134,7 +146,7 @@ export default function AgentDetailPage() {
 		if (!items.length) return null;
 		return (
 			<div className={styles.capabilityChips}>
-				{items.map(item => (
+				{items.map((item) => (
 					<Tag key={item} type="cool-gray" size="sm">
 						{item}
 					</Tag>
@@ -146,26 +158,14 @@ export default function AgentDetailPage() {
 	return (
 		<div className={styles.container}>
 			<div className={styles.header}>
-				<Button
-					kind="ghost"
-					renderIcon={ArrowLeft}
-					onClick={handleBackClick}
-					className={styles.backButton}
-				>
+				<Button kind="ghost" renderIcon={ArrowLeft} onClick={handleBackClick} className={styles.backButton}>
 					Back to agents
 				</Button>
 				<div className={styles.headerActions}>
-					<Button
-						kind="ghost"
-						renderIcon={Edit}
-						onClick={handleEditClick}
-					>
+					<Button kind="ghost" renderIcon={Edit} onClick={handleEditClick}>
 						Edit
 					</Button>
-					<Button
-						kind="danger--ghost"
-						onClick={handleDeleteClick}
-					>
+					<Button kind="danger--ghost" onClick={handleDeleteClick}>
 						Delete
 					</Button>
 				</div>
@@ -175,7 +175,9 @@ export default function AgentDetailPage() {
 				<div className={styles.mainInfo}>
 					<h1 className={styles.title}>{agent.name}</h1>
 					<div className={styles.meta}>
-						<Tag type="blue" size="sm">Version {agent.version}</Tag>
+						<Tag type="blue" size="sm">
+							Version {agent.version}
+						</Tag>
 						<Tag type={agentType === 'external_api' ? 'teal' : 'purple'} size="sm">
 							{agentType === 'external_api' ? 'External API' : 'CrewAI'}
 						</Tag>
@@ -193,7 +195,9 @@ export default function AgentDetailPage() {
 								<div className={styles.statHeader}>
 									<span className={styles.statLabel}>Success rate</span>
 									{stats.trends.successRate !== 0 && (
-										<span className={stats.trends.successRate > 0 ? styles.trendUp : styles.trendDown}>
+										<span
+											className={stats.trends.successRate > 0 ? styles.trendUp : styles.trendDown}
+										>
 											{stats.trends.successRate > 0 ? '↑' : '↓'}
 											{Math.abs(stats.trends.successRate).toFixed(1)}%
 										</span>
@@ -208,7 +212,11 @@ export default function AgentDetailPage() {
 									<div className={styles.statHeader}>
 										<span className={styles.statLabel}>Avg similarity</span>
 										{stats.trends.similarity !== null && stats.trends.similarity !== 0 && (
-											<span className={stats.trends.similarity > 0 ? styles.trendUp : styles.trendDown}>
+											<span
+												className={
+													stats.trends.similarity > 0 ? styles.trendUp : styles.trendDown
+												}
+											>
 												{stats.trends.similarity > 0 ? '↑' : '↓'}
 												{Math.abs(stats.trends.similarity).toFixed(1)}
 											</span>
@@ -223,7 +231,11 @@ export default function AgentDetailPage() {
 								<div className={styles.statHeader}>
 									<span className={styles.statLabel}>Avg exec time</span>
 									{stats.trends.executionTime !== null && stats.trends.executionTime !== 0 && (
-										<span className={stats.trends.executionTime < 0 ? styles.trendUp : styles.trendDown}>
+										<span
+											className={
+												stats.trends.executionTime < 0 ? styles.trendUp : styles.trendDown
+											}
+										>
 											{stats.trends.executionTime < 0 ? '↓' : '↑'}
 											{Math.abs(stats.trends.executionTime).toFixed(1)}s
 										</span>
@@ -284,13 +296,31 @@ export default function AgentDetailPage() {
 												</div>
 											</AccordionItem>
 										)}
-										{(settings.model || settings.base_url || settings.temperature !== undefined) && (
+										{(settings.model ||
+											settings.base_url ||
+											settings.temperature !== undefined) && (
 											<AccordionItem title="Model settings">
 												<div className={styles.configContent}>
-													{settings.model && <p><strong>Model:</strong> {settings.model}</p>}
-													{settings.base_url && <p><strong>Base URL:</strong> {settings.base_url}</p>}
-													{settings.temperature !== undefined && <p><strong>Temperature:</strong> {settings.temperature}</p>}
-													{settings.max_tokens !== undefined && <p><strong>Max tokens:</strong> {settings.max_tokens}</p>}
+													{settings.model && (
+														<p>
+															<strong>Model:</strong> {settings.model}
+														</p>
+													)}
+													{settings.base_url && (
+														<p>
+															<strong>Base URL:</strong> {settings.base_url}
+														</p>
+													)}
+													{settings.temperature !== undefined && (
+														<p>
+															<strong>Temperature:</strong> {settings.temperature}
+														</p>
+													)}
+													{settings.max_tokens !== undefined && (
+														<p>
+															<strong>Max tokens:</strong> {settings.max_tokens}
+														</p>
+													)}
 												</div>
 											</AccordionItem>
 										)}
@@ -302,8 +332,14 @@ export default function AgentDetailPage() {
 										{settings.api_endpoint && (
 											<AccordionItem title="API endpoint">
 												<div className={styles.configContent}>
-													<p><strong>URL:</strong> {settings.api_endpoint}</p>
-													{settings.http_method && <p><strong>Method:</strong> {settings.http_method}</p>}
+													<p>
+														<strong>URL:</strong> {settings.api_endpoint}
+													</p>
+													{settings.http_method && (
+														<p>
+															<strong>Method:</strong> {settings.http_method}
+														</p>
+													)}
 												</div>
 											</AccordionItem>
 										)}
@@ -342,11 +378,15 @@ export default function AgentDetailPage() {
 												<div className={styles.section}>
 													<h4>Request templates</h4>
 													<div className={styles.list}>
-														{requestTemplates.map(t => (
+														{requestTemplates.map((t) => (
 															<div key={t.id} className={styles.listItem}>
 																<div className={styles.listHeader}>
 																	<strong>{t.name}</strong>
-																	{Number(t.is_default) === 1 && <Tag type="green" size="sm">default</Tag>}
+																	{Number(t.is_default) === 1 && (
+																		<Tag type="green" size="sm">
+																			default
+																		</Tag>
+																	)}
 																</div>
 																{editingTemplateId === t.id ? (
 																	<div style={{ marginTop: '0.5rem' }}>
@@ -354,7 +394,12 @@ export default function AgentDetailPage() {
 																			id={`edit-tpl-name-${t.id}`}
 																			labelText="Name"
 																			value={editTemplateData.name}
-																			onChange={(e) => setEditTemplateData(prev => ({ ...prev, name: e.target.value }))}
+																			onChange={(e) =>
+																				setEditTemplateData((prev) => ({
+																					...prev,
+																					name: e.target.value
+																				}))
+																			}
 																			style={{ marginBottom: '0.5rem' }}
 																		/>
 																		<TextArea
@@ -362,7 +407,12 @@ export default function AgentDetailPage() {
 																			labelText="Body (JSON template)"
 																			rows={4}
 																			value={editTemplateData.body}
-																			onChange={(e) => setEditTemplateData(prev => ({ ...prev, body: e.target.value }))}
+																			onChange={(e) =>
+																				setEditTemplateData((prev) => ({
+																					...prev,
+																					body: e.target.value
+																				}))
+																			}
 																			style={{ marginBottom: '0.5rem' }}
 																		/>
 																		<TextArea
@@ -370,78 +420,166 @@ export default function AgentDetailPage() {
 																			labelText="Capabilities (JSON)"
 																			rows={3}
 																			value={editTemplateData.capabilities}
-																			onChange={(e) => setEditTemplateData(prev => ({ ...prev, capabilities: e.target.value }))}
+																			onChange={(e) =>
+																				setEditTemplateData((prev) => ({
+																					...prev,
+																					capabilities: e.target.value
+																				}))
+																			}
 																			style={{ marginBottom: '0.5rem' }}
 																		/>
-																		<div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+																		<div
+																			style={{
+																				marginTop: '0.5rem',
+																				marginBottom: '0.5rem'
+																			}}
+																		>
 																			<Checkbox
 																				id={`edit-tpl-default-${t.id}`}
 																				labelText="Set as default"
 																				checked={editTemplateData.is_default}
-																				onChange={(_evt, data) => setEditTemplateData(prev => ({ ...prev, is_default: data.checked }))}
+																				onChange={(_evt, data) =>
+																					setEditTemplateData((prev) => ({
+																						...prev,
+																						is_default: data.checked
+																					}))
+																				}
 																			/>
 																		</div>
 																		<div style={{ display: 'flex', gap: '0.5rem' }}>
-																			<Button size="sm" onClick={async () => {
-																				setCommError(null);
-																				try {
-																					JSON.parse(editTemplateData.body);
-																					const capabilitiesPayload = editTemplateData.capabilities && editTemplateData.capabilities.trim()
-																						? JSON.parse(editTemplateData.capabilities)
-																						: {};
-																					await api.updateAgentRequestTemplate(agent.id!, t.id, {
-																						name: editTemplateData.name,
-																						body: editTemplateData.body,
-																						capabilities: JSON.stringify(capabilitiesPayload),
-																						is_default: editTemplateData.is_default
-																					});
+																			<Button
+																				size="sm"
+																				onClick={async () => {
+																					setCommError(null);
+																					try {
+																						JSON.parse(
+																							editTemplateData.body
+																						);
+																						const capabilitiesPayload =
+																							editTemplateData.capabilities &&
+																							editTemplateData.capabilities.trim()
+																								? JSON.parse(
+																										editTemplateData.capabilities
+																									)
+																								: {};
+																						await api.updateAgentRequestTemplate(
+																							agent.id!,
+																							t.id,
+																							{
+																								name: editTemplateData.name,
+																								body: editTemplateData.body,
+																								capabilities:
+																									JSON.stringify(
+																										capabilitiesPayload
+																									),
+																								is_default:
+																									editTemplateData.is_default
+																							}
+																						);
+																						setEditingTemplateId(null);
+																						await reload();
+																					} catch (e) {
+																						setCommError(
+																							e instanceof Error
+																								? e.message
+																								: 'failed to update template'
+																						);
+																					}
+																				}}
+																			>
+																				Save
+																			</Button>
+																			<Button
+																				size="sm"
+																				kind="secondary"
+																				onClick={() => {
 																					setEditingTemplateId(null);
-																					await reload();
-																				} catch (e) {
-																					setCommError(e instanceof Error ? e.message : 'failed to update template');
-																				}
-																			}}>Save</Button>
-																			<Button size="sm" kind="secondary" onClick={() => {
-																				setEditingTemplateId(null);
-																			}}>Cancel</Button>
+																				}}
+																			>
+																				Cancel
+																			</Button>
 																		</div>
 																	</div>
 																) : (
 																	<>
-																		<CodeSnippet type="multi" feedback="Copied to clipboard">
+																		<CodeSnippet
+																			type="multi"
+																			feedback="Copied to clipboard"
+																		>
 																			{t.body}
 																		</CodeSnippet>
-																		{renderCapabilityChips(getRequestTemplateCapabilitySummary(t.capabilities))}
+																		{renderCapabilityChips(
+																			getRequestTemplateCapabilitySummary(
+																				t.capabilities
+																			)
+																		)}
 																		<div className={styles.actionsRow}>
-																			<Button size="sm" kind="ghost" onClick={() => {
-																				setEditingTemplateId(t.id);
-																				setEditTemplateData({
-																					name: t.name,
-																					body: t.body,
-																					capabilities: typeof t.capabilities === 'string'
-																						? t.capabilities
-																						: t.capabilities
-																							? JSON.stringify(t.capabilities)
-																							: '',
-																					is_default: Number(t.is_default) === 1
-																				});
-																			}}>Edit</Button>
-																			<Button size="sm" kind="ghost" onClick={async () => {
-																				try {
-																					await api.setDefaultAgentRequestTemplate(agent.id!, t.id);
-																					await reload();
-																				} catch (e) {
-																					setCommError(e instanceof Error ? e.message : 'failed to set default');
-																				}
-																			}}>Set default</Button>
-																			<Button size="sm" kind="danger--ghost" onClick={async () => {
-																				try {
-																					await api.deleteAgentRequestTemplate(agent.id!, t.id);
-																					await reload();
-																				} catch (e) {
-																					setCommError(e instanceof Error ? e.message : 'failed to delete');
-																				}
-																			}}>Delete</Button>
+																			<Button
+																				size="sm"
+																				kind="ghost"
+																				onClick={() => {
+																					setEditingTemplateId(t.id);
+																					setEditTemplateData({
+																						name: t.name,
+																						body: t.body,
+																						capabilities:
+																							typeof t.capabilities ===
+																							'string'
+																								? t.capabilities
+																								: t.capabilities
+																									? JSON.stringify(
+																											t.capabilities
+																										)
+																									: '',
+																						is_default:
+																							Number(t.is_default) === 1
+																					});
+																				}}
+																			>
+																				Edit
+																			</Button>
+																			<Button
+																				size="sm"
+																				kind="ghost"
+																				onClick={async () => {
+																					try {
+																						await api.setDefaultAgentRequestTemplate(
+																							agent.id!,
+																							t.id
+																						);
+																						await reload();
+																					} catch (e) {
+																						setCommError(
+																							e instanceof Error
+																								? e.message
+																								: 'failed to set default'
+																						);
+																					}
+																				}}
+																			>
+																				Set default
+																			</Button>
+																			<Button
+																				size="sm"
+																				kind="danger--ghost"
+																				onClick={async () => {
+																					try {
+																						await api.deleteAgentRequestTemplate(
+																							agent.id!,
+																							t.id
+																						);
+																						await reload();
+																					} catch (e) {
+																						setCommError(
+																							e instanceof Error
+																								? e.message
+																								: 'failed to delete'
+																						);
+																					}
+																				}}
+																			>
+																				Delete
+																			</Button>
 																		</div>
 																	</>
 																)}
@@ -450,36 +588,103 @@ export default function AgentDetailPage() {
 													</div>
 													<div className={styles.form}>
 														<h5>Create new template</h5>
-														<TextInput id="new-tpl-name" labelText="Name" value={newTemplate.name} onChange={(e) => setNewTemplate(prev => ({ ...prev, name: e.target.value }))} />
-														<TextArea id="new-tpl-body" labelText="Body (JSON template)" rows={4} value={newTemplate.body} onChange={(e) => setNewTemplate(prev => ({ ...prev, body: e.target.value }))} />
-														<TextArea id="new-tpl-capabilities" labelText="Capabilities (JSON)" rows={3} value={newTemplate.capabilities} onChange={(e) => setNewTemplate(prev => ({ ...prev, capabilities: e.target.value }))} />
-														<div style={{ marginTop: '0.5rem' }}>
-															<Checkbox id="new-tpl-default" labelText="Set as default" checked={newTemplate.is_default} onChange={(_evt, data) => setNewTemplate(prev => ({ ...prev, is_default: data.checked }))} />
-														</div>
-														<Button size="sm" onClick={async () => {
-															setCommError(null);
-															try {
-																const caps = newTemplate.capabilities && newTemplate.capabilities.trim()
-																	? JSON.parse(newTemplate.capabilities)
-																	: {};
-																await api.createAgentRequestTemplate(agent.id!, { name: newTemplate.name, body: newTemplate.body, capabilities: JSON.stringify(caps), is_default: newTemplate.is_default });
-																setNewTemplate({ name: '', body: '', capabilities: '', is_default: false });
-																await reload();
-															} catch (e) {
-																setCommError(e instanceof Error ? e.message : 'failed to create template');
+														<TextInput
+															id="new-tpl-name"
+															labelText="Name"
+															value={newTemplate.name}
+															onChange={(e) =>
+																setNewTemplate((prev) => ({
+																	...prev,
+																	name: e.target.value
+																}))
 															}
-														}}>Create</Button>
+														/>
+														<TextArea
+															id="new-tpl-body"
+															labelText="Body (JSON template)"
+															rows={4}
+															value={newTemplate.body}
+															onChange={(e) =>
+																setNewTemplate((prev) => ({
+																	...prev,
+																	body: e.target.value
+																}))
+															}
+														/>
+														<TextArea
+															id="new-tpl-capabilities"
+															labelText="Capabilities (JSON)"
+															rows={3}
+															value={newTemplate.capabilities}
+															onChange={(e) =>
+																setNewTemplate((prev) => ({
+																	...prev,
+																	capabilities: e.target.value
+																}))
+															}
+														/>
+														<div style={{ marginTop: '0.5rem' }}>
+															<Checkbox
+																id="new-tpl-default"
+																labelText="Set as default"
+																checked={newTemplate.is_default}
+																onChange={(_evt, data) =>
+																	setNewTemplate((prev) => ({
+																		...prev,
+																		is_default: data.checked
+																	}))
+																}
+															/>
+														</div>
+														<Button
+															size="sm"
+															onClick={async () => {
+																setCommError(null);
+																try {
+																	const caps =
+																		newTemplate.capabilities &&
+																		newTemplate.capabilities.trim()
+																			? JSON.parse(newTemplate.capabilities)
+																			: {};
+																	await api.createAgentRequestTemplate(agent.id!, {
+																		name: newTemplate.name,
+																		body: newTemplate.body,
+																		capabilities: JSON.stringify(caps),
+																		is_default: newTemplate.is_default
+																	});
+																	setNewTemplate({
+																		name: '',
+																		body: '',
+																		capabilities: '',
+																		is_default: false
+																	});
+																	await reload();
+																} catch (e) {
+																	setCommError(
+																		e instanceof Error
+																			? e.message
+																			: 'failed to create template'
+																	);
+																}
+															}}
+														>
+															Create
+														</Button>
 													</div>
 												</div>
 
 												<div className={styles.section}>
 													<h4>Response maps</h4>
 													<div className={styles.list}>
-														{responseMaps.map(m => (
+														{responseMaps.map((m) => (
 															<div key={m.id} className={styles.listItem}>
 																<div className={styles.listHeader}>
 																	<strong>{m.name}</strong>
-																	{Number(m.is_default) === 1 && <Tag type="green" size="sm">default</Tag>}
+																	{Number(m.is_default) === 1 && (
+																		<Tag type="green" size="sm">
+																			default
+																		</Tag>
+																	)}
 																</div>
 																{editingMapId === m.id ? (
 																	<div style={{ marginTop: '0.5rem' }}>
@@ -487,7 +692,12 @@ export default function AgentDetailPage() {
 																			id={`edit-map-name-${m.id}`}
 																			labelText="Name"
 																			value={editMapData.name}
-																			onChange={(e) => setEditMapData(prev => ({ ...prev, name: e.target.value }))}
+																			onChange={(e) =>
+																				setEditMapData((prev) => ({
+																					...prev,
+																					name: e.target.value
+																				}))
+																			}
 																			style={{ marginBottom: '0.5rem' }}
 																		/>
 																		<TextArea
@@ -495,7 +705,12 @@ export default function AgentDetailPage() {
 																			labelText="Spec (JSON mapping)"
 																			rows={4}
 																			value={editMapData.spec}
-																			onChange={(e) => setEditMapData(prev => ({ ...prev, spec: e.target.value }))}
+																			onChange={(e) =>
+																				setEditMapData((prev) => ({
+																					...prev,
+																					spec: e.target.value
+																				}))
+																			}
 																			style={{ marginBottom: '0.5rem' }}
 																		/>
 																		<TextArea
@@ -503,79 +718,165 @@ export default function AgentDetailPage() {
 																			labelText="Capabilities (JSON)"
 																			rows={3}
 																			value={editMapData.capabilities}
-																			onChange={(e) => setEditMapData(prev => ({ ...prev, capabilities: e.target.value }))}
+																			onChange={(e) =>
+																				setEditMapData((prev) => ({
+																					...prev,
+																					capabilities: e.target.value
+																				}))
+																			}
 																			style={{ marginBottom: '0.5rem' }}
 																		/>
-																		<div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+																		<div
+																			style={{
+																				marginTop: '0.5rem',
+																				marginBottom: '0.5rem'
+																			}}
+																		>
 																			<Checkbox
 																				id={`edit-map-default-${m.id}`}
 																				labelText="Set as default"
 																				checked={editMapData.is_default}
-																				onChange={(_evt, data) => setEditMapData(prev => ({ ...prev, is_default: data.checked }))}
+																				onChange={(_evt, data) =>
+																					setEditMapData((prev) => ({
+																						...prev,
+																						is_default: data.checked
+																					}))
+																				}
 																			/>
 																		</div>
 																		<div style={{ display: 'flex', gap: '0.5rem' }}>
-																			<Button size="sm" onClick={async () => {
-																				setCommError(null);
-																				try {
-																					// Validate JSON
-																					JSON.parse(editMapData.spec);
-																					const capabilitiesPayload = editMapData.capabilities && editMapData.capabilities.trim()
-																						? JSON.parse(editMapData.capabilities)
-																						: {};
-																					await api.updateAgentResponseMap(agent.id!, m.id, {
-																						name: editMapData.name,
-																						spec: editMapData.spec,
-																						capabilities: JSON.stringify(capabilitiesPayload),
-																						is_default: editMapData.is_default
-																					});
+																			<Button
+																				size="sm"
+																				onClick={async () => {
+																					setCommError(null);
+																					try {
+																						// Validate JSON
+																						JSON.parse(editMapData.spec);
+																						const capabilitiesPayload =
+																							editMapData.capabilities &&
+																							editMapData.capabilities.trim()
+																								? JSON.parse(
+																										editMapData.capabilities
+																									)
+																								: {};
+																						await api.updateAgentResponseMap(
+																							agent.id!,
+																							m.id,
+																							{
+																								name: editMapData.name,
+																								spec: editMapData.spec,
+																								capabilities:
+																									JSON.stringify(
+																										capabilitiesPayload
+																									),
+																								is_default:
+																									editMapData.is_default
+																							}
+																						);
+																						setEditingMapId(null);
+																						await reload();
+																					} catch (e) {
+																						setCommError(
+																							e instanceof Error
+																								? e.message
+																								: 'failed to update response map'
+																						);
+																					}
+																				}}
+																			>
+																				Save
+																			</Button>
+																			<Button
+																				size="sm"
+																				kind="secondary"
+																				onClick={() => {
 																					setEditingMapId(null);
-																					await reload();
-																				} catch (e) {
-																					setCommError(e instanceof Error ? e.message : 'failed to update response map');
-																				}
-																			}}>Save</Button>
-																			<Button size="sm" kind="secondary" onClick={() => {
-																				setEditingMapId(null);
-																			}}>Cancel</Button>
+																				}}
+																			>
+																				Cancel
+																			</Button>
 																		</div>
 																	</div>
 																) : (
 																	<>
-																		<CodeSnippet type="multi" feedback="Copied to clipboard">
+																		<CodeSnippet
+																			type="multi"
+																			feedback="Copied to clipboard"
+																		>
 																			{m.spec}
 																		</CodeSnippet>
-																		{renderCapabilityChips(getResponseMapCapabilitySummary(m.capabilities))}
+																		{renderCapabilityChips(
+																			getResponseMapCapabilitySummary(
+																				m.capabilities
+																			)
+																		)}
 																		<div className={styles.actionsRow}>
-																			<Button size="sm" kind="ghost" onClick={() => {
-																				setEditingMapId(m.id);
-																				setEditMapData({
-																					name: m.name,
-																					spec: m.spec,
-																					capabilities: typeof m.capabilities === 'string'
-																						? m.capabilities
-																						: m.capabilities
-																							? JSON.stringify(m.capabilities)
-																							: '',
-																					is_default: Number(m.is_default) === 1
-																				});
-																			}}>Edit</Button>
-																			<Button size="sm" kind="ghost" onClick={async () => {
-																				try {
-																					await api.setDefaultAgentResponseMap(agent.id!, m.id);
-																					await reload();
-																				} catch (e) {
-																					setCommError(e instanceof Error ? e.message : 'failed to set default');
-																				}
-																			}}>Set default</Button>
-																			<Button size="sm" kind="danger--ghost" onClick={async () => {
-																				try {
-																					await api.deleteAgentResponseMap(agent.id!, m.id);
-																					await reload();
-																				} catch (e) {
-																					setCommError(e instanceof Error ? e.message : 'failed to delete');
-																				}
-																			}}>Delete</Button>
+																			<Button
+																				size="sm"
+																				kind="ghost"
+																				onClick={() => {
+																					setEditingMapId(m.id);
+																					setEditMapData({
+																						name: m.name,
+																						spec: m.spec,
+																						capabilities:
+																							typeof m.capabilities ===
+																							'string'
+																								? m.capabilities
+																								: m.capabilities
+																									? JSON.stringify(
+																											m.capabilities
+																										)
+																									: '',
+																						is_default:
+																							Number(m.is_default) === 1
+																					});
+																				}}
+																			>
+																				Edit
+																			</Button>
+																			<Button
+																				size="sm"
+																				kind="ghost"
+																				onClick={async () => {
+																					try {
+																						await api.setDefaultAgentResponseMap(
+																							agent.id!,
+																							m.id
+																						);
+																						await reload();
+																					} catch (e) {
+																						setCommError(
+																							e instanceof Error
+																								? e.message
+																								: 'failed to set default'
+																						);
+																					}
+																				}}
+																			>
+																				Set default
+																			</Button>
+																			<Button
+																				size="sm"
+																				kind="danger--ghost"
+																				onClick={async () => {
+																					try {
+																						await api.deleteAgentResponseMap(
+																							agent.id!,
+																							m.id
+																						);
+																						await reload();
+																					} catch (e) {
+																						setCommError(
+																							e instanceof Error
+																								? e.message
+																								: 'failed to delete'
+																						);
+																					}
+																				}}
+																			>
+																				Delete
+																			</Button>
 																		</div>
 																	</>
 																)}
@@ -584,47 +885,155 @@ export default function AgentDetailPage() {
 													</div>
 													<div className={styles.form}>
 														<h5>Create new response map</h5>
-														<TextInput id="new-map-name" labelText="Name" value={newResponseMap.name} onChange={(e) => setNewResponseMap(prev => ({ ...prev, name: e.target.value }))} />
-														<TextArea id="new-map-spec" labelText="Spec (JSON mapping)" rows={4} value={newResponseMap.spec} onChange={(e) => setNewResponseMap(prev => ({ ...prev, spec: e.target.value }))} />
-														<TextArea id="new-map-capabilities" labelText="Capabilities (JSON)" rows={3} value={newResponseMap.capabilities} onChange={(e) => setNewResponseMap(prev => ({ ...prev, capabilities: e.target.value }))} />
-														<div style={{ marginTop: '0.5rem' }}>
-															<Checkbox id="new-map-default" labelText="Set as default" checked={newResponseMap.is_default} onChange={(_evt, data) => setNewResponseMap(prev => ({ ...prev, is_default: data.checked }))} />
-														</div>
-														<Button size="sm" onClick={async () => {
-															setCommError(null);
-															try {
-																const caps = newResponseMap.capabilities && newResponseMap.capabilities.trim()
-																	? JSON.parse(newResponseMap.capabilities)
-																	: {};
-																await api.createAgentResponseMap(agent.id!, { name: newResponseMap.name, spec: newResponseMap.spec, capabilities: JSON.stringify(caps), is_default: newResponseMap.is_default });
-																setNewResponseMap({ name: '', spec: '', capabilities: '', is_default: false });
-																await reload();
-															} catch (e) {
-																setCommError(e instanceof Error ? e.message : 'failed to create response map');
+														<TextInput
+															id="new-map-name"
+															labelText="Name"
+															value={newResponseMap.name}
+															onChange={(e) =>
+																setNewResponseMap((prev) => ({
+																	...prev,
+																	name: e.target.value
+																}))
 															}
-														}}>Create</Button>
+														/>
+														<TextArea
+															id="new-map-spec"
+															labelText="Spec (JSON mapping)"
+															rows={4}
+															value={newResponseMap.spec}
+															onChange={(e) =>
+																setNewResponseMap((prev) => ({
+																	...prev,
+																	spec: e.target.value
+																}))
+															}
+														/>
+														<TextArea
+															id="new-map-capabilities"
+															labelText="Capabilities (JSON)"
+															rows={3}
+															value={newResponseMap.capabilities}
+															onChange={(e) =>
+																setNewResponseMap((prev) => ({
+																	...prev,
+																	capabilities: e.target.value
+																}))
+															}
+														/>
+														<div style={{ marginTop: '0.5rem' }}>
+															<Checkbox
+																id="new-map-default"
+																labelText="Set as default"
+																checked={newResponseMap.is_default}
+																onChange={(_evt, data) =>
+																	setNewResponseMap((prev) => ({
+																		...prev,
+																		is_default: data.checked
+																	}))
+																}
+															/>
+														</div>
+														<Button
+															size="sm"
+															onClick={async () => {
+																setCommError(null);
+																try {
+																	const caps =
+																		newResponseMap.capabilities &&
+																		newResponseMap.capabilities.trim()
+																			? JSON.parse(newResponseMap.capabilities)
+																			: {};
+																	await api.createAgentResponseMap(agent.id!, {
+																		name: newResponseMap.name,
+																		spec: newResponseMap.spec,
+																		capabilities: JSON.stringify(caps),
+																		is_default: newResponseMap.is_default
+																	});
+																	setNewResponseMap({
+																		name: '',
+																		spec: '',
+																		capabilities: '',
+																		is_default: false
+																	});
+																	await reload();
+																} catch (e) {
+																	setCommError(
+																		e instanceof Error
+																			? e.message
+																			: 'failed to create response map'
+																	);
+																}
+															}}
+														>
+															Create
+														</Button>
 													</div>
 												</div>
 												<div className={styles.section}>
 													<h4>Preview</h4>
 													<div className={styles.form}>
-														<TextInput id="preview-input" labelText="Current user message" value={previewInput} onChange={(e) => setPreviewInput(e.target.value)} />
-														<TextArea id="preview-history" labelText="Conversation history" rows={3} value={previewHistory} onChange={(e) => setPreviewHistory(e.target.value)} />
-														<TextArea id="preview-vars" labelText="Variables (JSON)" rows={3} value={previewVars} onChange={(e) => setPreviewVars(e.target.value)} />
+														<TextInput
+															id="preview-input"
+															labelText="Current user message"
+															value={previewInput}
+															onChange={(e) => setPreviewInput(e.target.value)}
+														/>
+														<TextArea
+															id="preview-history"
+															labelText="Conversation history"
+															rows={3}
+															value={previewHistory}
+															onChange={(e) => setPreviewHistory(e.target.value)}
+														/>
+														<TextArea
+															id="preview-vars"
+															labelText="Variables (JSON)"
+															rows={3}
+															value={previewVars}
+															onChange={(e) => setPreviewVars(e.target.value)}
+														/>
 														<div className={styles.list}>
-															{requestTemplates.map(t => (
-																<div key={t.id} className={styles.listItem} onClick={() => setPreviewTemplateId(t.id)} style={{ cursor: 'pointer', border: previewTemplateId === t.id ? '1px solid var(--cds-border-strong-01)' : undefined }}>
-																	<strong>{t.name}</strong> {previewTemplateId === t.id && <Tag type="blue" size="sm">selected</Tag>}
+															{requestTemplates.map((t) => (
+																<div
+																	key={t.id}
+																	className={styles.listItem}
+																	onClick={() => setPreviewTemplateId(t.id)}
+																	style={{
+																		cursor: 'pointer',
+																		border:
+																			previewTemplateId === t.id
+																				? '1px solid var(--cds-border-strong-01)'
+																				: undefined
+																	}}
+																>
+																	<strong>{t.name}</strong>{' '}
+																	{previewTemplateId === t.id && (
+																		<Tag type="blue" size="sm">
+																			selected
+																		</Tag>
+																	)}
 																</div>
 															))}
 														</div>
 														{previewTemplateId && (
 															<CodeSnippet type="multi" feedback="Copied to clipboard">
 																{(() => {
-																	const tpl = requestTemplates.find(t => t.id === previewTemplateId)?.body || '';
+																	const tpl =
+																		requestTemplates.find(
+																			(t) => t.id === previewTemplateId
+																		)?.body || '';
 																	let vars: Record<string, unknown> = {};
-																	try { vars = JSON.parse(previewVars || '{}'); } catch { vars = {}; }
-																	return renderTemplate(tpl, previewInput, previewHistory, vars);
+																	try {
+																		vars = JSON.parse(previewVars || '{}');
+																	} catch {
+																		vars = {};
+																	}
+																	return renderTemplate(
+																		tpl,
+																		previewInput,
+																		previewHistory,
+																		vars
+																	);
 																})()}
 															</CodeSnippet>
 														)}

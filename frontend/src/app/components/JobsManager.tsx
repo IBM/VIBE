@@ -42,10 +42,7 @@ type JobTableRow = {
 
 type JobTableHeaderKey = keyof JobTableRow;
 
-export default function JobsManager({
-	onViewSession,
-	onViewConversation
-}: JobsManagerProps) {
+export default function JobsManager({ onViewSession, onViewConversation }: JobsManagerProps) {
 	const { agents, fetchAgents } = useAgents();
 	const { tests, fetchTests } = useTests();
 	const { getResultById, fetchResults } = useAppData();
@@ -104,28 +101,27 @@ export default function JobsManager({
 
 	// Handle job selection for viewing details
 	const handleViewJob = (jobId: string) => {
-		const job = jobs.find(j => j.id === jobId);
+		const job = jobs.find((j) => j.id === jobId);
 		if (job) {
 			setSelectedJob(job);
 			setJobModalOpen(true);
 		}
 	};
 
+	// View session or conversation when available
+	const handleViewResult = () => {
+		if (!selectedJob) return;
 
-    // View session or conversation when available
-    const handleViewResult = () => {
-        if (!selectedJob) return;
-
-        if (selectedJob.session_id) {
-            onViewSession(selectedJob.session_id);
-        } else if (selectedJob.conversation_id) {
-            onViewConversation(selectedJob.conversation_id);
-        } else if (selectedJob.result_id) {
-            // Legacy fallback - navigate to sessions page
-            onViewSession(selectedJob.result_id);
-        }
-        setJobModalOpen(false);
-    };
+		if (selectedJob.session_id) {
+			onViewSession(selectedJob.session_id);
+		} else if (selectedJob.conversation_id) {
+			onViewConversation(selectedJob.conversation_id);
+		} else if (selectedJob.result_id) {
+			// Legacy fallback - navigate to sessions page
+			onViewSession(selectedJob.result_id);
+		}
+		setJobModalOpen(false);
+	};
 
 	// Refresh job list
 	const handleRefresh = () => {
@@ -148,7 +144,9 @@ export default function JobsManager({
 			} else if (selectedJob.conversation_id) {
 				// Conversation job
 				const result = await api.executeConversation(selectedJob.agent_id, selectedJob.conversation_id);
-				setSuccessMessage(`Conversation job ${result.job_id} created successfully and is now queued for execution`);
+				setSuccessMessage(
+					`Conversation job ${result.job_id} created successfully and is now queued for execution`
+				);
 			} else {
 				throw new Error('Job has neither test_id nor conversation_id');
 			}
@@ -227,14 +225,14 @@ export default function JobsManager({
 
 	// Memoize expensive row mapping with O(1) lookups
 	const rows = useMemo((): JobTableRow[] => {
-		const agentMap = new Map(agents.map(agent => [agent.id, agent]));
-		const testMap = new Map(tests.map(test => [test.id, test]));
+		const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
+		const testMap = new Map(tests.map((test) => [test.id, test]));
 
-		return jobs.map(job => {
+		return jobs.map((job) => {
 			const agent = agentMap.get(job.agent_id);
 			const test = testMap.get(job.test_id);
-            const preferredId = getJobId(job);
-            const result = preferredId !== null ? getResultById(preferredId) : undefined;
+			const preferredId = getJobId(job);
+			const result = preferredId !== null ? getResultById(preferredId) : undefined;
 
 			const isPendingOrRunning = job.status === 'pending' || job.status === 'running';
 
@@ -243,7 +241,9 @@ export default function JobsManager({
 				agent: agent ? `${agent.name} (v${agent.version})` : `Agent ${job.agent_id}`,
 				test: job.conversation_id
 					? `Conversation ${job.conversation_id}`
-					: test ? test.name : `Test ${job.test_id}`,
+					: test
+						? test.name
+						: `Test ${job.test_id}`,
 				status: (
 					<Tag type={getStatusTagType(job.status)}>
 						{job.status.charAt(0).toUpperCase() + job.status.slice(1)}
@@ -312,20 +312,16 @@ export default function JobsManager({
 				)
 			};
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [jobs, agents, tests, getResultById, rerunningJob, cancelingJob, deletingJob]);
 
 	return (
 		<div>
-			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+			<div
+				style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}
+			>
 				<h3>Test Jobs</h3>
-				<Button
-					kind="ghost"
-					size="sm"
-					renderIcon={Renew}
-					onClick={handleRefresh}
-					disabled={isLoading}
-				>
+				<Button kind="ghost" size="sm" renderIcon={Renew} onClick={handleRefresh} disabled={isLoading}>
 					{isLoading ? <InlineLoading description="Refreshing..." /> : 'Refresh'}
 				</Button>
 			</div>
@@ -435,7 +431,8 @@ export default function JobsManager({
 									<TableRow>
 										<TableCell>Agent</TableCell>
 										<TableCell>
-											{agents.find(a => a.id === selectedJob.agent_id)?.name || `Agent ${selectedJob.agent_id}`}
+											{agents.find((a) => a.id === selectedJob.agent_id)?.name ||
+												`Agent ${selectedJob.agent_id}`}
 										</TableCell>
 									</TableRow>
 									<TableRow>
@@ -443,41 +440,45 @@ export default function JobsManager({
 										<TableCell>
 											{selectedJob.conversation_id
 												? `Conversation ${selectedJob.conversation_id}`
-												: tests.find(t => t.id === selectedJob.test_id)?.name || `Test ${selectedJob.test_id}`
-											}
+												: tests.find((t) => t.id === selectedJob.test_id)?.name ||
+													`Test ${selectedJob.test_id}`}
 										</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell>Status</TableCell>
 										<TableCell>
 											<Tag type={getStatusTagType(selectedJob.status)}>
-												{selectedJob.status.charAt(0).toUpperCase() + selectedJob.status.slice(1)}
+												{selectedJob.status.charAt(0).toUpperCase() +
+													selectedJob.status.slice(1)}
 											</Tag>
 										</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell>Created</TableCell>
-										<TableCell>
-											{new Date(selectedJob.created_at).toLocaleString()}
-										</TableCell>
+										<TableCell>{new Date(selectedJob.created_at).toLocaleString()}</TableCell>
 									</TableRow>
 									<TableRow>
 										<TableCell>Last Updated</TableCell>
-										<TableCell>
-											{new Date(selectedJob.updated_at).toLocaleString()}
-										</TableCell>
+										<TableCell>{new Date(selectedJob.updated_at).toLocaleString()}</TableCell>
 									</TableRow>
-                                    {getJobId(selectedJob) && (
+									{getJobId(selectedJob) && (
 										<TableRow>
-                                            <TableCell>Result ID</TableCell>
-                                            <TableCell>{getJobId(selectedJob)}</TableCell>
+											<TableCell>Result ID</TableCell>
+											<TableCell>{getJobId(selectedJob)}</TableCell>
 										</TableRow>
 									)}
 								</TableBody>
 							</Table>
 
 							{/* Re-run button */}
-							<div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
+							<div
+								style={{
+									marginTop: '1rem',
+									display: 'flex',
+									justifyContent: 'flex-start',
+									gap: '1rem'
+								}}
+							>
 								<Button
 									kind="primary"
 									size="sm"

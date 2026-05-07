@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Tag } from '@carbon/react';
 import type { ImportPlanItem, ImportResolution, ImportResolutionDecision } from '@ibm-vibe/types';
 import { formatResolutionDecision, getDefaultResolutionDecision } from './resolutionOptions';

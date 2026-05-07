@@ -43,13 +43,7 @@ beforeEach(() => {
 describe('ConversationFormModal', () => {
 	it('shows validation error when name is missing', async () => {
 		const user = userEvent.setup();
-		render(
-			<ConversationFormModal
-				isOpen
-				onClose={jest.fn()}
-				onSave={jest.fn()}
-			/>
-		);
+		render(<ConversationFormModal isOpen onClose={jest.fn()} onSave={jest.fn()} />);
 
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
@@ -70,13 +64,7 @@ describe('ConversationFormModal', () => {
 			stop_on_failure: false
 		} as any);
 
-		render(
-			<ConversationFormModal
-				isOpen
-				onClose={onClose}
-				onSave={onSave}
-			/>
-		);
+		render(<ConversationFormModal isOpen onClose={onClose} onSave={onSave} />);
 
 		await user.type(screen.getByLabelText('Name'), 'New conversation');
 		await user.click(screen.getByRole('button', { name: /Add message/i }));

@@ -50,10 +50,7 @@ describe('utils edge cases', () => {
 	it('loadSessionMessages skips sessions without id', async () => {
 		mockedApi.getSessionTranscript.mockResolvedValueOnce([{ id: 1, role: 'user', content: 'hi' }] as any);
 
-		const sessions: ExecutionSession[] = [
-			{ id: undefined } as any,
-			{ id: 123 } as any
-		];
+		const sessions: ExecutionSession[] = [{ id: undefined } as any, { id: 123 } as any];
 
 		const map = await loadSessionMessages(sessions);
 		expect(map.has(123)).toBe(true);
@@ -76,4 +73,3 @@ describe('utils edge cases', () => {
 		expect(extractByPath(obj, 'a')).toBeUndefined();
 	});
 });
-

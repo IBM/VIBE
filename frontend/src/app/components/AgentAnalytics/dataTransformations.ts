@@ -22,15 +22,18 @@ export function prepareTimePerformanceData(
 	sessionMessages: Map<number, SessionMessage[]>,
 	visibility: MetricVisibility
 ): ChartDataPoint[] {
-	const dataByDate = new Map<string, {
-		successRate: number;
-		avgExecutionTime: number;
-		avgSimilarity: number;
-		similarityCount: number;
-		count: number;
-	}>();
+	const dataByDate = new Map<
+		string,
+		{
+			successRate: number;
+			avgExecutionTime: number;
+			avgSimilarity: number;
+			similarityCount: number;
+			count: number;
+		}
+	>();
 
-	sessions.forEach(session => {
+	sessions.forEach((session) => {
 		if (!session.started_at) {
 			return;
 		}
@@ -114,13 +117,13 @@ export function prepareFailureAnalysisData(
 ): ChartDataPoint[] {
 	const failuresByConversation = new Map<number, { name: string; failures: number; total: number }>();
 
-	sessions.forEach(session => {
+	sessions.forEach((session) => {
 		const convId = session.conversation_id;
 		if (!convId) {
 			return;
 		}
 
-		const conv = conversations.find(c => c.id === convId);
+		const conv = conversations.find((c) => c.id === convId);
 		const convName = conv?.name || `#${convId}`;
 
 		const existing = failuresByConversation.get(convId) || { name: convName, failures: 0, total: 0 };
@@ -132,10 +135,10 @@ export function prepareFailureAnalysisData(
 	});
 
 	return Array.from(failuresByConversation.values())
-		.filter(item => item.failures > 0)
+		.filter((item) => item.failures > 0)
 		.sort((a, b) => b.failures - a.failures)
 		.slice(0, 10)
-		.map(item => ({
+		.map((item) => ({
 			group: 'Failures',
 			key: item.name,
 			value: item.failures
@@ -151,12 +154,12 @@ export function prepareConversationDifficultyData(
 ): ChartDataPoint[] {
 	const statsByConversation = new Map<number, { name: string; successful: number; total: number }>();
 
-	sessions.forEach(session => {
+	sessions.forEach((session) => {
 		const convId = session.conversation_id;
 		if (!convId) {
 			return;
 		}
-		const conv = conversations.find(c => c.id === convId);
+		const conv = conversations.find((c) => c.id === convId);
 		const convName = conv?.name || `#${convId}`;
 
 		const existing = statsByConversation.get(convId) || { name: convName, successful: 0, total: 0 };
@@ -168,15 +171,15 @@ export function prepareConversationDifficultyData(
 	});
 
 	return Array.from(statsByConversation.values())
-		.filter(item => item.total >= 3)
-		.map(item => ({
+		.filter((item) => item.total >= 3)
+		.map((item) => ({
 			conversation: item.name,
 			successRate: (item.successful / item.total) * 100,
 			totalRuns: item.total
 		}))
 		.sort((a, b) => a.successRate - b.successRate)
 		.slice(0, 10)
-		.map(item => ({
+		.map((item) => ({
 			group: 'Success rate',
 			key: item.conversation,
 			value: Math.round(item.successRate)
@@ -191,22 +194,25 @@ export function prepareSuccessSpeedScatterData(
 	sessionMessages: Map<number, SessionMessage[]>,
 	conversations: Conversation[]
 ): ChartDataPoint[] {
-	const conversationStats = new Map<number, {
-		name: string;
-		totalExecutionTime: number;
-		totalSimilarity: number;
-		similarityCount: number;
-		executionTimeCount: number;
-		runCount: number;
-	}>();
+	const conversationStats = new Map<
+		number,
+		{
+			name: string;
+			totalExecutionTime: number;
+			totalSimilarity: number;
+			similarityCount: number;
+			executionTimeCount: number;
+			runCount: number;
+		}
+	>();
 
-	sessions.forEach(session => {
+	sessions.forEach((session) => {
 		const convId = session.conversation_id;
 		if (!convId) {
 			return;
 		}
 
-		const conv = conversations.find(c => c.id === convId);
+		const conv = conversations.find((c) => c.id === convId);
 		const convName = conv?.name || `#${convId}`;
 
 		const stats = conversationStats.get(convId) || {
@@ -235,7 +241,7 @@ export function prepareSuccessSpeedScatterData(
 	});
 
 	const result: ChartDataPoint[] = [];
-	conversationStats.forEach(stats => {
+	conversationStats.forEach((stats) => {
 		if (stats.executionTimeCount > 0 && stats.similarityCount > 0) {
 			const avgExecutionTime = stats.totalExecutionTime / stats.executionTimeCount;
 			const avgSimilarity = stats.totalSimilarity / stats.similarityCount;
@@ -258,7 +264,7 @@ export function prepareSuccessSpeedScatterData(
 export function prepareExecutionTimeHistogramData(sessions: ExecutionSession[]): ChartDataPoint[] {
 	const executionTimes: number[] = [];
 
-	sessions.forEach(session => {
+	sessions.forEach((session) => {
 		const executionTime = calculateExecutionTime(session);
 		if (executionTime > 0) {
 			executionTimes.push(executionTime);
@@ -278,14 +284,14 @@ export function prepareExecutionTimeHistogramData(sessions: ExecutionSession[]):
 	for (let i = 0; i < binCount; i++) {
 		const binStart = min + i * binSize;
 		const binEnd = min + (i + 1) * binSize;
-		const count = executionTimes.filter(time => time >= binStart && time < binEnd).length;
+		const count = executionTimes.filter((time) => time >= binStart && time < binEnd).length;
 		bins.push({
 			range: `${binStart.toFixed(0)}-${binEnd.toFixed(0)}`,
 			count
 		});
 	}
 
-	return bins.map(bin => ({
+	return bins.map((bin) => ({
 		group: 'Frequency',
 		key: bin.range,
 		value: bin.count
@@ -305,11 +311,11 @@ export function prepareRecentTrendsData(
 	}
 
 	const conversationCounts = new Map<number, { name: string; count: number }>();
-	sessions.forEach(session => {
+	sessions.forEach((session) => {
 		if (!session.conversation_id) {
 			return;
 		}
-		const conv = conversations.find(c => c.id === session.conversation_id);
+		const conv = conversations.find((c) => c.id === session.conversation_id);
 		const convName = conv?.name || `#${session.conversation_id}`;
 		const existing = conversationCounts.get(session.conversation_id);
 		conversationCounts.set(session.conversation_id, {
@@ -335,11 +341,11 @@ export function prepareRecentTrendsData(
 
 	const result: ChartDataPoint[] = [];
 
-	topConversationIds.forEach(convId => {
-		const convSessions = sortedSessions.filter(s => s.conversation_id === convId);
+	topConversationIds.forEach((convId) => {
+		const convSessions = sortedSessions.filter((s) => s.conversation_id === convId);
 		const last15 = convSessions.slice(-15);
 
-		const conv = conversations.find(c => c.id === convId);
+		const conv = conversations.find((c) => c.id === convId);
 		const convName = conv?.name || `#${convId}`;
 
 		last15.forEach((session, index) => {

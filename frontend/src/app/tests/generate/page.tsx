@@ -1,42 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useAppData, useTests, useLLMConfigs } from '@/lib/AppDataContext';
 import { api, TestSuite } from '@/lib/api';
-import { useRouter } from 'next/navigation';
-import {
-	Form,
-	TextArea,
-	NumberInput,
-	Dropdown,
-	Checkbox,
-	Button,
-	InlineLoading,
-	TextInput
-} from '@carbon/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Form, TextArea, NumberInput, Dropdown, Checkbox, Button, InlineLoading, TextInput } from '@carbon/react';
 import { parseLLMVariations } from '@/lib/parseLLMResponse';
 
-interface GenerateTestsPageProps {
-	searchParams?: {
-		seed?: string;
-		description?: string;
-		expectedOutput?: string;
-	};
-}
-
-export default function GenerateTestsPage({ searchParams }: GenerateTestsPageProps) {
+function GenerateTestsContent() {
+	const searchParams = useSearchParams();
 	const router = useRouter();
 	const { fetchAllData } = useAppData();
 	const { llmConfigs, callLLM } = useLLMConfigs();
 	const { createTest } = useTests();
 
 	const [testSuites, setTestSuites] = useState<TestSuite[]>([]);
-	const [seedInput, setSeedInput] = useState(searchParams?.seed ?? '');
-	const [description, setDescription] = useState(searchParams?.description ?? '');
-	const [expectedOutput, setExpectedOutput] = useState(searchParams?.expectedOutput ?? '');
+	const [seedInput, setSeedInput] = useState(searchParams.get('seed') ?? '');
+	const [description, setDescription] = useState(searchParams.get('description') ?? '');
+	const [expectedOutput, setExpectedOutput] = useState(searchParams.get('expectedOutput') ?? '');
 	const [selectedLLMConfigId, setSelectedLLMConfigId] = useState<number | null>(null);
 	const [count, setCount] = useState(5);
-	const PROMPT_TEMPLATE = "You are a test generation assistant. Given an example user request: '{{seed}}', produce {{count}} similar variations that trigger the same action. Return a JSON array of strings.";
+	const PROMPT_TEMPLATE =
+		"You are a test generation assistant. Given an example user request: '{{seed}}', produce {{count}} similar variations that trigger the same action. Return a JSON array of strings.";
 	const [generated, setGenerated] = useState<Array<{ text: string; selected: boolean }>>([]);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -55,12 +40,10 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 		setError(null);
 		setIsGenerating(true);
 		try {
-			const filled = PROMPT_TEMPLATE
-				.replace(/{{seed}}/g, seedInput)
-				.replace(/{{count}}/g, count.toString());
+			const filled = PROMPT_TEMPLATE.replace(/{{seed}}/g, seedInput).replace(/{{count}}/g, count.toString());
 			const res = await callLLM(selectedLLMConfigId, { prompt: filled });
 			const items = parseLLMVariations(res.text);
-			setGenerated(items.map(text => ({ text, selected: true })));
+			setGenerated(items.map((text) => ({ text, selected: true })));
 		} catch (e: unknown) {
 			const msg = e instanceof Error ? e.message : String(e);
 			setError(msg);
@@ -70,7 +53,7 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 	};
 
 	const handleSave = async () => {
-		const toSave = generated.filter(g => g.selected).map(g => g.text);
+		const toSave = generated.filter((g) => g.selected).map((g) => g.text);
 		if (toSave.length === 0) return;
 		setIsSaving(true);
 		setError(null);
@@ -105,7 +88,7 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 					labelText="Seed example input"
 					placeholder="Enter a user request example..."
 					value={seedInput}
-					onChange={e => setSeedInput(e.currentTarget.value)}
+					onChange={(e) => setSeedInput(e.currentTarget.value)}
 					style={{ marginBottom: '1rem' }}
 				/>
 
@@ -114,7 +97,7 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 					labelText="Description (applied to all generated tests)"
 					placeholder="Enter test description"
 					value={description}
-					onChange={e => setDescription(e.currentTarget.value)}
+					onChange={(e) => setDescription(e.currentTarget.value)}
 					style={{ marginBottom: '1rem' }}
 				/>
 
@@ -123,7 +106,7 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 					labelText="Expected output (applied to all generated tests)"
 					placeholder="Enter expected output"
 					value={expectedOutput}
-					onChange={e => setExpectedOutput(e.currentTarget.value)}
+					onChange={(e) => setExpectedOutput(e.currentTarget.value)}
 					style={{ marginBottom: '1rem' }}
 				/>
 
@@ -131,14 +114,13 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 					id="llm-config-select"
 					label="LLM config"
 					titleText="Select LLM config"
-					items={llmConfigs.map(cfg => ({ id: String(cfg.id), label: cfg.name }))}
+					items={llmConfigs.map((cfg) => ({ id: String(cfg.id), label: cfg.name }))}
 					selectedItem={
 						selectedLLMConfigId
 							? {
-								id: String(selectedLLMConfigId),
-								label:
-									llmConfigs.find(c => c.id === selectedLLMConfigId)?.name || ''
-							}
+									id: String(selectedLLMConfigId),
+									label: llmConfigs.find((c) => c.id === selectedLLMConfigId)?.name || ''
+								}
 							: undefined
 					}
 					onChange={({ selectedItem }) => {
@@ -155,7 +137,7 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 					value={count}
 					min={1}
 					max={20}
-					onChange={e => setCount(Number(e.currentTarget.value))}
+					onChange={(e) => setCount(Number(e.currentTarget.value))}
 					style={{ marginBottom: '1rem' }}
 				/>
 
@@ -163,10 +145,13 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 					id="suite-select"
 					label="Add to test suite (optional)"
 					titleText="Select test suite"
-					items={testSuites.map(s => ({ id: String(s.id), label: s.name }))}
+					items={testSuites.map((s) => ({ id: String(s.id), label: s.name }))}
 					selectedItem={
 						selectedSuiteId
-							? { id: String(selectedSuiteId), label: testSuites.find(s => s.id === selectedSuiteId)?.name || '' }
+							? {
+									id: String(selectedSuiteId),
+									label: testSuites.find((s) => s.id === selectedSuiteId)?.name || ''
+								}
 							: undefined
 					}
 					onChange={({ selectedItem }) => {
@@ -208,17 +193,20 @@ export default function GenerateTestsPage({ searchParams }: GenerateTestsPagePro
 						/>
 					))}
 
-					<Button
-						kind="primary"
-						onClick={handleSave}
-						disabled={isSaving}
-						style={{ marginTop: '1rem' }}
-					>
+					<Button kind="primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: '1rem' }}>
 						{isSaving ? 'Saving...' : 'Save selected tests'}
 						{isSaving && <InlineLoading description="Saving tests..." />}
 					</Button>
 				</div>
 			)}
 		</div>
+	);
+}
+
+export default function GenerateTestsPage() {
+	return (
+		<Suspense fallback={null}>
+			<GenerateTestsContent />
+		</Suspense>
 	);
 }

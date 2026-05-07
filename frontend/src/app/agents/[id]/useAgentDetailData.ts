@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type Agent, type ExecutionSession, type SessionMessage } from '../../../lib/api';
 import { loadConversationsByIds, loadSessionMessages, calculateSessionStats } from '../../../lib/utils';
-import { calculateExecutionTime, getSimilarityScore, sortSessionsByTime } from '../../components/AgentAnalytics/analyticsUtils';
+import {
+	calculateExecutionTime,
+	getSimilarityScore,
+	sortSessionsByTime
+} from '../../components/AgentAnalytics/analyticsUtils';
 
 export type AgentRequestTemplateConfig = {
 	id: number;
@@ -75,7 +79,11 @@ export function useAgentDetailData(agentId: number | null) {
 			setRecentSessions(recentSessionsData.data);
 
 			// Load conversations for the sessions
-			const conversationIds = Array.from(new Set(recentSessionsData.data.map(s => s.conversation_id).filter(id => id !== undefined) as number[]));
+			const conversationIds = Array.from(
+				new Set(
+					recentSessionsData.data.map((s) => s.conversation_id).filter((id) => id !== undefined) as number[]
+				)
+			);
 			const conversationsMap = await loadConversationsByIds(conversationIds);
 			setConversations(conversationsMap);
 
@@ -107,7 +115,7 @@ export function useAgentDetailData(agentId: number | null) {
 				let totalExecutionTime = 0;
 				let executionTimeCount = 0;
 
-				sessions.forEach(session => {
+				sessions.forEach((session) => {
 					if (session.success) {
 						successCount++;
 					}
@@ -144,12 +152,14 @@ export function useAgentDetailData(agentId: number | null) {
 				lastRun: calculatedStats.lastRun,
 				trends: {
 					successRate: second.successRate - first.successRate,
-					similarity: overall.avgSimilarity && first.avgSimilarity && second.avgSimilarity
-						? second.avgSimilarity - first.avgSimilarity
-						: null,
-					executionTime: overall.avgExecutionTime && first.avgExecutionTime && second.avgExecutionTime
-						? second.avgExecutionTime - first.avgExecutionTime
-						: null
+					similarity:
+						overall.avgSimilarity && first.avgSimilarity && second.avgSimilarity
+							? second.avgSimilarity - first.avgSimilarity
+							: null,
+					executionTime:
+						overall.avgExecutionTime && first.avgExecutionTime && second.avgExecutionTime
+							? second.avgExecutionTime - first.avgExecutionTime
+							: null
 				}
 			});
 

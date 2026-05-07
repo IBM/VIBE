@@ -14,7 +14,7 @@ export default function TestsPage() {
 	const [deleteId, setDeleteId] = useState<number | null>(null);
 	const [deleteName, setDeleteName] = useState('');
 
-	const getTestById = (id: number) => tests.find(test => test.id === id);
+	const getTestById = (id: number) => tests.find((test) => test.id === id);
 
 	const handleAddClick = () => {
 		setEditingId(null);
@@ -41,20 +41,16 @@ export default function TestsPage() {
 	// Prepare initial form data for TestFormModal
 	const initialFormData: Record<string, string> = editingId
 		? {
-			'test-name': getTestById(editingId)?.name || '',
-			'test-description': getTestById(editingId)?.description || '',
-			'test-input': getTestById(editingId)?.input || '',
-			'test-expected-output': getTestById(editingId)?.expected_output || ''
-		}
+				'test-name': getTestById(editingId)?.name || '',
+				'test-description': getTestById(editingId)?.description || '',
+				'test-input': getTestById(editingId)?.input || '',
+				'test-expected-output': getTestById(editingId)?.expected_output || ''
+			}
 		: ({} as Record<string, string>);
 
 	return (
 		<>
-			<Tests
-				onAddClick={handleAddClick}
-				onEditTest={handleEditTest}
-				onDeleteTest={handleDeleteTest}
-			/>
+			<Tests onAddClick={handleAddClick} onEditTest={handleEditTest} onDeleteTest={handleDeleteTest} />
 
 			<TestFormModal
 				isOpen={isModalOpen}

@@ -12,7 +12,7 @@ describe('similarityScoreUtils', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_score: 0.9, similarity_scoring_status: 'completed' } as any,
 				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any,
-				{ id: 3, similarity_scoring_status: 'pending' } as any,
+				{ id: 3, similarity_scoring_status: 'pending' } as any
 			];
 
 			const scored = filterScoredResults(results);
@@ -24,7 +24,7 @@ describe('similarityScoreUtils', () => {
 		it('excludes results without similarity_score', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_scoring_status: 'completed' } as any,
-				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any,
+				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any
 			];
 
 			const scored = filterScoredResults(results);
@@ -35,7 +35,7 @@ describe('similarityScoreUtils', () => {
 		it('excludes results with null similarity_score', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_score: null, similarity_scoring_status: 'completed' } as any,
-				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any,
+				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any
 			];
 
 			const scored = filterScoredResults(results);
@@ -46,7 +46,7 @@ describe('similarityScoreUtils', () => {
 		it('excludes results with undefined similarity_score', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_score: undefined, similarity_scoring_status: 'completed' } as any,
-				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any,
+				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any
 			];
 
 			const scored = filterScoredResults(results);
@@ -59,7 +59,7 @@ describe('similarityScoreUtils', () => {
 				{ id: 1, similarity_score: 0.9, similarity_scoring_status: 'pending' } as any,
 				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'running' } as any,
 				{ id: 3, similarity_score: 0.7, similarity_scoring_status: 'failed' } as any,
-				{ id: 4, similarity_score: 0.6, similarity_scoring_status: 'completed' } as any,
+				{ id: 4, similarity_score: 0.6, similarity_scoring_status: 'completed' } as any
 			];
 
 			const scored = filterScoredResults(results);
@@ -75,7 +75,7 @@ describe('similarityScoreUtils', () => {
 		it('returns empty array when no results have completed scoring', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_scoring_status: 'pending' } as any,
-				{ id: 2, similarity_scoring_status: 'running' } as any,
+				{ id: 2, similarity_scoring_status: 'running' } as any
 			];
 
 			const scored = filterScoredResults(results);
@@ -88,7 +88,7 @@ describe('similarityScoreUtils', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_score: 0.9, similarity_scoring_status: 'completed' } as any,
 				{ id: 2, similarity_score: 0.8, similarity_scoring_status: 'completed' } as any,
-				{ id: 3, similarity_score: 0.7, similarity_scoring_status: 'completed' } as any,
+				{ id: 3, similarity_score: 0.7, similarity_scoring_status: 'completed' } as any
 			];
 
 			const average = calculateOverallAverageSimilarityScore(results);
@@ -103,7 +103,7 @@ describe('similarityScoreUtils', () => {
 		it('returns N/A when no results have completed scoring', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_scoring_status: 'pending' } as any,
-				{ id: 2, similarity_scoring_status: 'running' } as any,
+				{ id: 2, similarity_scoring_status: 'running' } as any
 			];
 
 			const average = calculateOverallAverageSimilarityScore(results);
@@ -114,7 +114,7 @@ describe('similarityScoreUtils', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_score: 0.9, similarity_scoring_status: 'completed' } as any,
 				{ id: 2, similarity_scoring_status: 'pending' } as any,
-				{ id: 3, similarity_score: 0.7, similarity_scoring_status: 'completed' } as any,
+				{ id: 3, similarity_score: 0.7, similarity_scoring_status: 'completed' } as any
 			];
 
 			const average = calculateOverallAverageSimilarityScore(results);
@@ -124,7 +124,7 @@ describe('similarityScoreUtils', () => {
 		it('formats result to one decimal place', () => {
 			const results: TestResult[] = [
 				{ id: 1, similarity_score: 0.95, similarity_scoring_status: 'completed' } as any,
-				{ id: 2, similarity_score: 0.85, similarity_scoring_status: 'completed' } as any,
+				{ id: 2, similarity_score: 0.85, similarity_scoring_status: 'completed' } as any
 			];
 
 			const average = calculateOverallAverageSimilarityScore(results);
@@ -133,7 +133,7 @@ describe('similarityScoreUtils', () => {
 
 		it('handles single result', () => {
 			const results: TestResult[] = [
-				{ id: 1, similarity_score: 0.75, similarity_scoring_status: 'completed' } as any,
+				{ id: 1, similarity_score: 0.75, similarity_scoring_status: 'completed' } as any
 			];
 
 			const average = calculateOverallAverageSimilarityScore(results);
@@ -149,7 +149,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(), // +1 hour
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString() // +1 hour
 			};
 
 			const results: TestResult[] = [
@@ -158,15 +158,15 @@ describe('similarityScoreUtils', () => {
 					agent_id: 1,
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(), // +30 min
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString() // +30 min
 				} as any,
 				{
 					id: 2,
 					agent_id: 1,
 					similarity_score: 0.7,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 2700000).toISOString(), // +45 min
-				} as any,
+					created_at: new Date(baseDate.getTime() + 2700000).toISOString() // +45 min
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -178,7 +178,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const results: TestResult[] = [
@@ -187,8 +187,8 @@ describe('similarityScoreUtils', () => {
 					agent_id: 2, // Different agent
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
-				} as any,
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -200,7 +200,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const results: TestResult[] = [
@@ -209,15 +209,15 @@ describe('similarityScoreUtils', () => {
 					agent_id: 1,
 					similarity_score: 0.5,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() - 1000).toISOString(), // Before start
+					created_at: new Date(baseDate.getTime() - 1000).toISOString() // Before start
 				} as any,
 				{
 					id: 2,
 					agent_id: 1,
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
-				} as any,
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -229,7 +229,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const results: TestResult[] = [
@@ -238,15 +238,15 @@ describe('similarityScoreUtils', () => {
 					agent_id: 1,
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
 				} as any,
 				{
 					id: 2,
 					agent_id: 1,
 					similarity_score: 0.5,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 3600001).toISOString(), // After end
-				} as any,
+					created_at: new Date(baseDate.getTime() + 3600001).toISOString() // After end
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -257,7 +257,7 @@ describe('similarityScoreUtils', () => {
 			const suiteRun = {
 				id: 1,
 				agent_id: 1,
-				started_at: baseDate.toISOString(),
+				started_at: baseDate.toISOString()
 				// No completed_at
 			};
 
@@ -267,8 +267,8 @@ describe('similarityScoreUtils', () => {
 					agent_id: 1,
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
-				} as any,
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -280,7 +280,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const results: TestResult[] = [
@@ -289,15 +289,15 @@ describe('similarityScoreUtils', () => {
 					agent_id: 1,
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
 				} as any,
 				{
 					id: 2,
 					agent_id: 2,
 					similarity_score: 0.5,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
-				} as any,
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -309,7 +309,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const results: TestResult[] = [
@@ -318,14 +318,14 @@ describe('similarityScoreUtils', () => {
 					agent_id: 1,
 					similarity_score: 0.9,
 					similarity_scoring_status: 'completed',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
 				} as any,
 				{
 					id: 2,
 					agent_id: 1,
 					similarity_scoring_status: 'pending',
-					created_at: new Date(baseDate.getTime() + 1800000).toISOString(),
-				} as any,
+					created_at: new Date(baseDate.getTime() + 1800000).toISOString()
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);
@@ -337,7 +337,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const average = calculateSuiteRunAverageSimilarityScore([], suiteRun);
@@ -349,7 +349,7 @@ describe('similarityScoreUtils', () => {
 				id: 1,
 				agent_id: 1,
 				started_at: baseDate.toISOString(),
-				completed_at: new Date(baseDate.getTime() + 3600000).toISOString(),
+				completed_at: new Date(baseDate.getTime() + 3600000).toISOString()
 			};
 
 			const results: TestResult[] = [
@@ -357,9 +357,9 @@ describe('similarityScoreUtils', () => {
 					id: 1,
 					agent_id: 1,
 					similarity_score: 0.9,
-					similarity_scoring_status: 'completed',
+					similarity_scoring_status: 'completed'
 					// No created_at
-				} as any,
+				} as any
 			];
 
 			const average = calculateSuiteRunAverageSimilarityScore(results, suiteRun);

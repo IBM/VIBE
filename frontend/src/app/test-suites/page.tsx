@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, TestSuite } from '../../lib/api';
 import {
@@ -57,7 +57,6 @@ export default function TestSuitesPage() {
 		fetchSuites();
 	}, []);
 
-
 	// Open modal for creating new suite
 	const openModal = () => {
 		setEditingId(null);
@@ -113,24 +112,19 @@ export default function TestSuitesPage() {
 		if (!tagString) {
 			return [];
 		}
-		return tagString.split(',').map(tag => tag.trim()).filter(Boolean);
+		return tagString
+			.split(',')
+			.map((tag) => tag.trim())
+			.filter(Boolean);
 	};
 
 	// Get current page of data for pagination
-	const paginatedSuites = suites.slice(
-		(page - 1) * pageSize,
-		page * pageSize,
-	);
+	const paginatedSuites = suites.slice((page - 1) * pageSize, page * pageSize);
 
 	if (loading) {
 		return (
 			<DataTableSkeleton
-				headers={[
-					{ header: 'Name' },
-					{ header: 'Description' },
-					{ header: 'Created' },
-					{ header: 'Tags' }
-				]}
+				headers={[{ header: 'Name' }, { header: 'Description' }, { header: 'Created' }, { header: 'Tags' }]}
 				rowCount={5}
 			/>
 		);
@@ -166,13 +160,15 @@ export default function TestSuitesPage() {
 						{paginatedSuites.map((suite) => (
 							<Column sm={4} md={4} lg={4} key={suite.id}>
 								<Tile className={styles.suiteTile}>
-									<div 
+									<div
 										className={styles.tileContent}
 										onClick={() => handleSuiteClick(suite.id as number)}
 										style={{ cursor: 'pointer' }}
 									>
 										<div className={styles.tileHeader}>
-											<h4><Folder size={20} /> {suite.name}</h4>
+											<h4>
+												<Folder size={20} /> {suite.name}
+											</h4>
 											<div className={styles.tileActions} onClick={(e) => e.stopPropagation()}>
 												<IconButton
 													kind="ghost"
@@ -192,9 +188,7 @@ export default function TestSuitesPage() {
 												</IconButton>
 											</div>
 										</div>
-										{suite.description && (
-											<p className={styles.description}>{suite.description}</p>
-										)}
+										{suite.description && <p className={styles.description}>{suite.description}</p>}
 										<div className={styles.tileFooter}>
 											<div className={styles.tileDate}>
 												<Calendar size={16} />
@@ -203,14 +197,20 @@ export default function TestSuitesPage() {
 											<div className={styles.tileTestCount}>
 												<span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
 													<TagIcon size={16} />
-													<span>{typeof suite.test_count === 'number' ? `${suite.test_count} test${suite.test_count === 1 ? '' : 's'}` : '-'}</span>
+													<span>
+														{typeof suite.test_count === 'number'
+															? `${suite.test_count} test${suite.test_count === 1 ? '' : 's'}`
+															: '-'}
+													</span>
 												</span>
 											</div>
 											{getTags(suite.tags).length > 0 && (
 												<div className={styles.tagContainer}>
 													<TagIcon size={16} />
 													{getTags(suite.tags).map((tag, index) => (
-														<Tag key={index} type="blue" size="sm">{tag}</Tag>
+														<Tag key={index} type="blue" size="sm">
+															{tag}
+														</Tag>
 													))}
 												</div>
 											)}

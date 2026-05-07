@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Accordion, AccordionItem, UnorderedList, ListItem } from '@carbon/react';
 
 /**
@@ -12,9 +11,7 @@ export function TemplateInfoPanel() {
 		<Accordion>
 			<AccordionItem title="How do templates work?">
 				<div style={{ padding: '1rem 0' }}>
-					<p style={{ marginBottom: '1rem' }}>
-						Templates define how VIBE talks to AI services:
-					</p>
+					<p style={{ marginBottom: '1rem' }}>Templates define how VIBE talks to AI services:</p>
 
 					<UnorderedList style={{ marginBottom: '1rem' }}>
 						<ListItem>
@@ -24,8 +21,8 @@ export function TemplateInfoPanel() {
 							<strong>Response maps</strong> extract the AI&apos;s reply from the API response
 						</ListItem>
 						<ListItem>
-							<strong>Capabilities</strong> are tags that match templates to conversations.
-							If a conversation requires &quot;openai-chat&quot;, only agents with that capability can run it.
+							<strong>Capabilities</strong> are tags that match templates to conversations. If a
+							conversation requires &quot;openai-chat&quot;, only agents with that capability can run it.
 						</ListItem>
 					</UnorderedList>
 
@@ -45,14 +42,16 @@ export function TemplateInfoPanel() {
 
 					<h6 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Response map spec</h6>
 					<p>Use dot notation to extract data from API responses:</p>
-					<pre style={{
-						background: '#f4f4f4',
-						padding: '0.75rem',
-						borderRadius: '4px',
-						fontSize: '12px',
-						marginTop: '0.5rem'
-					}}>
-{`{
+					<pre
+						style={{
+							background: '#f4f4f4',
+							padding: '0.75rem',
+							borderRadius: '4px',
+							fontSize: '12px',
+							marginTop: '0.5rem'
+						}}
+					>
+						{`{
   "output": "choices.0.message.content"
 }`}
 					</pre>
@@ -76,27 +75,29 @@ export function CapabilityInfoPanel() {
 
 					<UnorderedList style={{ marginBottom: '1rem' }}>
 						<ListItem>
-							When you set a <strong>required capability</strong>, the conversation will only execute
-							on agents that have templates with matching capabilities.
+							When you set a <strong>required capability</strong>, the conversation will only execute on
+							agents that have templates with matching capabilities.
 						</ListItem>
 						<ListItem>
 							This ensures the API request format matches what your target AI service expects.
 						</ListItem>
-						<ListItem>
-							Leave empty to allow any agent to run this conversation.
-						</ListItem>
+						<ListItem>Leave empty to allow any agent to run this conversation.</ListItem>
 					</UnorderedList>
 
 					<h6 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Example capabilities</h6>
 					<UnorderedList>
-						<ListItem><code>openai-chat</code> - OpenAI ChatGPT format</ListItem>
-						<ListItem><code>ollama-generate</code> - Ollama format</ListItem>
-						<ListItem><code>anthropic-messages</code> - Claude format</ListItem>
+						<ListItem>
+							<code>openai-chat</code> - OpenAI ChatGPT format
+						</ListItem>
+						<ListItem>
+							<code>ollama-generate</code> - Ollama format
+						</ListItem>
+						<ListItem>
+							<code>anthropic-messages</code> - Claude format
+						</ListItem>
 					</UnorderedList>
 				</div>
 			</AccordionItem>
 		</Accordion>
 	);
 }
-
-

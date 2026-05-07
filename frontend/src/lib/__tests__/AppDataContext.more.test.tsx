@@ -1,14 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-	AppDataProvider,
-	useAgents,
-	useTests,
-	useLLMConfigs,
-	useResultOperations
-} from '../AppDataContext';
+import { AppDataProvider, useAgents, useTests, useLLMConfigs, useResultOperations } from '../AppDataContext';
 import { api } from '../api';
 import type { LLMRequestOptions } from '@ibm-vibe/types';
 
@@ -52,20 +46,21 @@ function AgentsHarness() {
 			<div data-testid="agents-count">{agents.length}</div>
 			<div data-testid="agents-first-name">{agents[0]?.name ?? ''}</div>
 
-			<button type="button" onClick={() => fetchAgents()}>Fetch agents</button>
+			<button type="button" onClick={() => fetchAgents()}>
+				Fetch agents
+			</button>
 			<button
 				type="button"
 				onClick={() => createAgent({ name: 'New agent', version: '1', prompt: 'p', settings: '{}' } as any)}
 			>
 				Create agent
 			</button>
-			<button
-				type="button"
-				onClick={() => updateAgent(1, { name: 'Updated agent' } as any)}
-			>
+			<button type="button" onClick={() => updateAgent(1, { name: 'Updated agent' } as any)}>
 				Update agent
 			</button>
-			<button type="button" onClick={() => deleteAgent(1)}>Delete agent</button>
+			<button type="button" onClick={() => deleteAgent(1)}>
+				Delete agent
+			</button>
 		</div>
 	);
 }
@@ -80,26 +75,39 @@ function TestsHarness() {
 			<div data-testid="tests-count">{tests.length}</div>
 			<div data-testid="tests-first-name">{tests[0]?.name ?? ''}</div>
 
-			<button type="button" onClick={() => fetchTests()}>Fetch tests</button>
+			<button type="button" onClick={() => fetchTests()}>
+				Fetch tests
+			</button>
 			<button
 				type="button"
-				onClick={() => createTest({ name: 'New test', description: '', input: 'i', expected_output: 'o' } as any)}
+				onClick={() =>
+					createTest({ name: 'New test', description: '', input: 'i', expected_output: 'o' } as any)
+				}
 			>
 				Create test
 			</button>
-			<button
-				type="button"
-				onClick={() => updateTest(1, { name: 'Updated test' } as any)}
-			>
+			<button type="button" onClick={() => updateTest(1, { name: 'Updated test' } as any)}>
 				Update test
 			</button>
-			<button type="button" onClick={() => deleteTest(1)}>Delete test</button>
+			<button type="button" onClick={() => deleteTest(1)}>
+				Delete test
+			</button>
 		</div>
 	);
 }
 
 function LLMConfigsHarness() {
-	const { llmConfigs, loading, error, fetchLLMConfigs, createLLMConfig, updateLLMConfig, deleteLLMConfig, callLLM, callLLMWithFallback } = useLLMConfigs();
+	const {
+		llmConfigs,
+		loading,
+		error,
+		fetchLLMConfigs,
+		createLLMConfig,
+		updateLLMConfig,
+		deleteLLMConfig,
+		callLLM,
+		callLLMWithFallback
+	} = useLLMConfigs();
 	const [llmResult, setLlmResult] = useState<string>('');
 
 	const options: LLMRequestOptions = { prompt: 'Hello' } as any;
@@ -112,24 +120,22 @@ function LLMConfigsHarness() {
 			<div data-testid="llm-first-name">{llmConfigs[0]?.name ?? ''}</div>
 			<div data-testid="llm-result">{llmResult}</div>
 
-			<button type="button" onClick={() => fetchLLMConfigs()}>Fetch llm configs</button>
+			<button type="button" onClick={() => fetchLLMConfigs()}>
+				Fetch llm configs
+			</button>
 			<button
 				type="button"
 				onClick={() => createLLMConfig({ name: 'New config', provider: 'x', config: '{}', priority: 1 } as any)}
 			>
 				Create llm config
 			</button>
-			<button
-				type="button"
-				onClick={() => updateLLMConfig(1, { name: 'Updated config' } as any)}
-			>
+			<button type="button" onClick={() => updateLLMConfig(1, { name: 'Updated config' } as any)}>
 				Update llm config
 			</button>
-			<button type="button" onClick={() => deleteLLMConfig(1)}>Delete llm config</button>
-			<button
-				type="button"
-				onClick={async () => setLlmResult(JSON.stringify(await callLLM(1, options)))}
-			>
+			<button type="button" onClick={() => deleteLLMConfig(1)}>
+				Delete llm config
+			</button>
+			<button type="button" onClick={async () => setLlmResult(JSON.stringify(await callLLM(1, options)))}>
 				Call llm
 			</button>
 			<button
@@ -200,21 +206,49 @@ function ResultOpsHarness() {
 describe('AppDataContext (more coverage)', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		mockedApi.getAgents.mockResolvedValue([{ id: 1, name: 'Agent A', version: '1', prompt: '', settings: '{}' }] as any);
+		mockedApi.getAgents.mockResolvedValue([
+			{ id: 1, name: 'Agent A', version: '1', prompt: '', settings: '{}' }
+		] as any);
 		mockedApi.getTests.mockResolvedValue([{ id: 1, name: 'Test A' }] as any);
-		mockedApi.getLLMConfigs.mockResolvedValue([{ id: 1, name: 'LLM A', provider: 'x', config: '{}', priority: 1 }] as any);
+		mockedApi.getLLMConfigs.mockResolvedValue([
+			{ id: 1, name: 'LLM A', provider: 'x', config: '{}', priority: 1 }
+		] as any);
 		mockedApi.getResults.mockResolvedValue([{ id: 1 }] as any);
 
-		mockedApi.createAgent.mockResolvedValue({ id: 2, name: 'Agent B', version: '1', prompt: '', settings: '{}' } as any);
-		mockedApi.updateAgent.mockResolvedValue({ id: 1, name: 'Agent A+', version: '1', prompt: '', settings: '{}' } as any);
+		mockedApi.createAgent.mockResolvedValue({
+			id: 2,
+			name: 'Agent B',
+			version: '1',
+			prompt: '',
+			settings: '{}'
+		} as any);
+		mockedApi.updateAgent.mockResolvedValue({
+			id: 1,
+			name: 'Agent A+',
+			version: '1',
+			prompt: '',
+			settings: '{}'
+		} as any);
 		mockedApi.deleteAgent.mockResolvedValue(undefined as any);
 
 		mockedApi.createTest.mockResolvedValue({ id: 2, name: 'Test B' } as any);
 		mockedApi.updateTest.mockResolvedValue({ id: 1, name: 'Test A+' } as any);
 		mockedApi.deleteTest.mockResolvedValue(undefined as any);
 
-		mockedApi.createLLMConfig.mockResolvedValue({ id: 2, name: 'LLM B', provider: 'x', config: '{}', priority: 2 } as any);
-		mockedApi.updateLLMConfig.mockResolvedValue({ id: 1, name: 'LLM A+', provider: 'x', config: '{}', priority: 1 } as any);
+		mockedApi.createLLMConfig.mockResolvedValue({
+			id: 2,
+			name: 'LLM B',
+			provider: 'x',
+			config: '{}',
+			priority: 2
+		} as any);
+		mockedApi.updateLLMConfig.mockResolvedValue({
+			id: 1,
+			name: 'LLM A+',
+			provider: 'x',
+			config: '{}',
+			priority: 1
+		} as any);
 		mockedApi.deleteLLMConfig.mockResolvedValue(undefined as any);
 
 		mockedApi.callLLM.mockResolvedValue({ output: 'ok' } as any);
@@ -320,4 +354,3 @@ describe('AppDataContext (more coverage)', () => {
 		await waitFor(() => expect(screen.getByTestId('resultsops-caught').textContent).toBe('Score failed'));
 	});
 });
-

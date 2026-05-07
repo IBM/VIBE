@@ -22,7 +22,9 @@ describe('data transfer API', () => {
 			json: async () => bundle
 		} as Response);
 
-		await expect(api.exportData([ExportableDataType.AGENTS, ExportableDataType.CONVERSATIONS])).resolves.toEqual(bundle);
+		await expect(api.exportData([ExportableDataType.AGENTS, ExportableDataType.CONVERSATIONS])).resolves.toEqual(
+			bundle
+		);
 		expect(global.fetch).toHaveBeenCalledWith(
 			'http://localhost:5000/api/data-transfer/export?types=agents,conversations'
 		);
@@ -145,4 +147,3 @@ describe('data transfer API', () => {
 		).rejects.toThrow('Invalid import payload');
 	});
 });
-

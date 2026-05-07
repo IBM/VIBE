@@ -1,9 +1,4 @@
-import type {
-	ComboChartOptions,
-	BarChartOptions,
-	LineChartOptions,
-	ScatterChartOptions
-} from '@carbon/charts';
+import type { ComboChartOptions, BarChartOptions, LineChartOptions, ScatterChartOptions } from '@carbon/charts';
 
 // These match Carbon's semantic colors: blue (interactive), purple (support-04), red (danger), green (success)
 export const CHART_COLORS = {
@@ -163,7 +158,7 @@ export const failureAnalysisChartOptions = {
 	...baseChartOptions,
 	color: {
 		scale: {
-			'Failures': CHART_COLORS.FAILURES
+			Failures: CHART_COLORS.FAILURES
 		}
 	},
 	legend: {

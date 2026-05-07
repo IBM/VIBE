@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api, type SuiteEntry } from '../../../lib/api';
 import {
@@ -36,23 +36,12 @@ import { ComboChart } from '@carbon/charts-react';
 import '@carbon/charts/styles.css';
 import type { ComboChartOptions } from '@carbon/charts';
 import { CHART_COLORS } from '../../components/AgentAnalytics/chartOptions';
-import {
-	ChevronLeft,
-	Rocket,
-	Add,
-	ArrowLeft,
-	Edit,
-	TrashCan
-} from '@carbon/icons-react';
+import { ChevronLeft, Rocket, Add, ArrowLeft, Edit, TrashCan } from '@carbon/icons-react';
 import TestSuiteFormModal from '../../components/TestSuiteFormModal';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import { AvailableItemsTable, type AvailableSuiteItem } from './components/AvailableItemsTable';
 import { useTestSuiteDetailData } from './useTestSuiteDetailData';
 import styles from '../TestSuites.module.scss';
-
-interface PageProps {
-	params: { id: string };
-}
 
 type SuitePerformancePoint = {
 	group: string;
@@ -61,7 +50,8 @@ type SuitePerformancePoint = {
 	tokens?: number;
 };
 
-export default function TestSuiteDetailPage({ params }: PageProps) {
+export default function TestSuiteDetailPage() {
+	const params = useParams<{ id: string }>();
 	const { id } = params;
 	const suiteId = parseInt(id, 10);
 
@@ -129,12 +119,12 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 	// Derived run agents for filter
 	const runAgents = useMemo(() => {
 		const map = new Map<number, string>();
-		suiteRuns.forEach(r => map.set(r.agent_id, r.agent_name || `Agent #${r.agent_id}`));
+		suiteRuns.forEach((r) => map.set(r.agent_id, r.agent_name || `Agent #${r.agent_id}`));
 		return Array.from(map.entries());
 	}, [suiteRuns]);
 
 	const filteredRuns = useMemo(() => {
-		return suiteRuns.filter(r => runsAgentFilter === 'all' || r.agent_id === runsAgentFilter);
+		return suiteRuns.filter((r) => runsAgentFilter === 'all' || r.agent_id === runsAgentFilter);
 	}, [suiteRuns, runsAgentFilter]);
 
 	// Chart data: success rate, avg similarity, and token usage across runs
@@ -142,16 +132,16 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 		if (!filteredRuns || filteredRuns.length === 0) {
 			return [] as Array<SuitePerformancePoint>;
 		}
-		const runs = [...filteredRuns].sort((a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime());
+		const runs = [...filteredRuns].sort(
+			(a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime()
+		);
 
 		// Limit to most recent runs to match what the chart actually displays
 		// This ensures the scale is calculated from visible data only
 		const displayedRuns = runs.slice(-50);
 		const points: Array<SuitePerformancePoint> = [];
 		displayedRuns.forEach((run, idx) => {
-			const key = runsViewMode === 'time'
-				? new Date(run.started_at)
-				: `#${idx + 1}`;
+			const key = runsViewMode === 'time' ? new Date(run.started_at) : `#${idx + 1}`;
 			const successRate = run.total_tests > 0 ? (run.successful_tests / run.total_tests) * 100 : 0;
 			if (!Number.isNaN(successRate)) {
 				points.push({ group: 'Success rate', key, value: Math.round(successRate) });
@@ -204,7 +194,12 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 		const itemKey = `${item.type}-${item.id}`;
 		const agentOverride = availableItemAgents[itemKey];
 
-		const entryPayload: { sequence: number; test_id?: number; child_suite_id?: number; agent_id_override?: number } = {
+		const entryPayload: {
+			sequence: number;
+			test_id?: number;
+			child_suite_id?: number;
+			agent_id_override?: number;
+		} = {
 			sequence: entries.length
 		};
 
@@ -220,9 +215,9 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 
 		try {
 			const newEntry = await api.addSuiteEntry(suiteId, entryPayload);
-			setEntries(prev => [...prev, newEntry]);
+			setEntries((prev) => [...prev, newEntry]);
 			// Reset the agent selection for this item
-			setAvailableItemAgents(prev => ({ ...prev, [itemKey]: null }));
+			setAvailableItemAgents((prev) => ({ ...prev, [itemKey]: null }));
 			setError(null);
 		} catch (e: unknown) {
 			if (e instanceof Error) {
@@ -234,7 +229,7 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 	const handleDeleteEntry = async (entryId: number) => {
 		try {
 			await api.deleteSuiteEntry(suiteId, entryId);
-			setEntries(prev => prev.filter(e => e.id !== entryId));
+			setEntries((prev) => prev.filter((e) => e.id !== entryId));
 			setError(null);
 		} catch (e: unknown) {
 			if (e instanceof Error) {
@@ -246,11 +241,9 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 	const handleUpdateEntryAgent = async (entryId: number, agentId: number | null) => {
 		try {
 			await api.updateSuiteEntry(suiteId, entryId, { agent_id_override: agentId || undefined });
-			setEntries(prev => prev.map(e =>
-				e.id === entryId
-					? { ...e, agent_id_override: agentId || undefined }
-					: e,
-			));
+			setEntries((prev) =>
+				prev.map((e) => (e.id === entryId ? { ...e, agent_id_override: agentId || undefined } : e))
+			);
 			setError(null);
 		} catch (e: unknown) {
 			let message = 'An unknown error occurred';
@@ -265,26 +258,26 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 
 	const getEntryName = (entry: SuiteEntry): string => {
 		if (entry.test_id) {
-			const test = allTests.find(t => t.id === entry.test_id);
+			const test = allTests.find((t) => t.id === entry.test_id);
 			return test ? test.name : `Test #${entry.test_id}`;
 		} else if (entry.child_suite_id) {
-			const childSuite = allSuites.find(s => s.id === entry.child_suite_id);
+			const childSuite = allSuites.find((s) => s.id === entry.child_suite_id);
 			return childSuite ? childSuite.name : `Suite #${entry.child_suite_id}`;
 		}
 		return 'Unknown Entry';
 	};
 
 	// Filter available tests and suites
-	const usedTestIds = new Set(entries.filter(e => e.test_id).map(e => e.test_id!));
-	const usedSuiteIds = new Set(entries.filter(e => e.child_suite_id).map(e => e.child_suite_id!));
+	const usedTestIds = new Set(entries.filter((e) => e.test_id).map((e) => e.test_id!));
+	const usedSuiteIds = new Set(entries.filter((e) => e.child_suite_id).map((e) => e.child_suite_id!));
 
 	const availableTests: AvailableSuiteItem[] = allTests
-		.filter(t => t.id != null && !usedTestIds.has(t.id))
-		.map(t => ({ id: t.id!, name: t.name, type: 'test', description: t.description }));
+		.filter((t) => t.id != null && !usedTestIds.has(t.id))
+		.map((t) => ({ id: t.id!, name: t.name, type: 'test', description: t.description }));
 
 	const availableSuites: AvailableSuiteItem[] = allSuites
-		.filter(s => !usedSuiteIds.has(s.id!))
-		.map(s => ({ id: s.id!, name: s.name, type: 'suite', description: s.description }));
+		.filter((s) => !usedSuiteIds.has(s.id!))
+		.map((s) => ({ id: s.id!, name: s.name, type: 'suite', description: s.description }));
 
 	// Filter items based on search and active tab
 	const getFilteredItems = () => {
@@ -292,16 +285,17 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 		if (!searchTerm) {
 			return allItems;
 		}
-		return allItems.filter(item =>
-			item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			(item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())),
+		return allItems.filter(
+			(item) =>
+				item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				(item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
 		);
 	};
 
 	const filteredItems = getFilteredItems();
 
 	const handleAvailableItemAgentChange = (itemKey: string, value: number | null) => {
-		setAvailableItemAgents(prev => ({
+		setAvailableItemAgents((prev) => ({
 			...prev,
 			[itemKey]: value
 		}));
@@ -310,7 +304,7 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 	// Create agent select options
 	const agentSelectOptions = [
 		{ id: 'default', label: 'Use suite default' },
-		...agents.map(agent => ({
+		...agents.map((agent) => ({
 			id: String(agent.id),
 			label: `${agent.name} v${agent.version}`
 		}))
@@ -318,13 +312,15 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 
 	// Chart options
 	const xTitle = runsViewMode === 'time' ? 'Date' : 'Run';
-	const bottomAxis = runsViewMode === 'time'
-		? { title: xTitle, mapsTo: 'key', scaleType: 'time' as const }
-		: { title: xTitle, mapsTo: 'key', scaleType: 'labels' as const };
+	const bottomAxis =
+		runsViewMode === 'time'
+			? { title: xTitle, mapsTo: 'key', scaleType: 'time' as const }
+			: { title: xTitle, mapsTo: 'key', scaleType: 'labels' as const };
 
 	// Calculate max token usage for proper scaling
-	const tokenDataPoints = suitePerformanceData.filter(d => d.group === 'Token usage') as SuitePerformancePoint[];
-	const getTokenValue = (p: SuitePerformancePoint): number => (typeof p.tokens === 'number' ? p.tokens : (p.value ?? 0));
+	const tokenDataPoints = suitePerformanceData.filter((d) => d.group === 'Token usage') as SuitePerformancePoint[];
+	const getTokenValue = (p: SuitePerformancePoint): number =>
+		typeof p.tokens === 'number' ? p.tokens : (p.value ?? 0);
 	const tokenValues = tokenDataPoints.map(getTokenValue);
 	const hasTokenBars = tokenValues.length > 0;
 	const maxTokens = hasTokenBars ? Math.max(...tokenValues) : 0;
@@ -340,26 +336,24 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 				includeZero: true,
 				correspondingDatasets: ['Success rate', 'Avg similarity']
 			},
-			...(hasTokenBars ? {
-				right: {
-					title: 'Token usage',
-					mapsTo: 'tokens',
-					domain: [0, Math.ceil(maxTokens * 1.1)],
-					includeZero: true,
-					correspondingDatasets: ['Token usage']
-				}
-			} : {})
+			...(hasTokenBars
+				? {
+						right: {
+							title: 'Token usage',
+							mapsTo: 'tokens',
+							domain: [0, Math.ceil(maxTokens * 1.1)],
+							includeZero: true,
+							correspondingDatasets: ['Token usage']
+						}
+					}
+				: {})
 		},
-		comboChartTypes: (
-			hasTokenBars
-				? [
+		comboChartTypes: hasTokenBars
+			? [
 					{ type: 'line', options: {}, correspondingDatasets: ['Success rate', 'Avg similarity'] },
 					{ type: 'simple-bar', options: {}, correspondingDatasets: ['Token usage'] }
 				]
-				: [
-					{ type: 'line', options: {}, correspondingDatasets: ['Success rate', 'Avg similarity'] }
-				]
-		),
+			: [{ type: 'line', options: {}, correspondingDatasets: ['Success rate', 'Avg similarity'] }],
 		height: '400px',
 		legend: { enabled: true, alignment: 'center' },
 		curve: 'curveMonotoneX',
@@ -381,20 +375,10 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 					<div className={styles.header}>
 						<h1>{suite.name}</h1>
 						<div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-							<IconButton
-								kind="ghost"
-								size="md"
-								label="Edit suite"
-								onClick={openEditModal}
-							>
+							<IconButton kind="ghost" size="md" label="Edit suite" onClick={openEditModal}>
 								<Edit size={20} />
 							</IconButton>
-							<IconButton
-								kind="ghost"
-								size="md"
-								label="Delete suite"
-								onClick={openDeleteModal}
-							>
+							<IconButton kind="ghost" size="md" label="Delete suite" onClick={openDeleteModal}>
 								<TrashCan size={20} />
 							</IconButton>
 							<Button
@@ -410,24 +394,26 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 
 					<div className={styles.backButton}>
 						<Link href="/test-suites" passHref>
-							<Button
-								kind="ghost"
-								renderIcon={ChevronLeft}
-							>
+							<Button kind="ghost" renderIcon={ChevronLeft}>
 								Back to Test Suites
 							</Button>
 						</Link>
 					</div>
 
-					{suite.description && (
-						<p>{suite.description}</p>
-					)}
+					{suite.description && <p>{suite.description}</p>}
 
 					{/* Suite performance over runs */}
 					{suitePerformanceData.length > 0 && (
 						<Tile>
 							<h3 className={styles.sectionTitle}>Suite performance over runs</h3>
-							<div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', margin: '0.5rem 0 1rem' }}>
+							<div
+								style={{
+									display: 'flex',
+									gap: '1rem',
+									alignItems: 'flex-end',
+									margin: '0.5rem 0 1rem'
+								}}
+							>
 								<div>
 									<FormLabel>Agent</FormLabel>
 									<Select
@@ -457,7 +443,11 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 									</ContentSwitcher>
 								</div>
 							</div>
-							<ComboChart key={`suite-perf-${runsViewMode}-${runsAgentFilter}-${hasTokenBars ? 'tokens' : 'no-tokens'}-${Math.ceil(maxTokens)}`} data={suitePerformanceData} options={suitePerformanceOptions} />
+							<ComboChart
+								key={`suite-perf-${runsViewMode}-${runsAgentFilter}-${hasTokenBars ? 'tokens' : 'no-tokens'}-${Math.ceil(maxTokens)}`}
+								data={suitePerformanceData}
+								options={suitePerformanceOptions}
+							/>
 						</Tile>
 					)}
 
@@ -471,14 +461,25 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 								value={selectedAgentId ? String(selectedAgentId) : ''}
 								onChange={(e) => setSelectedAgentId(parseInt(e.target.value, 10))}
 							>
-								{agents.map(agent => (
-									<SelectItem key={agent.id} value={String(agent.id)} text={`${agent.name} v${agent.version}`} />
+								{agents.map((agent) => (
+									<SelectItem
+										key={agent.id}
+										value={String(agent.id)}
+										text={`${agent.name} v${agent.version}`}
+									/>
 								))}
 							</Select>
 						</div>
 					</Tile>
 
-					{error && <InlineNotification kind="error" title="Error" subtitle={error} onCloseButtonClick={() => setError(null)} />}
+					{error && (
+						<InlineNotification
+							kind="error"
+							title="Error"
+							subtitle={error}
+							onCloseButtonClick={() => setError(null)}
+						/>
+					)}
 
 					{/* Dual Panel Interface */}
 					<Grid className={styles.dualPanelGrid}>
@@ -499,7 +500,10 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 									className={styles.searchContainer}
 								/>
 
-								<Tabs selectedIndex={activeTab} onChange={({ selectedIndex }) => setActiveTab(selectedIndex)}>
+								<Tabs
+									selectedIndex={activeTab}
+									onChange={({ selectedIndex }) => setActiveTab(selectedIndex)}
+								>
 									<TabList>
 										<Tab>Tests ({availableTests.length})</Tab>
 										<Tab>Suites ({availableSuites.length})</Tab>
@@ -564,14 +568,12 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 																	size="sm"
 																	onClick={() => handleDeleteEntry(entry.id)}
 																	label="Remove from suite"
-																	align='right'
+																	align="right"
 																>
 																	<ArrowLeft size={16} />
 																</IconButton>
 															</TableCell>
-															<TableCell>
-																{entry.test_id ? 'Test' : 'Suite'}
-															</TableCell>
+															<TableCell>{entry.test_id ? 'Test' : 'Suite'}</TableCell>
 															<TableCell>
 																<div className={styles.entryName}>
 																	{getEntryName(entry)}
@@ -583,13 +585,20 @@ export default function TestSuiteDetailPage({ params }: PageProps) {
 																	labelText=""
 																	size="sm"
 																	className={styles.entryAgentSelect}
-																	value={entry.agent_id_override ? String(entry.agent_id_override) : 'default'}
+																	value={
+																		entry.agent_id_override
+																			? String(entry.agent_id_override)
+																			: 'default'
+																	}
 																	onChange={(e) => {
-																		const value = e.target.value === 'default' ? null : parseInt(e.target.value);
+																		const value =
+																			e.target.value === 'default'
+																				? null
+																				: parseInt(e.target.value);
 																		handleUpdateEntryAgent(entry.id, value);
 																	}}
 																>
-																	{agentSelectOptions.map(option => (
+																	{agentSelectOptions.map((option) => (
 																		<SelectItem
 																			key={option.id}
 																			value={option.id}

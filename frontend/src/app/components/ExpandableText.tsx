@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@carbon/react';
 
 interface ExpandableTextProps {
@@ -10,12 +10,7 @@ interface ExpandableTextProps {
 	className?: string;
 }
 
-export function ExpandableText({
-	text,
-	previewChars = 200,
-	threshold = 800,
-	className
-}: ExpandableTextProps) {
+export function ExpandableText({ text, previewChars = 200, threshold = 800, className }: ExpandableTextProps) {
 	const [expanded, setExpanded] = useState(false);
 	const isLong = text.length > threshold;
 	const displayText = isLong && !expanded ? `${text.slice(0, previewChars)}...` : text;
@@ -25,11 +20,7 @@ export function ExpandableText({
 			{displayText}
 			{isLong && (
 				<div style={{ marginTop: '0.5rem' }}>
-					<Button
-						size="sm"
-						kind="ghost"
-						onClick={() => setExpanded(v => !v)}
-					>
+					<Button size="sm" kind="ghost" onClick={() => setExpanded((v) => !v)}>
 						{expanded ? 'Show less' : 'Show more'}
 					</Button>
 				</div>

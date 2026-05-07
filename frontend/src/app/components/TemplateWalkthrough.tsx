@@ -15,7 +15,8 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
 		content: (
 			<>
 				<p style={{ marginBottom: '1rem' }}>
-					Templates define how VIBE communicates with AI services. This quick guide will help you understand how they work.
+					Templates define how VIBE communicates with AI services. This quick guide will help you understand
+					how they work.
 				</p>
 				<p>
 					<strong>You&apos;ll learn about:</strong>
@@ -35,9 +36,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
 				<p style={{ marginBottom: '1rem' }}>
 					<strong>Request templates</strong> format your messages into API-compatible JSON.
 				</p>
-				<p style={{ marginBottom: '1rem' }}>
-					Use placeholders to inject content:
-				</p>
+				<p style={{ marginBottom: '1rem' }}>Use placeholders to inject content:</p>
 				<UnorderedList style={{ marginBottom: '1rem' }}>
 					<ListItem>
 						<code>{'{{input}}'}</code> - the current user message
@@ -46,13 +45,15 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
 						<code>{'{{conversation_history}}'}</code> - full chat history
 					</ListItem>
 				</UnorderedList>
-				<pre style={{
-					background: '#f4f4f4',
-					padding: '1rem',
-					borderRadius: '4px',
-					fontSize: '12px'
-				}}>
-{`{
+				<pre
+					style={{
+						background: '#f4f4f4',
+						padding: '1rem',
+						borderRadius: '4px',
+						fontSize: '12px'
+					}}
+				>
+					{`{
   "model": "gpt-4",
   "messages": [
     {"role": "user", "content": "{{input}}"}
@@ -69,17 +70,17 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
 				<p style={{ marginBottom: '1rem' }}>
 					<strong>Response maps</strong> tell VIBE how to extract the AI&apos;s reply from the API response.
 				</p>
-				<p style={{ marginBottom: '1rem' }}>
-					Use dot notation to specify the path:
-				</p>
-				<pre style={{
-					background: '#f4f4f4',
-					padding: '1rem',
-					borderRadius: '4px',
-					fontSize: '12px',
-					marginBottom: '1rem'
-				}}>
-{`{
+				<p style={{ marginBottom: '1rem' }}>Use dot notation to specify the path:</p>
+				<pre
+					style={{
+						background: '#f4f4f4',
+						padding: '1rem',
+						borderRadius: '4px',
+						fontSize: '12px',
+						marginBottom: '1rem'
+					}}
+				>
+					{`{
   "output": "choices.0.message.content"
 }`}
 				</pre>
@@ -96,16 +97,10 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
 				<p style={{ marginBottom: '1rem' }}>
 					<strong>Capabilities</strong> are tags that match templates to conversations.
 				</p>
-				<p style={{ marginBottom: '1rem' }}>
-					When a conversation requires a capability:
-				</p>
+				<p style={{ marginBottom: '1rem' }}>When a conversation requires a capability:</p>
 				<UnorderedList style={{ marginBottom: '1rem' }}>
-					<ListItem>
-						Only agents with matching templates can run it
-					</ListItem>
-					<ListItem>
-						This ensures the API format is correct
-					</ListItem>
+					<ListItem>Only agents with matching templates can run it</ListItem>
+					<ListItem>This ensures the API format is correct</ListItem>
 					<ListItem>
 						Example: <code>openai-chat</code>, <code>ollama-generate</code>
 					</ListItem>
@@ -153,7 +148,7 @@ export function TemplateWalkthrough({ forceShow = false }: TemplateWalkthroughPr
 
 	const handleNext = () => {
 		if (currentStep < WALKTHROUGH_STEPS.length - 1) {
-			setCurrentStep(prev => prev + 1);
+			setCurrentStep((prev) => prev + 1);
 		} else {
 			handleClose();
 		}
@@ -161,7 +156,7 @@ export function TemplateWalkthrough({ forceShow = false }: TemplateWalkthroughPr
 
 	const handlePrevious = () => {
 		if (currentStep > 0) {
-			setCurrentStep(prev => prev - 1);
+			setCurrentStep((prev) => prev - 1);
 		}
 	};
 
@@ -169,13 +164,7 @@ export function TemplateWalkthrough({ forceShow = false }: TemplateWalkthroughPr
 	const step = WALKTHROUGH_STEPS[currentStep];
 
 	return (
-		<Modal
-			open={isOpen}
-			onRequestClose={handleClose}
-			modalHeading={step.title}
-			passiveModal={false}
-			size="md"
-		>
+		<Modal open={isOpen} onRequestClose={handleClose} modalHeading={step.title} passiveModal={false} size="md">
 			<Stack gap={5}>
 				<div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
 					{WALKTHROUGH_STEPS.map((_, index) => (
@@ -193,32 +182,20 @@ export function TemplateWalkthrough({ forceShow = false }: TemplateWalkthroughPr
 				</div>
 
 				{/* Step content */}
-				<div style={{ minHeight: '200px' }}>
-					{step.content}
-				</div>
+				<div style={{ minHeight: '200px' }}>{step.content}</div>
 
 				{/* Navigation buttons */}
 				<div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-					<Button
-						kind="ghost"
-						onClick={handleClose}
-					>
+					<Button kind="ghost" onClick={handleClose}>
 						Skip tutorial
 					</Button>
 					<div style={{ display: 'flex', gap: '0.5rem' }}>
 						{currentStep > 0 && (
-							<Button
-								kind="secondary"
-								onClick={handlePrevious}
-							>
+							<Button kind="secondary" onClick={handlePrevious}>
 								Previous
 							</Button>
 						)}
-						<Button
-							kind="primary"
-							onClick={handleNext}
-							renderIcon={isLastStep ? Checkmark : ArrowRight}
-						>
+						<Button kind="primary" onClick={handleNext} renderIcon={isLastStep ? Checkmark : ArrowRight}>
 							{isLastStep ? 'Got it!' : 'Next'}
 						</Button>
 					</div>
@@ -242,12 +219,7 @@ export function WalkthroughTrigger() {
 
 	return (
 		<>
-			<Button
-				kind="ghost"
-				size="sm"
-				renderIcon={Idea}
-				onClick={handleClick}
-			>
+			<Button kind="ghost" size="sm" renderIcon={Idea} onClick={handleClick}>
 				Learn about templates
 			</Button>
 			{showWalkthrough && <TemplateWalkthrough forceShow />}

@@ -7,7 +7,7 @@ export function getUserTurnForAssistantMessage(
 	messages: Array<{ role: string; sequence: number }>,
 	assistantMessageSequence: number
 ): number {
-	return messages.filter(m => m.role === 'user' && m.sequence <= assistantMessageSequence).length;
+	return messages.filter((m) => m.role === 'user' && m.sequence <= assistantMessageSequence).length;
 }
 
 export function getThresholdForTurn(
@@ -28,9 +28,7 @@ export function getThresholdForTurn(
 	return typeof threshold === 'number' ? threshold : DEFAULT_SIMILARITY_THRESHOLD;
 }
 
-export async function loadTurnTargetsMap(
-	conversationIds: number[]
-): Promise<Map<number, Map<number, number>>> {
+export async function loadTurnTargetsMap(conversationIds: number[]): Promise<Map<number, Map<number, number>>> {
 	const result = new Map<number, Map<number, number>>();
 	if (conversationIds.length === 0) {
 		return result;
@@ -59,4 +57,3 @@ export async function loadTurnTargetsMap(
 
 	return result;
 }
-

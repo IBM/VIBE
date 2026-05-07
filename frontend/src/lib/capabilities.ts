@@ -25,6 +25,3 @@ export const getCapabilitySummary = (value?: string | Record<string, unknown> | 
 // Aliases for backward compatibility with existing code
 export const getRequestTemplateCapabilitySummary = getCapabilitySummary;
 export const getResponseMapCapabilitySummary = getCapabilitySummary;
-
-
-

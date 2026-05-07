@@ -1,14 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-	Add,
-	Edit,
-	TrashCan,
-	ArrowUp,
-	ArrowDown,
-	PlayOutline
-} from '@carbon/icons-react';
+import { useState, useEffect } from 'react';
+import { Add, Edit, TrashCan, ArrowUp, ArrowDown, PlayOutline } from '@carbon/icons-react';
 import {
 	DataTable,
 	Table,
@@ -29,14 +22,7 @@ import LLMConfigFormModal from '../components/LLMConfigFormModal';
 import TestLLMModal from './components/TestLLMModal';
 
 export default function LLMConfigsPage() {
-	const {
-		llmConfigs,
-		loading,
-		error,
-		updateLLMConfig,
-		deleteLLMConfig,
-		fetchLLMConfigs
-	} = useLLMConfigs();
+	const { llmConfigs, loading, error, updateLLMConfig, deleteLLMConfig, fetchLLMConfigs } = useLLMConfigs();
 
 	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -45,7 +31,7 @@ export default function LLMConfigsPage() {
 
 	useEffect(() => {
 		fetchLLMConfigs();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const sortedConfigs = sortBy(llmConfigs, 'priority');
@@ -53,14 +39,12 @@ export default function LLMConfigsPage() {
 	// Get current config for edit modal
 	const getConfigById = (id: number | null) => {
 		if (!id) return null;
-		return llmConfigs.find(config => config.id === id) || null;
+		return llmConfigs.find((config) => config.id === id) || null;
 	};
 
 	const handleMovePriority = async (config: LLMConfig, direction: 'up' | 'down') => {
 		const currentPriority = config.priority;
-		const newPriority = direction === 'up'
-			? Math.max(1, currentPriority - 10)
-			: currentPriority + 10;
+		const newPriority = direction === 'up' ? Math.max(1, currentPriority - 10) : currentPriority + 10;
 
 		try {
 			await updateLLMConfig(config.id!, { priority: newPriority });
@@ -87,7 +71,7 @@ export default function LLMConfigsPage() {
 	];
 
 	// Format rows for the data table
-	const rows = sortedConfigs.map(config => ({
+	const rows = sortedConfigs.map((config) => ({
 		id: `${config.id}`,
 		priority: config.priority,
 		name: config.name,
@@ -157,21 +141,13 @@ export default function LLMConfigsPage() {
 		<div className={styles.container}>
 			<div className={styles.header}>
 				<h1>LLM Configurations</h1>
-				<Button
-					renderIcon={Add}
-					onClick={() => setIsAddModalOpen(true)}
-				>
+				<Button renderIcon={Add} onClick={() => setIsAddModalOpen(true)}>
 					Add LLM Config
 				</Button>
 			</div>
 
 			{error && (
-				<InlineNotification
-					kind="error"
-					title="Error"
-					subtitle={error}
-					className={styles.notification}
-				/>
+				<InlineNotification kind="error" title="Error" subtitle={error} className={styles.notification} />
 			)}
 
 			{loading ? (
@@ -182,7 +158,7 @@ export default function LLMConfigsPage() {
 						<Table {...getTableProps()}>
 							<TableHead>
 								<TableRow>
-									{headers.map(header => (
+									{headers.map((header) => (
 										<TableHeader {...getHeaderProps({ header })} key={header.key}>
 											{header.header}
 										</TableHeader>
@@ -190,9 +166,9 @@ export default function LLMConfigsPage() {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{rows.map(row => (
+								{rows.map((row) => (
 									<TableRow key={row.id}>
-										{row.cells.map(cell => (
+										{row.cells.map((cell) => (
 											<TableCell key={cell.id}>{cell.value}</TableCell>
 										))}
 									</TableRow>
@@ -211,12 +187,7 @@ export default function LLMConfigsPage() {
 			)}
 
 			{/* Add LLM Config Modal */}
-			{isAddModalOpen && (
-				<LLMConfigFormModal
-					isOpen={isAddModalOpen}
-					onClose={() => setIsAddModalOpen(false)}
-				/>
-			)}
+			{isAddModalOpen && <LLMConfigFormModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />}
 
 			{/* Edit LLM Config Modal */}
 			{isEditModalOpen && selectedConfigId && (

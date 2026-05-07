@@ -1,14 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-	Form,
-	Select,
-	SelectItem,
-	Button,
-	InlineLoading,
-	Tile
-} from '@carbon/react';
+import { Form, Select, SelectItem, Button, InlineLoading, Tile } from '@carbon/react';
 import { PlayFilled } from '@carbon/icons-react';
 import { api } from '@/lib/api';
 import { useAgents, useTests } from '@/lib/AppDataContext';
@@ -18,9 +11,7 @@ interface TestExecutorProps {
 	onJobCreated: () => void;
 }
 
-export default function TestExecutor({
-	onJobCreated
-}: TestExecutorProps) {
+export default function TestExecutor({ onJobCreated }: TestExecutorProps) {
 	// Get data from context
 	const { agents, fetchAgents } = useAgents();
 	const { tests, fetchTests } = useTests();
@@ -38,7 +29,7 @@ export default function TestExecutor({
 		if (tests.length === 0) {
 			fetchTests();
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleAgentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -88,12 +79,8 @@ export default function TestExecutor({
 						onChange={handleAgentChange}
 					>
 						<SelectItem value="" text="Choose an agent" disabled />
-						{agents.map(agent => (
-							<SelectItem
-								key={agent.id}
-								value={agent.id}
-								text={`${agent.name} (v${agent.version})`}
-							/>
+						{agents.map((agent) => (
+							<SelectItem key={agent.id} value={agent.id} text={`${agent.name} (v${agent.version})`} />
 						))}
 					</Select>
 				</div>
@@ -107,12 +94,8 @@ export default function TestExecutor({
 						onChange={handleTestChange}
 					>
 						<SelectItem value="" text="Choose a test" disabled />
-						{tests.map(test => (
-							<SelectItem
-								key={test.id}
-								value={test.id}
-								text={test.name}
-							/>
+						{tests.map((test) => (
+							<SelectItem key={test.id} value={test.id} text={test.name} />
 						))}
 					</Select>
 				</div>
@@ -127,17 +110,9 @@ export default function TestExecutor({
 				</Button>
 			</Form>
 
-			{error && (
-				<Tile className={styles.errorTile}>
-					{error}
-				</Tile>
-			)}
+			{error && <Tile className={styles.errorTile}>{error}</Tile>}
 
-			{successMessage && (
-				<Tile className={styles.successTile}>
-					{successMessage}
-				</Tile>
-			)}
+			{successMessage && <Tile className={styles.successTile}>{successMessage}</Tile>}
 		</div>
 	);
 }

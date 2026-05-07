@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAgents } from '@/lib/AppDataContext';
 import { agentToFormData } from '@/lib/utils';
 import Agents from '../components/Agents';
@@ -15,7 +15,7 @@ export default function AgentsPage() {
 	const [deleteId, setDeleteId] = useState<number | null>(null);
 	const [deleteName, setDeleteName] = useState('');
 
-	const getAgentById = (id: number) => agents.find(agent => agent.id === id);
+	const getAgentById = (id: number) => agents.find((agent) => agent.id === id);
 
 	const handleAddClick = () => {
 		setEditingId(null);
@@ -41,11 +41,7 @@ export default function AgentsPage() {
 
 	return (
 		<>
-			<Agents
-				onAddClick={handleAddClick}
-				onEditAgent={handleEditAgent}
-				onDeleteAgent={handleDeleteAgent}
-			/>
+			<Agents onAddClick={handleAddClick} onEditAgent={handleEditAgent} onDeleteAgent={handleDeleteAgent} />
 
 			<AgentFormModal
 				isOpen={isModalOpen}

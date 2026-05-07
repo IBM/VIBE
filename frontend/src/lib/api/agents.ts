@@ -21,7 +21,16 @@ export const agentsApi = {
 
 	async createAgentRequestTemplate(
 		agentId: number,
-		payload: { name: string; description?: string; engine?: string; content_type?: string; body: string; tags?: string; capabilities?: string; is_default?: boolean }
+		payload: {
+			name: string;
+			description?: string;
+			engine?: string;
+			content_type?: string;
+			body: string;
+			tags?: string;
+			capabilities?: string;
+			is_default?: boolean;
+		}
 	): Promise<AgentRequestTemplate> {
 		return fetchJson<AgentRequestTemplate>(
 			`${API_URL}/api/agents/${agentId}/request-templates`,
@@ -37,7 +46,16 @@ export const agentsApi = {
 	async updateAgentRequestTemplate(
 		agentId: number,
 		templateId: number,
-		updates: Partial<{ name: string; description?: string; engine?: string; content_type?: string; body: string; tags?: string; capabilities?: string; is_default?: boolean }>
+		updates: Partial<{
+			name: string;
+			description?: string;
+			engine?: string;
+			content_type?: string;
+			body: string;
+			tags?: string;
+			capabilities?: string;
+			is_default?: boolean;
+		}>
 	): Promise<AgentRequestTemplate> {
 		return fetchJson<AgentRequestTemplate>(
 			`${API_URL}/api/agents/${agentId}/request-templates/${templateId}`,
@@ -77,7 +95,14 @@ export const agentsApi = {
 
 	async createAgentResponseMap(
 		agentId: number,
-		payload: { name: string; description?: string; spec: string; tags?: string; capabilities?: string; is_default?: boolean }
+		payload: {
+			name: string;
+			description?: string;
+			spec: string;
+			tags?: string;
+			capabilities?: string;
+			is_default?: boolean;
+		}
 	): Promise<AgentResponseMap> {
 		return fetchJson<AgentResponseMap>(
 			`${API_URL}/api/agents/${agentId}/response-maps`,
@@ -93,7 +118,14 @@ export const agentsApi = {
 	async updateAgentResponseMap(
 		agentId: number,
 		mapId: number,
-		updates: Partial<{ name: string; description?: string; spec: string; tags?: string; capabilities?: string; is_default?: boolean }>
+		updates: Partial<{
+			name: string;
+			description?: string;
+			spec: string;
+			tags?: string;
+			capabilities?: string;
+			is_default?: boolean;
+		}>
 	): Promise<AgentResponseMap> {
 		return fetchJson<AgentResponseMap>(
 			`${API_URL}/api/agents/${agentId}/response-maps/${mapId}`,
@@ -133,7 +165,9 @@ export const agentsApi = {
 
 	async linkTemplateToAgent(
 		agentId: number,
-		payload: { template_id?: number; is_default?: boolean } | (Omit<RequestTemplate, 'id' | 'created_at'> & { is_default?: boolean })
+		payload:
+			| { template_id?: number; is_default?: boolean }
+			| (Omit<RequestTemplate, 'id' | 'created_at'> & { is_default?: boolean })
 	): Promise<RequestTemplate> {
 		return fetchJson<RequestTemplate>(
 			`${API_URL}/api/agents/${agentId}/linked-templates`,
@@ -172,7 +206,9 @@ export const agentsApi = {
 
 	async linkResponseMapToAgent(
 		agentId: number,
-		payload: { response_map_id?: number; is_default?: boolean } | (Omit<ResponseMap, 'id' | 'created_at'> & { is_default?: boolean })
+		payload:
+			| { response_map_id?: number; is_default?: boolean }
+			| (Omit<ResponseMap, 'id' | 'created_at'> & { is_default?: boolean })
 	): Promise<ResponseMap> {
 		return fetchJson<ResponseMap>(
 			`${API_URL}/api/agents/${agentId}/linked-response-maps`,
@@ -235,10 +271,6 @@ export const agentsApi = {
 	},
 
 	async deleteAgent(id: number): Promise<void> {
-		await fetchJson<void>(
-			`${API_URL}/api/agents/${id}`,
-			{ method: 'DELETE' },
-			'Failed to delete agent'
-		);
+		await fetchJson<void>(`${API_URL}/api/agents/${id}`, { method: 'DELETE' }, 'Failed to delete agent');
 	}
 };

@@ -35,16 +35,8 @@ export function AgentCoreFields({ formData, onInputChange }: AgentCoreFieldsProp
 					} as React.ChangeEvent<HTMLInputElement>);
 				}}
 			>
-				<RadioButton
-					id="crew_ai"
-					labelText="CrewAI Agent"
-					value="crew_ai"
-				/>
-				<RadioButton
-					id="external_api"
-					labelText="External API Agent"
-					value="external_api"
-				/>
+				<RadioButton id="crew_ai" labelText="CrewAI Agent" value="crew_ai" />
+				<RadioButton id="external_api" labelText="External API Agent" value="external_api" />
 			</RadioButtonGroup>
 		</>
 	);

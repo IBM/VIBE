@@ -1,10 +1,4 @@
-import type {
-	Job,
-	TestResult,
-	SessionMessage,
-	Agent,
-	ExecutionSession
-} from './api';
+import type { Job, TestResult, SessionMessage, Agent, ExecutionSession } from './api';
 import { api } from './api';
 export { tokenizePath, traverseByTokens, extractByPath } from '@ibm-vibe/utils';
 
@@ -27,12 +21,18 @@ export const isScoringActive = (scoringStatus: string | null | undefined): boole
  */
 export const getStatusTagType = (status: string): 'green' | 'blue' | 'red' | 'purple' | 'gray' | 'cool-gray' => {
 	switch (status.toLowerCase()) {
-		case 'completed': return 'green';
-		case 'running': return 'blue';
-		case 'failed': return 'red';
-		case 'pending': return 'purple';
-		case 'queued': return 'purple';
-		default: return 'gray';
+		case 'completed':
+			return 'green';
+		case 'running':
+			return 'blue';
+		case 'failed':
+			return 'red';
+		case 'pending':
+			return 'purple';
+		case 'queued':
+			return 'purple';
+		default:
+			return 'gray';
 	}
 };
 
@@ -107,7 +107,7 @@ export const parseMessageMetadata = (message: SessionMessage): Record<string, un
  * Filter messages by role
  */
 export const filterMessagesByRole = (messages: SessionMessage[], role: string): SessionMessage[] => {
-	return messages.filter(m => m.role === role);
+	return messages.filter((m) => m.role === role);
 };
 
 /**
@@ -130,13 +130,16 @@ export const calculateMessageTokens = (message: SessionMessage): number => {
  * Calculate total tokens from multiple messages
  */
 export const calculateTotalTokens = (messages: SessionMessage[]): { input: number; output: number; total: number } => {
-	const totals = messages.reduce((acc, message) => {
-		const metadata = parseMessageMetadata(message);
-		return {
-			input: acc.input + getNumberFromMetadata(metadata, 'input_tokens'),
-			output: acc.output + getNumberFromMetadata(metadata, 'output_tokens')
-		};
-	}, { input: 0, output: 0 });
+	const totals = messages.reduce(
+		(acc, message) => {
+			const metadata = parseMessageMetadata(message);
+			return {
+				input: acc.input + getNumberFromMetadata(metadata, 'input_tokens'),
+				output: acc.output + getNumberFromMetadata(metadata, 'output_tokens')
+			};
+		},
+		{ input: 0, output: 0 }
+	);
 
 	return {
 		input: totals.input,
@@ -148,7 +151,11 @@ export const calculateTotalTokens = (messages: SessionMessage[]): { input: numbe
 /**
  * Calculate response time from message metadata
  */
-export const calculateResponseTime = (message: SessionMessage, fallbackDuration?: number, totalAssistantMessages?: number): number => {
+export const calculateResponseTime = (
+	message: SessionMessage,
+	fallbackDuration?: number,
+	totalAssistantMessages?: number
+): number => {
 	const metadata = parseMessageMetadata(message);
 
 	const executionTime = getNumberFromMetadata(metadata, 'execution_time_ms');
@@ -169,10 +176,11 @@ export const calculateResponseTime = (message: SessionMessage, fallbackDuration?
  */
 export const findScoredAssistantMessage = (messages: SessionMessage[]): SessionMessage | null => {
 	const assistantMessages = filterMessagesByRole(messages, 'assistant');
-	return assistantMessages.find(m =>
-		m.similarity_scoring_status === 'completed' &&
-		typeof m.similarity_score === 'number'
-	) || null;
+	return (
+		assistantMessages.find(
+			(m) => m.similarity_scoring_status === 'completed' && typeof m.similarity_score === 'number'
+		) || null
+	);
 };
 
 /**
@@ -213,14 +221,14 @@ export const agentToFormData = (agent: Agent | null | undefined): Record<string,
 			data['agent-api-key'] = settings.api_key ?? '';
 			data['agent-http-method'] = settings.http_method ?? 'POST';
 			if (settings.headers !== undefined) {
-				data['agent-headers'] = typeof settings.headers === 'string'
-					? settings.headers
-					: JSON.stringify(settings.headers);
+				data['agent-headers'] =
+					typeof settings.headers === 'string' ? settings.headers : JSON.stringify(settings.headers);
 			}
 			if (settings.token_mapping !== undefined) {
-				data['agent-token-mapping'] = typeof settings.token_mapping === 'string'
-					? settings.token_mapping
-					: JSON.stringify(settings.token_mapping);
+				data['agent-token-mapping'] =
+					typeof settings.token_mapping === 'string'
+						? settings.token_mapping
+						: JSON.stringify(settings.token_mapping);
 			}
 		}
 	} catch {
@@ -234,7 +242,9 @@ export const agentToFormData = (agent: Agent | null | undefined): Record<string,
  * Load conversations by their IDs and return a map of id -> { name, id }
  * Uses Promise.all for parallel loading
  */
-export const loadConversationsByIds = async (conversationIds: number[]): Promise<Map<number, { name: string; id: number }>> => {
+export const loadConversationsByIds = async (
+	conversationIds: number[]
+): Promise<Map<number, { name: string; id: number }>> => {
 	const conversationsMap = new Map<number, { name: string; id: number }>();
 
 	if (conversationIds.length === 0) {
@@ -251,7 +261,7 @@ export const loadConversationsByIds = async (conversationIds: number[]): Promise
 	});
 
 	const results = await Promise.all(conversationPromises);
-	results.forEach(result => {
+	results.forEach((result) => {
 		if (result) {
 			conversationsMap.set(result[0], result[1]);
 		}
@@ -284,7 +294,7 @@ export const loadSessionMessages = async (sessions: ExecutionSession[]): Promise
 	});
 
 	const results = await Promise.all(messagePromises);
-	results.forEach(result => {
+	results.forEach((result) => {
 		if (result) {
 			messagesMap.set(result[0], result[1]);
 		}
@@ -296,7 +306,9 @@ export const loadSessionMessages = async (sessions: ExecutionSession[]): Promise
 /**
  * Calculate session statistics from a list of execution sessions
  */
-export const calculateSessionStats = (sessions: ExecutionSession[]): {
+export const calculateSessionStats = (
+	sessions: ExecutionSession[]
+): {
 	totalRuns: number;
 	successRate: number;
 	avgDuration: number;
@@ -312,22 +324,21 @@ export const calculateSessionStats = (sessions: ExecutionSession[]): {
 	}
 
 	const totalRuns = sessions.length;
-	const successfulRuns = sessions.filter(s => s.success).length;
+	const successfulRuns = sessions.filter((s) => s.success).length;
 	const successRate = totalRuns > 0 ? (successfulRuns / totalRuns) * 100 : 0;
 
 	// Calculate average duration
-	const sessionsWithTime = sessions.filter(s => s.started_at && s.completed_at);
-	const avgDuration = sessionsWithTime.length > 0
-		? sessionsWithTime.reduce((sum, s) => {
-			const duration = new Date(s.completed_at!).getTime() - new Date(s.started_at!).getTime();
-			return sum + duration;
-		}, 0) / sessionsWithTime.length
-		: 0;
+	const sessionsWithTime = sessions.filter((s) => s.started_at && s.completed_at);
+	const avgDuration =
+		sessionsWithTime.length > 0
+			? sessionsWithTime.reduce((sum, s) => {
+					const duration = new Date(s.completed_at!).getTime() - new Date(s.started_at!).getTime();
+					return sum + duration;
+				}, 0) / sessionsWithTime.length
+			: 0;
 
 	// Get last run timestamp
-	const lastRun = sessions.length > 0 && sessions[0].started_at
-		? sessions[0].started_at
-		: null;
+	const lastRun = sessions.length > 0 && sessions[0].started_at ? sessions[0].started_at : null;
 
 	return {
 		totalRuns,
@@ -336,4 +347,3 @@ export const calculateSessionStats = (sessions: ExecutionSession[]): {
 		lastRun
 	};
 };
-

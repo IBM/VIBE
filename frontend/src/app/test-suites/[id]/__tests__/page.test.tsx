@@ -5,6 +5,7 @@ import { api } from '../../../../lib/api';
 const mockPush = jest.fn();
 
 jest.mock('next/navigation', () => ({
+	useParams: () => ({ id: '999' }),
 	useRouter: () => ({ push: mockPush })
 }));
 
@@ -50,7 +51,7 @@ describe('TestSuiteDetailPage', () => {
 	it('shows error state when requested suite does not exist', async () => {
 		mockedApi.getTestSuites.mockResolvedValue([]);
 
-		render(<TestSuiteDetailPage params={{ id: '999' }} />);
+		render(<TestSuiteDetailPage />);
 
 		expect(await screen.findByText('Test suite not found')).toBeInTheDocument();
 		expect(mockedApi.getAgents).not.toHaveBeenCalled();

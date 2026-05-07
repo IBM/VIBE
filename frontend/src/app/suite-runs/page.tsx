@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api, SuiteRun } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import {
@@ -69,14 +69,13 @@ export default function SuiteRunsPage() {
 		const interval = setInterval(() => {
 			// Only refetch while there is at least one run in running state
 			// or a completed run that is missing avg_similarity_score
-			if (runs.some(r => r.status === 'running' ||
-				(
-					r.status === 'completed'
-					&& (
-						r.avg_similarity_score === null
-						|| r.avg_similarity_score === undefined
-					)
-				))
+			if (
+				runs.some(
+					(r) =>
+						r.status === 'running' ||
+						(r.status === 'completed' &&
+							(r.avg_similarity_score === null || r.avg_similarity_score === undefined))
+				)
 			) {
 				fetchRuns();
 			}
@@ -140,7 +139,7 @@ export default function SuiteRunsPage() {
 	];
 
 	const getRowActions = (rowId: string) => {
-		const run = runs.find(run => String(run.id) === rowId);
+		const run = runs.find((run) => String(run.id) === rowId);
 		if (!run) return null;
 
 		return (
@@ -177,16 +176,15 @@ export default function SuiteRunsPage() {
 	const rows = runs.map((run) => {
 		// Calculate Total Execution Time from suite clock time
 		// Note: Backend computes this dynamically from individual test execution times
-		const totalMs = (run.started_at && run.completed_at)
-			? (new Date(run.completed_at).getTime() - new Date(run.started_at).getTime())
-			: 0;
+		const totalMs =
+			run.started_at && run.completed_at
+				? new Date(run.completed_at).getTime() - new Date(run.started_at).getTime()
+				: 0;
 		const totalExecutionTimeSec = totalMs / 1000;
 
 		// Calculate Success Rate
 		const successfulTests = typeof run.successful_tests === 'number' ? run.successful_tests : 0;
-		const successRate = run.total_tests > 0
-			? (successfulTests / run.total_tests) * 100
-			: null;
+		const successRate = run.total_tests > 0 ? (successfulTests / run.total_tests) * 100 : null;
 
 		// Calculate Token Usage
 		const inputTokens = run.total_input_tokens || 0;
@@ -253,7 +251,10 @@ export default function SuiteRunsPage() {
 									<TableHead>
 										<TableRow>
 											{headers.map((header, index) => (
-												<TableHeader {...getHeaderProps({ header })} key={`header-${header.key}-${index}`}>
+												<TableHeader
+													{...getHeaderProps({ header })}
+													key={`header-${header.key}-${index}`}
+												>
 													{header.header}
 												</TableHeader>
 											))}
@@ -264,11 +265,12 @@ export default function SuiteRunsPage() {
 											<TableRow key={row.id}>
 												{row.cells.map((cell) => {
 													if (cell.info.header === 'status') {
-														const tagType = cell.value === 'completed'
-															? 'green'
-															: cell.value === 'running'
-																? 'blue'
-																: 'gray';
+														const tagType =
+															cell.value === 'completed'
+																? 'green'
+																: cell.value === 'running'
+																	? 'blue'
+																	: 'gray';
 														return (
 															<TableCell key={`${row.id}-${cell.id}`}>
 																<Tag type={tagType}>{cell.value}</Tag>
@@ -276,7 +278,7 @@ export default function SuiteRunsPage() {
 														);
 													}
 													if (cell.info.header === 'agent_name') {
-														const run = runs.find(r => String(r.id) === row.id);
+														const run = runs.find((r) => String(r.id) === row.id);
 														return (
 															<TableCell key={`${row.id}-${cell.id}`}>
 																{run && run.agent_id ? (
@@ -297,9 +299,15 @@ export default function SuiteRunsPage() {
 														);
 													}
 													if (cell.info.header === 'actions') {
-														return <TableCell key={`${row.id}-actions`}>{getRowActions(row.id)}</TableCell>;
+														return (
+															<TableCell key={`${row.id}-actions`}>
+																{getRowActions(row.id)}
+															</TableCell>
+														);
 													}
-													return <TableCell key={`${row.id}-${cell.id}`}>{cell.value}</TableCell>;
+													return (
+														<TableCell key={`${row.id}-${cell.id}`}>{cell.value}</TableCell>
+													);
 												})}
 											</TableRow>
 										))}
@@ -355,7 +363,10 @@ export default function SuiteRunsPage() {
 				onRequestSubmit={handleRerunSuiteConfirm}
 				primaryButtonDisabled={rerunningId !== null}
 			>
-				<p>Are you sure you want to re-run this test suite? This will create a new suite run with the same agent and tests.</p>
+				<p>
+					Are you sure you want to re-run this test suite? This will create a new suite run with the same
+					agent and tests.
+				</p>
 			</Modal>
 		</>
 	);

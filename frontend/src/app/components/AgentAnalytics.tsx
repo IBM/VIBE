@@ -1,12 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-	ComboChart,
-	SimpleBarChart,
-	ScatterChart,
-	LineChart
-} from '@carbon/charts-react';
+import { useEffect, useState, useMemo } from 'react';
+import { ComboChart, SimpleBarChart, ScatterChart, LineChart } from '@carbon/charts-react';
 import type { ComboChartOptions } from '@carbon/charts';
 import { Tile } from '@carbon/react';
 import type { ExecutionSession, SessionMessage, Conversation } from '../../lib/api';
@@ -14,10 +9,7 @@ import { api } from '../../lib/api';
 import '@carbon/charts/styles.css';
 import styles from './AgentAnalytics.module.scss';
 import AnalyticsFilters, { type FilterState } from './AgentAnalytics/AnalyticsFilters';
-import {
-	filterSessionsByDateRange,
-	sortSessionsByTime
-} from './AgentAnalytics/analyticsUtils';
+import { filterSessionsByDateRange, sortSessionsByTime } from './AgentAnalytics/analyticsUtils';
 import {
 	prepareTimePerformanceData,
 	prepareExperimentsPerformanceData,
@@ -46,8 +38,8 @@ const buildPerformanceChartOptions = (
 	baseOptions: ComboChartOptions,
 	data: Array<{ group: string }>
 ): ComboChartOptions => {
-	const availableGroups = new Set(data.map(point => point.group));
-	const lineDatasets = ['Success rate', 'Similarity score'].filter(group => availableGroups.has(group));
+	const availableGroups = new Set(data.map((point) => point.group));
+	const lineDatasets = ['Success rate', 'Similarity score'].filter((group) => availableGroups.has(group));
 	const comboChartTypes = [
 		...(lineDatasets.length > 0
 			? [{ type: 'line' as const, options: {}, correspondingDatasets: lineDatasets }]
@@ -93,9 +85,9 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 
 	// Get unique conversations from sessions
 	const availableConversations = useMemo(() => {
-		const conversationIds = new Set(sessions.map(s => s.conversation_id));
+		const conversationIds = new Set(sessions.map((s) => s.conversation_id));
 
-		return conversations.filter(c => c.id && conversationIds.has(c.id));
+		return conversations.filter((c) => c.id && conversationIds.has(c.id));
 	}, [sessions, conversations]);
 
 	// Load conversations for this agent
@@ -148,9 +140,7 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 
 		// Filter by conversation
 		if (filterState.conversationIds.length > 0) {
-			filtered = filtered.filter(s =>
-				filterState.conversationIds.includes(s.conversation_id)
-			);
+			filtered = filtered.filter((s) => filterState.conversationIds.includes(s.conversation_id));
 		}
 
 		// Filter by date range
@@ -212,7 +202,7 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 	}, [filteredSessions, sessionMessages, conversations]);
 
 	const handleFilterChange = (updates: Partial<FilterState>) => {
-		setFilterState(prev => ({ ...prev, ...updates }));
+		setFilterState((prev) => ({ ...prev, ...updates }));
 	};
 
 	return (
@@ -234,9 +224,7 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 			{!loading && filteredSessions.length === 0 && (
 				<Tile className={styles.emptyState}>
 					<p>No sessions found for the selected filters</p>
-					<p className={styles.emptyStateSubtext}>
-						Try adjusting your filters or run some tests first
-					</p>
+					<p className={styles.emptyStateSubtext}>Try adjusting your filters or run some tests first</p>
 				</Tile>
 			)}
 
@@ -247,10 +235,13 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 							<div className={styles.chartHeader}>
 								<div>
 									<h3 className={styles.chartTitle}>
-										{filterState.viewMode === 'time' ? 'Performance over time' : 'Performance by experiment'}
+										{filterState.viewMode === 'time'
+											? 'Performance over time'
+											: 'Performance by experiment'}
 									</h3>
 									<p className={styles.chartDescription}>
-										Track agent performance metrics with dual Y-axis scaling. Click legend items to toggle series visibility.
+										Track agent performance metrics with dual Y-axis scaling. Click legend items to
+										toggle series visibility.
 									</p>
 								</div>
 							</div>
@@ -264,16 +255,14 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 								) : (
 									<div className={styles.noData}>No data available</div>
 								)
+							) : experimentsPerformanceData.length > 0 ? (
+								<ComboChart
+									key={`experiments-chart-${filterState.experimentCount}`}
+									data={experimentsPerformanceData}
+									options={resolvedExperimentsChartOptions}
+								/>
 							) : (
-								experimentsPerformanceData.length > 0 ? (
-									<ComboChart
-										key={`experiments-chart-${filterState.experimentCount}`}
-										data={experimentsPerformanceData}
-										options={resolvedExperimentsChartOptions}
-									/>
-								) : (
-									<div className={styles.noData}>No data available</div>
-								)
+								<div className={styles.noData}>No data available</div>
 							)}
 						</Tile>
 					</div>
@@ -285,10 +274,7 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 								<p className={styles.chartDescription}>
 									Top 10 conversations by failure count - prioritize fixes here
 								</p>
-								<SimpleBarChart
-									data={failureAnalysisData}
-									options={failureAnalysisChartOptions}
-								/>
+								<SimpleBarChart data={failureAnalysisData} options={failureAnalysisChartOptions} />
 							</Tile>
 						)}
 
@@ -309,25 +295,18 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 							<Tile className={styles.chartTile}>
 								<h3 className={styles.chartTitle}>Similarity vs speed analysis</h3>
 								<p className={styles.chartDescription}>
-									Each point = one conversation. Shows average similarity score vs average execution time - are faster conversations less accurate?
+									Each point = one conversation. Shows average similarity score vs average execution
+									time - are faster conversations less accurate?
 								</p>
-								<ScatterChart
-									data={successSpeedScatterData}
-									options={successSpeedScatterOptions}
-								/>
+								<ScatterChart data={successSpeedScatterData} options={successSpeedScatterOptions} />
 							</Tile>
 						)}
 
 						{executionTimeHistogramData.length > 0 && (
 							<Tile className={styles.chartTile}>
 								<h3 className={styles.chartTitle}>Execution time distribution</h3>
-								<p className={styles.chartDescription}>
-									Performance consistency and outlier detection
-								</p>
-								<SimpleBarChart
-									data={executionTimeHistogramData}
-									options={histogramBarChartOptions}
-								/>
+								<p className={styles.chartDescription}>Performance consistency and outlier detection</p>
+								<SimpleBarChart data={executionTimeHistogramData} options={histogramBarChartOptions} />
 							</Tile>
 						)}
 
@@ -335,12 +314,10 @@ export default function AgentAnalytics({ sessions }: AgentAnalyticsProps) {
 							<Tile className={styles.chartTile}>
 								<h3 className={styles.chartTitle}>Recent performance trends</h3>
 								<p className={styles.chartDescription}>
-									Last 15 runs for top 5 most active conversations - spot improving or declining patterns
+									Last 15 runs for top 5 most active conversations - spot improving or declining
+									patterns
 								</p>
-								<LineChart
-									data={recentTrendsData}
-									options={recentTrendsChartOptions}
-								/>
+								<LineChart data={recentTrendsData} options={recentTrendsChartOptions} />
 							</Tile>
 						)}
 					</div>

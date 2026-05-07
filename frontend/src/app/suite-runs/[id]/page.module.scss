@@ -1,6 +1,6 @@
-@use "@carbon/react/scss/colors" as *;
-@use "@carbon/react/scss/theme" as *;
-@use "@carbon/react/scss/spacing" as *;
+@use '@carbon/react/scss/colors' as *;
+@use '@carbon/react/scss/theme' as *;
+@use '@carbon/react/scss/spacing' as *;
 
 .container {
 	padding: $spacing-06;
@@ -129,7 +129,6 @@
 	color: $text-secondary;
 	font-size: 0.875rem;
 }
-
 
 .jobsSection {
 	margin-bottom: $spacing-06;

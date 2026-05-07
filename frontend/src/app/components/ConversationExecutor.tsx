@@ -1,17 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-	Form,
-	Select,
-	SelectItem,
-	Button,
-	InlineLoading,
-	Tile,
-	Tag,
-	Grid,
-	Column
-} from '@carbon/react';
+import { Form, Select, SelectItem, Button, InlineLoading, Tile, Tag, Grid, Column } from '@carbon/react';
 import { PlayFilled, Chat } from '@carbon/icons-react';
 import { api, Conversation } from '@/lib/api';
 import { useAgents } from '@/lib/AppDataContext';
@@ -39,7 +29,7 @@ export default function ConversationExecutor() {
 			fetchAgents();
 		}
 		fetchConversations();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const fetchConversations = async () => {
@@ -74,7 +64,7 @@ export default function ConversationExecutor() {
 				}
 			} catch {
 				if (!cancelled) {
-					const fallbackConversation = conversations.find(c => c.id === selectedConversationId);
+					const fallbackConversation = conversations.find((c) => c.id === selectedConversationId);
 					setSelectedConversationDetails(fallbackConversation || null);
 				}
 			} finally {
@@ -142,7 +132,8 @@ export default function ConversationExecutor() {
 		}
 	};
 
-	const selectedConversation = selectedConversationDetails || conversations.find(c => c.id === selectedConversationId);
+	const selectedConversation =
+		selectedConversationDetails || conversations.find((c) => c.id === selectedConversationId);
 
 	return (
 		<Grid>
@@ -157,7 +148,7 @@ export default function ConversationExecutor() {
 							onChange={handleAgentChange}
 						>
 							<SelectItem value="" text="Choose an agent" disabled />
-							{agents.map(agent => (
+							{agents.map((agent) => (
 								<SelectItem
 									key={agent.id}
 									value={agent.id}
@@ -181,12 +172,8 @@ export default function ConversationExecutor() {
 								text={loadingConversations ? 'Loading conversations...' : 'Choose a conversation'}
 								disabled
 							/>
-							{conversations.map(conversation => (
-								<SelectItem
-									key={conversation.id}
-									value={conversation.id}
-									text={conversation.name}
-								/>
+							{conversations.map((conversation) => (
+								<SelectItem key={conversation.id} value={conversation.id} text={conversation.name} />
 							))}
 						</Select>
 					</div>
@@ -201,17 +188,9 @@ export default function ConversationExecutor() {
 					</Button>
 				</Form>
 
-				{error && (
-					<Tile className={styles.errorTile}>
-						{error}
-					</Tile>
-				)}
+				{error && <Tile className={styles.errorTile}>{error}</Tile>}
 
-				{successMessage && (
-					<Tile className={styles.successTile}>
-						{successMessage}
-					</Tile>
-				)}
+				{successMessage && <Tile className={styles.successTile}>{successMessage}</Tile>}
 			</Column>
 
 			<Column sm={4} md={2} lg={8}>
@@ -224,11 +203,15 @@ export default function ConversationExecutor() {
 
 						<div className={styles.fieldGroup}>
 							<strong>{selectedConversation.name}</strong>
-                                    {selectedConversation.description && (
-                                        <div className={styles.previewDescription}>
-                                            <ExpandableText text={selectedConversation.description} previewChars={160} threshold={240} />
-                                        </div>
-                                    )}
+							{selectedConversation.description && (
+								<div className={styles.previewDescription}>
+									<ExpandableText
+										text={selectedConversation.description}
+										previewChars={160}
+										threshold={240}
+									/>
+								</div>
+							)}
 						</div>
 
 						{formatTags(selectedConversation.tags).length > 0 && (
@@ -242,17 +225,15 @@ export default function ConversationExecutor() {
 						)}
 
 						{loadingConversationDetails ? (
-							<p className={styles.noMessages}>
-								Loading conversation script...
-							</p>
+							<p className={styles.noMessages}>Loading conversation script...</p>
 						) : selectedConversation.messages && selectedConversation.messages.length > 0 ? (
 							<div>
 								<strong>Script ({selectedConversation.messages.length} messages):</strong>
 								<ul className={styles.scriptList}>
-                                    {selectedConversation.messages.slice(0, 3).map((message, i) => (
+									{selectedConversation.messages.slice(0, 3).map((message, i) => (
 										<li key={i} className={styles.scriptItem}>
-                                            <strong>{message.role}:</strong>{' '}
-                                            <ExpandableText text={message.content} previewChars={60} threshold={80} />
+											<strong>{message.role}:</strong>{' '}
+											<ExpandableText text={message.content} previewChars={60} threshold={80} />
 										</li>
 									))}
 									{selectedConversation.messages.length > 3 && (
@@ -263,9 +244,7 @@ export default function ConversationExecutor() {
 								</ul>
 							</div>
 						) : (
-							<p className={styles.noMessages}>
-								No messages defined in this conversation
-							</p>
+							<p className={styles.noMessages}>No messages defined in this conversation</p>
 						)}
 					</Tile>
 				)}

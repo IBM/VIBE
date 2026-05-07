@@ -53,14 +53,14 @@ export default function AnalyticsFilters({
 	conversationSearch,
 	onConversationSearchChange
 }: AnalyticsFiltersProps) {
-	const selectedDateRangeItem = dateRangeItems.find(item => item.id === filterState.dateRange) || dateRangeItems[0];
+	const selectedDateRangeItem = dateRangeItems.find((item) => item.id === filterState.dateRange) || dateRangeItems[0];
 	const hasConversationFilters = filterState.conversationIds.length > 0;
 
 	const filteredConversations = React.useMemo(() => {
 		if (!conversationSearch.trim()) return availableConversations;
 		const search = conversationSearch.toLowerCase();
-		return availableConversations.filter(c =>
-			c.name.toLowerCase().includes(search) || c.id?.toString().includes(search)
+		return availableConversations.filter(
+			(c) => c.name.toLowerCase().includes(search) || c.id?.toString().includes(search)
 		);
 	}, [availableConversations, conversationSearch]);
 
@@ -68,7 +68,7 @@ export default function AnalyticsFilters({
 		const isSelected = filterState.conversationIds.includes(convId);
 		onFilterChange({
 			conversationIds: isSelected
-				? filterState.conversationIds.filter(id => id !== convId)
+				? filterState.conversationIds.filter((id) => id !== convId)
 				: [...filterState.conversationIds, convId]
 		});
 	};
@@ -124,7 +124,10 @@ export default function AnalyticsFilters({
 									max={100}
 									value={filterState.experimentCount}
 									onChange={(_event, state) => {
-										const value = typeof state.value === 'number' ? state.value : parseInt(String(state.value)) || 20;
+										const value =
+											typeof state.value === 'number'
+												? state.value
+												: parseInt(String(state.value)) || 20;
 										onFilterChange({ experimentCount: Math.min(100, Math.max(5, value)) });
 									}}
 									size="md"
@@ -179,7 +182,9 @@ export default function AnalyticsFilters({
 							<div className={styles.accordionTitle}>
 								<span>Filter by conversation</span>
 								{hasConversationFilters && (
-									<Tag type="blue" size="sm">{filterState.conversationIds.length} selected</Tag>
+									<Tag type="blue" size="sm">
+										{filterState.conversationIds.length} selected
+									</Tag>
 								)}
 							</div>
 						}
@@ -198,18 +203,14 @@ export default function AnalyticsFilters({
 									/>
 								)}
 								{hasConversationFilters && (
-									<Button
-										kind="ghost"
-										size="sm"
-										onClick={clearConversationFilters}
-									>
+									<Button kind="ghost" size="sm" onClick={clearConversationFilters}>
 										Clear all
 									</Button>
 								)}
 							</div>
 							<div className={styles.conversationList}>
 								{filteredConversations.length > 0 ? (
-									filteredConversations.map(conv => (
+									filteredConversations.map((conv) => (
 										<Checkbox
 											key={conv.id}
 											id={`conv-${conv.id}`}
@@ -237,8 +238,8 @@ export default function AnalyticsFilters({
 
 			{hasConversationFilters && (
 				<div className={styles.selectedConversations}>
-					{filterState.conversationIds.map(convId => {
-						const conv = availableConversations.find(c => c.id === convId);
+					{filterState.conversationIds.map((convId) => {
+						const conv = availableConversations.find((c) => c.id === convId);
 						return conv ? (
 							<Tag
 								key={convId}

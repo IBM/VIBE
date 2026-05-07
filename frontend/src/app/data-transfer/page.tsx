@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ExportPanel from './ExportPanel';
 import ImportPanel from './ImportPanel';
 import styles from './page.module.scss';
@@ -46,4 +46,3 @@ export default function DataTransferPage() {
 		</div>
 	);
 }
-

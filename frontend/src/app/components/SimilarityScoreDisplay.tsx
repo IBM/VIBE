@@ -1,4 +1,3 @@
-import React from 'react';
 import { Tag, InlineLoading, Tooltip } from '@carbon/react';
 import { Error } from '@carbon/icons-react';
 import { TestResult } from '@/lib/api';

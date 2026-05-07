@@ -37,7 +37,9 @@ jest.mock('../../components/EmptyState', () => ({
 		<div>
 			<h3>{title}</h3>
 			<p>{description}</p>
-			<button type="button" onClick={onAddClick}>Add</button>
+			<button type="button" onClick={onAddClick}>
+				Add
+			</button>
 		</div>
 	)
 }));

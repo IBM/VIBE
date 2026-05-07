@@ -1,8 +1,6 @@
 import type { AnalysisItem, ImportResolutionDecision } from '@ibm-vibe/types';
 
-export const getDefaultResolutionDecision = (
-	status: AnalysisItem['status']
-): ImportResolutionDecision => {
+export const getDefaultResolutionDecision = (status: AnalysisItem['status']): ImportResolutionDecision => {
 	if (status === 'new') {
 		return 'create_new';
 	}
@@ -27,8 +25,5 @@ export const getAllowedResolutionDecisions = (
 	return ['skip'];
 };
 
-export const formatResolutionDecision = (decision: ImportResolutionDecision): string => (
-	decision === 'create_new'
-		? 'Create new'
-		: decision.charAt(0).toUpperCase() + decision.slice(1)
-);
+export const formatResolutionDecision = (decision: ImportResolutionDecision): string =>
+	decision === 'create_new' ? 'Create new' : decision.charAt(0).toUpperCase() + decision.slice(1);

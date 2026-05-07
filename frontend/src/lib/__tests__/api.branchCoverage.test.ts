@@ -19,9 +19,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getResultsWithCount({ agent_id: 5 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('agent_id=5')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('agent_id=5'));
 		});
 
 		it('includes test_id when provided', async () => {
@@ -31,9 +29,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getResultsWithCount({ test_id: 10 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('test_id=10')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('test_id=10'));
 		});
 
 		it('includes limit when provided', async () => {
@@ -43,9 +39,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getResultsWithCount({ limit: 20 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=20')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=20'));
 		});
 
 		it('includes offset when provided', async () => {
@@ -55,9 +49,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getResultsWithCount({ offset: 30 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=30')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=30'));
 		});
 	});
 
@@ -69,9 +61,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRuns({ limit: 15 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=15')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=15'));
 		});
 
 		it('includes suite_id when provided', async () => {
@@ -81,9 +71,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRuns({ suite_id: 7 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('suite_id=7')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('suite_id=7'));
 		});
 
 		it('includes agent_id when provided', async () => {
@@ -93,9 +81,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRuns({ agent_id: 3 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('agent_id=3')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('agent_id=3'));
 		});
 
 		it('includes status when provided', async () => {
@@ -105,9 +91,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRuns({ status: 'completed' });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('status=completed')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('status=completed'));
 		});
 
 		it('includes after date when provided', async () => {
@@ -145,9 +129,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRunsWithCount({ limit: 25 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=25')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=25'));
 		});
 
 		it('includes offset when provided', async () => {
@@ -157,9 +139,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRunsWithCount({ offset: 50 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=50')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=50'));
 		});
 
 		it('includes suite_id when provided', async () => {
@@ -169,9 +149,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRunsWithCount({ suite_id: 8 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('suite_id=8')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('suite_id=8'));
 		});
 
 		it('includes agent_id when provided', async () => {
@@ -181,9 +159,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRunsWithCount({ agent_id: 4 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('agent_id=4')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('agent_id=4'));
 		});
 
 		it('includes status when provided', async () => {
@@ -193,9 +169,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getSuiteRunsWithCount({ status: 'failed' });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('status=failed')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('status=failed'));
 		});
 
 		it('includes after date when provided', async () => {
@@ -233,9 +207,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getJobsWithCount({ limit: 100 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=100')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=100'));
 		});
 
 		it('includes offset when provided', async () => {
@@ -245,9 +217,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getJobsWithCount({ offset: 200 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=200')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=200'));
 		});
 	});
 
@@ -259,9 +229,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getConversations({ offset: 40 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=40')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=40'));
 		});
 	});
 
@@ -273,9 +241,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getExecutionSessions({ agent_id: 6 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('agent_id=6')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('agent_id=6'));
 		});
 
 		it('includes limit when provided', async () => {
@@ -285,9 +251,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getExecutionSessions({ limit: 30 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=30')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=30'));
 		});
 
 		it('includes offset when provided', async () => {
@@ -297,9 +261,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getExecutionSessions({ offset: 60 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=60')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=60'));
 		});
 	});
 
@@ -311,9 +273,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getResults({ limit: 15 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=15')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=15'));
 		});
 
 		it('includes offset when provided', async () => {
@@ -323,9 +283,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getResults({ offset: 25 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=25')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=25'));
 		});
 	});
 
@@ -337,9 +295,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getJobs({ limit: 50 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('limit=50')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('limit=50'));
 		});
 
 		it('includes offset when provided', async () => {
@@ -349,9 +305,7 @@ describe('api client (branch coverage for optional filters)', () => {
 			} as Response);
 
 			await api.getJobs({ offset: 75 });
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('offset=75')
-			);
+			expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('offset=75'));
 		});
 	});
 
@@ -442,7 +396,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createAgentRequestTemplate(1, { name: 't', body: 'b' })).rejects.toThrow('Failed to create request template');
+			await expect(api.createAgentRequestTemplate(1, { name: 't', body: 'b' })).rejects.toThrow(
+				'Failed to create request template'
+			);
 		});
 
 		it('updateAgentRequestTemplate uses fallback when error.error is missing', async () => {
@@ -451,7 +407,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.updateAgentRequestTemplate(1, 2, { name: 't' })).rejects.toThrow('Failed to update request template');
+			await expect(api.updateAgentRequestTemplate(1, 2, { name: 't' })).rejects.toThrow(
+				'Failed to update request template'
+			);
 		});
 
 		it('deleteAgentRequestTemplate uses fallback when error.error is missing', async () => {
@@ -469,7 +427,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.setDefaultAgentRequestTemplate(1, 2)).rejects.toThrow('Failed to set default request template');
+			await expect(api.setDefaultAgentRequestTemplate(1, 2)).rejects.toThrow(
+				'Failed to set default request template'
+			);
 		});
 
 		it('getAgentResponseMaps uses fallback when error.error is missing', async () => {
@@ -487,7 +447,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createAgentResponseMap(1, { name: 'm', spec: '{}' })).rejects.toThrow('Failed to create response map');
+			await expect(api.createAgentResponseMap(1, { name: 'm', spec: '{}' })).rejects.toThrow(
+				'Failed to create response map'
+			);
 		});
 
 		it('updateAgentResponseMap uses fallback when error.error is missing', async () => {
@@ -496,7 +458,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.updateAgentResponseMap(1, 2, { name: 'm' })).rejects.toThrow('Failed to update response map');
+			await expect(api.updateAgentResponseMap(1, 2, { name: 'm' })).rejects.toThrow(
+				'Failed to update response map'
+			);
 		});
 
 		it('deleteAgentResponseMap uses fallback when error.error is missing', async () => {
@@ -541,7 +505,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createTemplate({ name: 't', body: 'b' } as any)).rejects.toThrow('Failed to create template');
+			await expect(api.createTemplate({ name: 't', body: 'b' } as any)).rejects.toThrow(
+				'Failed to create template'
+			);
 		});
 
 		it('updateTemplate uses fallback when error.error is missing', async () => {
@@ -586,7 +552,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createResponseMap({ name: 'm', spec: '{}' } as any)).rejects.toThrow('Failed to create response map');
+			await expect(api.createResponseMap({ name: 'm', spec: '{}' } as any)).rejects.toThrow(
+				'Failed to create response map'
+			);
 		});
 
 		it('updateResponseMap uses fallback when error.error is missing', async () => {
@@ -595,7 +563,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.updateResponseMap(1, { name: 'm' } as any)).rejects.toThrow('Failed to update response map');
+			await expect(api.updateResponseMap(1, { name: 'm' } as any)).rejects.toThrow(
+				'Failed to update response map'
+			);
 		});
 
 		it('deleteResponseMap uses fallback when error.error is missing', async () => {
@@ -658,7 +628,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.linkResponseMapToAgent(1, { response_map_id: 2 })).rejects.toThrow('Failed to link response map');
+			await expect(api.linkResponseMapToAgent(1, { response_map_id: 2 })).rejects.toThrow(
+				'Failed to link response map'
+			);
 		});
 
 		it('unlinkResponseMapFromAgent uses fallback when error.error is missing', async () => {
@@ -676,7 +648,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.setAgentLinkedResponseMapDefault(1, 2)).rejects.toThrow('Failed to set default response map');
+			await expect(api.setAgentLinkedResponseMapDefault(1, 2)).rejects.toThrow(
+				'Failed to set default response map'
+			);
 		});
 
 		it('getAgents uses fallback when error.error is missing', async () => {
@@ -703,7 +677,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createAgent({ name: 'a', version: '1', prompt: '', settings: '{}' } as any)).rejects.toThrow('Failed to create agent');
+			await expect(
+				api.createAgent({ name: 'a', version: '1', prompt: '', settings: '{}' } as any)
+			).rejects.toThrow('Failed to create agent');
 		});
 
 		it('updateAgent uses fallback when error.error is missing', async () => {
@@ -730,7 +706,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createTest({ name: 't', description: '', input: 'i', expected_output: 'o' } as any)).rejects.toThrow('Failed to create test');
+			await expect(
+				api.createTest({ name: 't', description: '', input: 'i', expected_output: 'o' } as any)
+			).rejects.toThrow('Failed to create test');
 		});
 
 		it('getTestById uses fallback when error.error is missing', async () => {
@@ -784,7 +762,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createResult({ agent_id: 1, test_id: 1, output: 'o', status: 'completed' } as any)).rejects.toThrow('Failed to create result');
+			await expect(
+				api.createResult({ agent_id: 1, test_id: 1, output: 'o', status: 'completed' } as any)
+			).rejects.toThrow('Failed to create result');
 		});
 
 		it('scoreResult uses fallback when error.error is missing', async () => {
@@ -955,7 +935,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createLLMConfig({ name: 'c', provider: 'x', config: '{}', priority: 1 } as any)).rejects.toThrow('Failed to create LLM config');
+			await expect(
+				api.createLLMConfig({ name: 'c', provider: 'x', config: '{}', priority: 1 } as any)
+			).rejects.toThrow('Failed to create LLM config');
 		});
 
 		it('updateLLMConfig uses fallback when error.error is missing', async () => {
@@ -982,7 +964,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.callLLMWithFallback({ prompt: 'hi' } as any)).rejects.toThrow('Failed to call LLM with fallback');
+			await expect(api.callLLMWithFallback({ prompt: 'hi' } as any)).rejects.toThrow(
+				'Failed to call LLM with fallback'
+			);
 		});
 
 		it('getSuiteEntries uses fallback when error.error is missing', async () => {
@@ -1027,7 +1011,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.reorderSuiteEntries(1, [{ entry_id: 1, sequence: 1 }])).rejects.toThrow('Failed to reorder suite entries');
+			await expect(api.reorderSuiteEntries(1, [{ entry_id: 1, sequence: 1 }])).rejects.toThrow(
+				'Failed to reorder suite entries'
+			);
 		});
 
 		it('getConversations uses fallback when error.error is missing', async () => {
@@ -1054,7 +1040,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.createConversation({ name: 'c', description: '' } as any)).rejects.toThrow('Failed to create conversation');
+			await expect(api.createConversation({ name: 'c', description: '' } as any)).rejects.toThrow(
+				'Failed to create conversation'
+			);
 		});
 
 		it('updateConversation uses fallback when error.error is missing', async () => {
@@ -1063,7 +1051,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.updateConversation(1, { name: 'c' } as any)).rejects.toThrow('Failed to update conversation');
+			await expect(api.updateConversation(1, { name: 'c' } as any)).rejects.toThrow(
+				'Failed to update conversation'
+			);
 		});
 
 		it('deleteConversation uses fallback when error.error is missing', async () => {
@@ -1081,7 +1071,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.addMessageToConversation(1, { role: 'user', content: 'hi', sequence: 1 } as any)).rejects.toThrow('Failed to add message to conversation');
+			await expect(
+				api.addMessageToConversation(1, { role: 'user', content: 'hi', sequence: 1 } as any)
+			).rejects.toThrow('Failed to add message to conversation');
 		});
 
 		it('updateConversationMessage uses fallback when error.error is missing', async () => {
@@ -1090,7 +1082,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.updateConversationMessage(1, 2, { content: 'x' } as any)).rejects.toThrow('Failed to update conversation message');
+			await expect(api.updateConversationMessage(1, 2, { content: 'x' } as any)).rejects.toThrow(
+				'Failed to update conversation message'
+			);
 		});
 
 		it('deleteConversationMessage uses fallback when error.error is missing', async () => {
@@ -1108,7 +1102,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.reorderConversationMessages(1, [{ id: 1, sequence: 1 }])).rejects.toThrow('Failed to reorder conversation messages');
+			await expect(api.reorderConversationMessages(1, [{ id: 1, sequence: 1 }])).rejects.toThrow(
+				'Failed to reorder conversation messages'
+			);
 		});
 
 		it('getExecutionSessions uses fallback when error.error is missing', async () => {
@@ -1171,7 +1167,9 @@ describe('api client (branch coverage for optional filters)', () => {
 				json: async () => ({})
 			} as Response);
 
-			await expect(api.saveConversationTurnTarget({ conversation_id: 1, sequence: 1, expected_similarity: 0.5 } as any)).rejects.toThrow('Failed to save turn target');
+			await expect(
+				api.saveConversationTurnTarget({ conversation_id: 1, sequence: 1, expected_similarity: 0.5 } as any)
+			).rejects.toThrow('Failed to save turn target');
 		});
 
 		it('deleteConversationTurnTarget uses fallback when error.error is missing', async () => {

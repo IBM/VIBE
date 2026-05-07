@@ -20,9 +20,13 @@ jest.mock('@/lib/AppDataContext', () => ({
 	useAppData: jest.fn()
 }));
 
-jest.mock('../SimilarityScoreDisplay', () => function MockSimilarityScoreDisplay() {
-	return <div data-testid="similarity-score" />;
-});
+jest.mock(
+	'../SimilarityScoreDisplay',
+	() =>
+		function MockSimilarityScoreDisplay() {
+			return <div data-testid="similarity-score" />;
+		}
+);
 
 const mockedApi = api as jest.Mocked<typeof api>;
 const mockedUseAgents = useAgents as jest.Mock;
@@ -58,12 +62,7 @@ describe('JobsManager', () => {
 	it('shows empty state when no jobs exist', async () => {
 		mockedApi.getJobsWithCount.mockResolvedValue({ data: [], total: 0 });
 
-		render(
-			<JobsManager
-				onViewSession={jest.fn()}
-				onViewConversation={jest.fn()}
-			/>
-		);
+		render(<JobsManager onViewSession={jest.fn()} onViewConversation={jest.fn()} />);
 
 		expect(await screen.findByText(/No jobs found/i)).toBeInTheDocument();
 	});
@@ -90,12 +89,7 @@ describe('JobsManager', () => {
 		});
 		mockedApi.createJob.mockResolvedValue({ id: 'job-2' } as any);
 
-		render(
-			<JobsManager
-				onViewSession={onViewSession}
-				onViewConversation={onViewConversation}
-			/>
-		);
+		render(<JobsManager onViewSession={onViewSession} onViewConversation={onViewConversation} />);
 
 		await screen.findByText('Test Jobs');
 		await user.click(screen.getByLabelText('View job details'));

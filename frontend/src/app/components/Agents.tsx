@@ -12,11 +12,7 @@ interface AgentsProps {
 	onDeleteAgent: (id: number) => void;
 }
 
-export default function Agents({
-	onAddClick,
-	onEditAgent,
-	onDeleteAgent
-}: AgentsProps) {
+export default function Agents({ onAddClick, onEditAgent, onDeleteAgent }: AgentsProps) {
 	// Get data from context
 	const { agents, isLoading, fetchAgents } = useAgents();
 	const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
@@ -30,7 +26,7 @@ export default function Agents({
 			}
 		};
 		loadAgents();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const agentRows = agents.map((agent) => ({

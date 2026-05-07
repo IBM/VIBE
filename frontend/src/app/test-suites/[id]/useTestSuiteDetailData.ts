@@ -19,7 +19,7 @@ export function useTestSuiteDetailData(suiteId: number) {
 			throw new Error('Test suite not found');
 		}
 		setSuite(found);
-		setAllSuites(allSuitesData.filter(s => s.id !== suiteId));
+		setAllSuites(allSuitesData.filter((s) => s.id !== suiteId));
 	}, [suiteId]);
 
 	const reloadAll = useCallback(async () => {
@@ -38,7 +38,7 @@ export function useTestSuiteDetailData(suiteId: number) {
 			setAllTests(allTestsData);
 			setEntries(entriesData);
 			setSuiteRuns(runsData);
-			setSelectedAgentId(prev => prev ?? (agentsData[0]?.id ?? null));
+			setSelectedAgentId((prev) => prev ?? agentsData[0]?.id ?? null);
 			setError(null);
 		} catch (err: unknown) {
 			if (err instanceof Error) {

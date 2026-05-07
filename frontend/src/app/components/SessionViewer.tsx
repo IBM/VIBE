@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Tag, Tile, CodeSnippet } from '@carbon/react';
 import { ExpandableText } from './ExpandableText';
 import type { ExecutionSession, SessionMessage } from '../../lib/api';
@@ -22,12 +22,8 @@ const renderMetadata = (metadata?: string) => {
 				{meta.execution_time_ms !== undefined && (
 					<span className={styles.metaChip}>time: {meta.execution_time_ms}ms</span>
 				)}
-				{meta.input_tokens !== undefined && (
-					<span className={styles.metaChip}>in: {meta.input_tokens}</span>
-				)}
-				{meta.output_tokens !== undefined && (
-					<span className={styles.metaChip}>out: {meta.output_tokens}</span>
-				)}
+				{meta.input_tokens !== undefined && <span className={styles.metaChip}>in: {meta.input_tokens}</span>}
+				{meta.output_tokens !== undefined && <span className={styles.metaChip}>out: {meta.output_tokens}</span>}
 				{meta.request_template_used && (
 					<span className={styles.metaChip}>tpl: {meta.request_template_used}</span>
 				)}
@@ -46,7 +42,11 @@ const renderMetadata = (metadata?: string) => {
 				)}
 				{(meta.variables_before || meta.variables_after || meta.variables_snapshot) && (
 					<span className={styles.metaChip}>
-						vars: {Object.keys(meta.variables_before || meta.variables_after || meta.variables_snapshot || {}).length}
+						vars:{' '}
+						{
+							Object.keys(meta.variables_before || meta.variables_after || meta.variables_snapshot || {})
+								.length
+						}
 					</span>
 				)}
 			</>
@@ -105,20 +105,23 @@ export default function SessionViewer({ session, messages }: SessionViewerProps)
 		<div className={styles.container}>
 			<div className={styles.header}>
 				<div className={styles.meta}>
-					<Tag type={getStatusTagType(session.status)}>
-						{session.status}
-					</Tag>
+					<Tag type={getStatusTagType(session.status)}>{session.status}</Tag>
 					{typeof session.success === 'boolean' && (
 						<Tag type={session.success ? 'green' : 'red'}>{session.success ? 'success' : 'failure'}</Tag>
 					)}
 					{session.started_at && session.completed_at && (
 						<Tag type="purple">
-							{Math.round((new Date(session.completed_at).getTime() - new Date(session.started_at).getTime()) / 1000)}s
+							{Math.round(
+								(new Date(session.completed_at).getTime() - new Date(session.started_at).getTime()) /
+									1000
+							)}
+							s
 						</Tag>
 					)}
 					{(session as ExecutionSessionWithVars).variables && (
 						<Tag type="teal">
-							vars {(() => {
+							vars{' '}
+							{(() => {
 								try {
 									const varsStr = (session as ExecutionSessionWithVars).variables!;
 									return Object.keys(JSON.parse(varsStr)).length;

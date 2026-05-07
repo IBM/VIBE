@@ -53,12 +53,18 @@ export default function DeleteConfirmationModal({
 
 	const getDisplayName = () => {
 		switch (deleteType) {
-			case 'agent': return 'Agent';
-			case 'test': return 'Test';
-			case 'test-suite': return 'Test suite';
-			case 'conversation': return 'Conversation';
-			case 'suite-run': return 'Suite run';
-			default: return 'Item';
+			case 'agent':
+				return 'Agent';
+			case 'test':
+				return 'Test';
+			case 'test-suite':
+				return 'Test suite';
+			case 'conversation':
+				return 'Conversation';
+			case 'suite-run':
+				return 'Suite run';
+			default:
+				return 'Item';
 		}
 	};
 
@@ -67,19 +73,26 @@ export default function DeleteConfirmationModal({
 			return (
 				<>
 					<p>Are you sure you want to delete the test suite &quot;{deleteName}&quot;?</p>
-					<p><strong>Warning:</strong> This will also permanently delete all associated suite runs and their results. This action cannot be undone.</p>
+					<p>
+						<strong>Warning:</strong> This will also permanently delete all associated suite runs and their
+						results. This action cannot be undone.
+					</p>
 				</>
 			);
 		}
 		if (deleteType === 'suite-run') {
 			return (
 				<p>
-					Are you sure you want to delete the suite run &quot;{deleteName}&quot;?
-					This will permanently remove the run and associated job data.
+					Are you sure you want to delete the suite run &quot;{deleteName}&quot;? This will permanently remove
+					the run and associated job data.
 				</p>
 			);
 		}
-		return <p>Are you sure you want to delete the {getDisplayName().toLowerCase()} &quot;{deleteName}&quot;?</p>;
+		return (
+			<p>
+				Are you sure you want to delete the {getDisplayName().toLowerCase()} &quot;{deleteName}&quot;?
+			</p>
+		);
 	};
 
 	return (
@@ -93,11 +106,7 @@ export default function DeleteConfirmationModal({
 			primaryButtonDisabled={deleting}
 			danger
 		>
-			{error && (
-				<div className={noticeStyles.errorBox}>
-					{error}
-				</div>
-			)}
+			{error && <div className={noticeStyles.errorBox}>{error}</div>}
 			{getWarningMessage()}
 		</Modal>
 	);

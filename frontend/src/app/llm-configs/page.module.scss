@@ -1,7 +1,7 @@
-@use "@carbon/react/scss/spacing" as *;
-@use "@carbon/react/scss/type" as *;
-@use "@carbon/react/scss/colors" as *;
-@use "@carbon/react/scss/theme" as *;
+@use '@carbon/react/scss/spacing' as *;
+@use '@carbon/react/scss/type' as *;
+@use '@carbon/react/scss/colors' as *;
+@use '@carbon/react/scss/theme' as *;
 
 .container {
 	padding: $spacing-05;
@@ -14,7 +14,7 @@
 	margin-bottom: $spacing-06;
 
 	h1 {
-		@include type-style("heading-04");
+		@include type-style('heading-04');
 		margin: 0;
 	}
 }

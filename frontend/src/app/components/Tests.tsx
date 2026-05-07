@@ -13,17 +13,13 @@ interface TestsProps {
 	onDeleteTest: (id: number) => void;
 }
 
-export default function Tests({
-	onAddClick,
-	onEditTest,
-	onDeleteTest
-}: TestsProps) {
+export default function Tests({ onAddClick, onEditTest, onDeleteTest }: TestsProps) {
 	const router = useRouter();
 	const { tests, isLoading, fetchTests } = useTests();
 
 	useEffect(() => {
 		fetchTests();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const testRows = tests.map((test) => ({
@@ -65,7 +61,7 @@ export default function Tests({
 					onEdit={onEditTest}
 					onDelete={onDeleteTest}
 					onGenerate={(id) => {
-						const test = tests.find(t => t.id === id);
+						const test = tests.find((t) => t.id === id);
 						if (test) {
 							const params = new URLSearchParams({
 								seed: test.input,

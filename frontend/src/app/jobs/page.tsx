@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import JobsManager from '../components/JobsManager';
 
@@ -15,10 +14,5 @@ export default function JobsPage() {
 		router.push(`/conversations/${conversationId}`);
 	};
 
-	return (
-		<JobsManager
-			onViewSession={handleViewSession}
-			onViewConversation={handleViewConversation}
-		/>
-	);
+	return <JobsManager onViewSession={handleViewSession} onViewConversation={handleViewConversation} />;
 }

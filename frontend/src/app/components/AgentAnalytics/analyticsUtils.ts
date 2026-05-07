@@ -25,16 +25,16 @@ export function getSimilarityScore(
 		return { similarity: 0, hasSimilarity: false };
 	}
 
-	const assistantMessages = messages.filter(m => m.role === 'assistant');
+	const assistantMessages = messages.filter((m) => m.role === 'assistant');
 	const scoredMessages = assistantMessages.filter(
-		m => m.similarity_scoring_status === 'completed' && typeof m.similarity_score === 'number'
+		(m) => m.similarity_scoring_status === 'completed' && typeof m.similarity_score === 'number'
 	);
 
 	if (scoredMessages.length === 0) {
 		return { similarity: 0, hasSimilarity: false };
 	}
 
-	const similarity = Math.max(...scoredMessages.map(m => m.similarity_score!));
+	const similarity = Math.max(...scoredMessages.map((m) => m.similarity_score!));
 	return { similarity, hasSimilarity: true };
 }
 
@@ -51,7 +51,7 @@ export function filterSessionsByDateRange(
 
 	if (dateRange === 'custom') {
 		if (!startDate || !endDate) return sessions;
-		return sessions.filter(s => {
+		return sessions.filter((s) => {
 			if (!s.started_at) return false;
 			const sessionDate = new Date(s.started_at);
 			return sessionDate >= startDate && sessionDate <= endDate;
@@ -75,7 +75,7 @@ export function filterSessionsByDateRange(
 	}
 
 	const startDateThreshold = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
-	return sessions.filter(s => {
+	return sessions.filter((s) => {
 		if (!s.started_at) return false;
 		return new Date(s.started_at) >= startDateThreshold;
 	});

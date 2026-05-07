@@ -1,14 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-	Modal,
-	TextInput,
-	NumberInput,
-	Dropdown,
-	TextArea,
-	Stack
-} from '@carbon/react';
+import { useState, useEffect } from 'react';
+import { Modal, TextInput, NumberInput, Dropdown, TextArea, Stack } from '@carbon/react';
 import { LLMConfig } from '../../lib/api';
 import { useLLMConfigs } from '../../lib/AppDataContext';
 
@@ -25,11 +18,7 @@ interface FormData {
 	configJson: string;
 }
 
-export default function LLMConfigFormModal({
-	isOpen,
-	onClose,
-	config = null
-}: LLMConfigFormModalProps) {
+export default function LLMConfigFormModal({ isOpen, onClose, config = null }: LLMConfigFormModalProps) {
 	const { createLLMConfig, updateLLMConfig } = useLLMConfigs();
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -85,7 +74,7 @@ export default function LLMConfigFormModal({
 						base_url: 'http://localhost:11434'
 					},
 					null,
-					2,
+					2
 				);
 			case 'openai':
 				return JSON.stringify(
@@ -95,7 +84,7 @@ export default function LLMConfigFormModal({
 						base_url: 'https://api.openai.com/v1'
 					},
 					null,
-					2,
+					2
 				);
 			case 'anthropic':
 				return JSON.stringify(
@@ -105,7 +94,7 @@ export default function LLMConfigFormModal({
 						base_url: 'https://api.anthropic.com/v1'
 					},
 					null,
-					2,
+					2
 				);
 			case 'watsonx':
 				return JSON.stringify(
@@ -116,7 +105,7 @@ export default function LLMConfigFormModal({
 						base_url: 'https://us-south.ml.cloud.ibm.com'
 					},
 					null,
-					2,
+					2
 				);
 			default:
 				return JSON.stringify({}, null, 2);
@@ -124,7 +113,7 @@ export default function LLMConfigFormModal({
 	};
 
 	// Handle provider change to update config template
-	const handleProviderChange = ({ selectedItem }: { selectedItem: { id: string, label: string } }) => {
+	const handleProviderChange = ({ selectedItem }: { selectedItem: { id: string; label: string } }) => {
 		const newProvider = selectedItem.id;
 		setFormData({
 			...formData,
@@ -226,7 +215,7 @@ export default function LLMConfigFormModal({
 					titleText="Provider"
 					label="Select a provider"
 					items={providerOptions}
-					selectedItem={providerOptions.find(item => item.id === formData.provider)}
+					selectedItem={providerOptions.find((item) => item.id === formData.provider)}
 					onChange={handleProviderChange}
 				/>
 

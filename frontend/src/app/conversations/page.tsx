@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, InlineLoading, ToastNotification, Pagination } from '@carbon/react';
 import { Add, Chat } from '@carbon/icons-react';
@@ -38,27 +38,27 @@ export default function ConversationsPage() {
 
 	useEffect(() => {
 		loadConversations();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentPage, pageSize]);
 
 	const handleAddClick = () => {
 		setFormModal({ open: true });
 	};
 
-    const handleEditConversation = async (id: number) => {
-        try {
-            setLoading(true);
-            const full = await api.getConversationById(id);
-            setFormModal({ open: true, conversation: full });
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load conversation');
-        } finally {
-            setLoading(false);
-        }
-    };
+	const handleEditConversation = async (id: number) => {
+		try {
+			setLoading(true);
+			const full = await api.getConversationById(id);
+			setFormModal({ open: true, conversation: full });
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Failed to load conversation');
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleDeleteConversation = (id: number) => {
-		const conversation = conversations.find(c => c.id === id);
+		const conversation = conversations.find((c) => c.id === id);
 		if (conversation) {
 			setDeleteModal({ open: true, conversation });
 		}
@@ -81,9 +81,10 @@ export default function ConversationsPage() {
 		id: conversation.id?.toString() || `conversation-${Date.now()}`,
 		name: conversation.name,
 		description: conversation.description || '',
-        messageCount: typeof conversation.message_count === 'number'
-            ? conversation.message_count
-            : (conversation.messages?.length || 0),
+		messageCount:
+			typeof conversation.message_count === 'number'
+				? conversation.message_count
+				: conversation.messages?.length || 0,
 		tags: formatTags(conversation.tags),
 		createdAt: conversation.created_at ? new Date(conversation.created_at).toLocaleDateString() : ''
 	}));

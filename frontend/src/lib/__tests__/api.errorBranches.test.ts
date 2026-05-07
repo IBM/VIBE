@@ -4,14 +4,15 @@ import { api } from '../api';
 describe('api client (error branches)', () => {
 	const originalFetch = global.fetch;
 
-	const makeNotOkJsonResponse = (payload: any = { error: 'Boom' }) => ({
-		ok: false,
-		status: 500,
-		headers: {
-			get: () => 'application/json'
-		},
-		json: async () => payload
-	}) as unknown as Response;
+	const makeNotOkJsonResponse = (payload: any = { error: 'Boom' }) =>
+		({
+			ok: false,
+			status: 500,
+			headers: {
+				get: () => 'application/json'
+			},
+			json: async () => payload
+		}) as unknown as Response;
 
 	afterEach(() => {
 		if (originalFetch) {
@@ -71,7 +72,10 @@ describe('api client (error branches)', () => {
 
 			// Tests
 			['getTests', () => api.getTests()],
-			['createTest', () => api.createTest({ name: 't', description: '', input: 'i', expected_output: 'o' } as any)],
+			[
+				'createTest',
+				() => api.createTest({ name: 't', description: '', input: 'i', expected_output: 'o' } as any)
+			],
 			['getTestById', () => api.getTestById(1)],
 			['updateTest', () => api.updateTest(1, { name: 't2' } as any)],
 			['deleteTest', () => api.deleteTest(1)],
@@ -80,7 +84,10 @@ describe('api client (error branches)', () => {
 			['getResults', () => api.getResults()],
 			['getResultsWithCount', () => api.getResultsWithCount()],
 			['getResultById', () => api.getResultById(1)],
-			['createResult', () => api.createResult({ agent_id: 1, test_id: 1, output: 'o', status: 'completed' } as any)],
+			[
+				'createResult',
+				() => api.createResult({ agent_id: 1, test_id: 1, output: 'o', status: 'completed' } as any)
+			],
 			['scoreResult', () => api.scoreResult(1)],
 			['executeTest', () => api.executeTest(1, 1)],
 
@@ -109,7 +116,10 @@ describe('api client (error branches)', () => {
 			// LLM configs (excluding deleteLLMConfig special cases below)
 			['getLLMConfigs', () => api.getLLMConfigs()],
 			['getLLMConfigById', () => api.getLLMConfigById(1)],
-			['createLLMConfig', () => api.createLLMConfig({ name: 'c', provider: 'x', config: '{}', priority: 1 } as any)],
+			[
+				'createLLMConfig',
+				() => api.createLLMConfig({ name: 'c', provider: 'x', config: '{}', priority: 1 } as any)
+			],
 			['updateLLMConfig', () => api.updateLLMConfig(1, { name: 'c2' } as any)],
 			['callLLM', () => api.callLLM(1, { prompt: 'hi' } as any)],
 			['callLLMWithFallback', () => api.callLLMWithFallback({ prompt: 'hi' } as any)],
@@ -127,7 +137,10 @@ describe('api client (error branches)', () => {
 			['createConversation', () => api.createConversation({ name: 'c', description: '' } as any)],
 			['updateConversation', () => api.updateConversation(1, { name: 'c2' } as any)],
 			['deleteConversation', () => api.deleteConversation(1)],
-			['addMessageToConversation', () => api.addMessageToConversation(1, { role: 'user', content: 'hi', sequence: 1 } as any)],
+			[
+				'addMessageToConversation',
+				() => api.addMessageToConversation(1, { role: 'user', content: 'hi', sequence: 1 } as any)
+			],
 			['updateConversationMessage', () => api.updateConversationMessage(1, 2, { content: 'x' } as any)],
 			['deleteConversationMessage', () => api.deleteConversationMessage(1, 1)],
 			['reorderConversationMessages', () => api.reorderConversationMessages(1, [{ id: 1, sequence: 1 }])],
@@ -140,7 +153,11 @@ describe('api client (error branches)', () => {
 			['regenerateSimilarityScore', () => api.regenerateSimilarityScore(1)],
 
 			['getConversationTurnTargets', () => api.getConversationTurnTargets(1)],
-			['saveConversationTurnTarget', () => api.saveConversationTurnTarget({ conversation_id: 1, sequence: 1, expected_similarity: 0.5 } as any)],
+			[
+				'saveConversationTurnTarget',
+				() =>
+					api.saveConversationTurnTarget({ conversation_id: 1, sequence: 1, expected_similarity: 0.5 } as any)
+			],
 			['deleteConversationTurnTarget', () => api.deleteConversationTurnTarget(1)]
 		];
 
@@ -178,7 +195,9 @@ describe('api client (error branches)', () => {
 			ok: false,
 			status: 500,
 			headers: { get: () => 'application/json' },
-			json: async () => { throw new Error('bad json'); }
+			json: async () => {
+				throw new Error('bad json');
+			}
 		} as unknown as Response);
 
 		await expect(api.deleteLLMConfig(1)).rejects.toThrow('Failed to delete LLM config (Status: 500)');
@@ -194,7 +213,9 @@ describe('api client (error branches)', () => {
 			ok: false,
 			status: 500,
 			headers: { get: () => 'application/json' },
-			json: async () => { throw new Error('no json'); }
+			json: async () => {
+				throw new Error('no json');
+			}
 		} as unknown as Response);
 
 		await expect(api.executeConversation(1, 2)).rejects.toThrow('Failed to execute conversation');
@@ -204,7 +225,7 @@ describe('api client (error branches)', () => {
 		// getResults: array vs { data }
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ([{ id: 1 }])
+			json: async () => [{ id: 1 }]
 		} as unknown as Response);
 		await expect(api.getResults()).resolves.toEqual([{ id: 1 }]);
 
@@ -217,7 +238,7 @@ describe('api client (error branches)', () => {
 		// getResultsWithCount: array -> { data, total } vs object passthrough
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ([{ id: 1 }, { id: 2 }])
+			json: async () => [{ id: 1 }, { id: 2 }]
 		} as unknown as Response);
 		await expect(api.getResultsWithCount()).resolves.toEqual({ data: [{ id: 1 }, { id: 2 }], total: 2 });
 
@@ -230,7 +251,7 @@ describe('api client (error branches)', () => {
 		// getSuiteRuns + getSuiteRunsWithCount
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ([{ id: 1 }])
+			json: async () => [{ id: 1 }]
 		} as unknown as Response);
 		await expect(api.getSuiteRuns()).resolves.toEqual([{ id: 1 }]);
 
@@ -242,7 +263,7 @@ describe('api client (error branches)', () => {
 
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ([{ id: 1 }, { id: 2 }])
+			json: async () => [{ id: 1 }, { id: 2 }]
 		} as unknown as Response);
 		await expect(api.getSuiteRunsWithCount()).resolves.toEqual({ data: [{ id: 1 }, { id: 2 }], total: 2 });
 
@@ -255,7 +276,7 @@ describe('api client (error branches)', () => {
 		// getJobs + getJobsWithCount
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ([{ id: 'j1' }])
+			json: async () => [{ id: 'j1' }]
 		} as unknown as Response);
 		await expect(api.getJobs()).resolves.toEqual([{ id: 'j1' }]);
 
@@ -267,7 +288,7 @@ describe('api client (error branches)', () => {
 
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ([{ id: 'j1' }, { id: 'j2' }])
+			json: async () => [{ id: 'j1' }, { id: 'j2' }]
 		} as unknown as Response);
 		await expect(api.getJobsWithCount()).resolves.toEqual({ data: [{ id: 'j1' }, { id: 'j2' }], total: 2 });
 
@@ -278,4 +299,3 @@ describe('api client (error branches)', () => {
 		await expect(api.getJobsWithCount()).resolves.toEqual({ data: [{ id: 'j3' }], total: 10 });
 	});
 });
-

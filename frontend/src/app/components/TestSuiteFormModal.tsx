@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-	Modal,
-	TextInput,
-	TextArea,
-	Form,
-	Stack,
-	InlineNotification,
-	Tag
-} from '@carbon/react';
+import { Modal, TextInput, TextArea, Form, Stack, InlineNotification, Tag } from '@carbon/react';
 import { api } from '@/lib/api';
 import styles from '../test-suites/TestSuites.module.scss';
 
@@ -26,7 +18,9 @@ export default function TestSuiteFormModal({
 	onClose,
 	onSuccess
 }: TestSuiteFormModalProps) {
-	const [formData, setFormData] = useState<{ name: string; description: string; tags: string }>(initialFormData || { name: '', description: '', tags: '' });
+	const [formData, setFormData] = useState<{ name: string; description: string; tags: string }>(
+		initialFormData || { name: '', description: '', tags: '' }
+	);
 	const [isSaving, setIsSaving] = useState(false);
 	const [formError, setFormError] = useState<string | null>(null);
 
@@ -37,7 +31,7 @@ export default function TestSuiteFormModal({
 	}, [isOpen, initialFormData]);
 
 	const handleInputChange = (field: string, value: string) => {
-		setFormData(prev => ({
+		setFormData((prev) => ({
 			...prev,
 			[field]: value
 		}));
@@ -47,7 +41,10 @@ export default function TestSuiteFormModal({
 		if (!tagString) {
 			return [];
 		}
-		return tagString.split(',').map(tag => tag.trim()).filter(Boolean);
+		return tagString
+			.split(',')
+			.map((tag) => tag.trim())
+			.filter(Boolean);
 	};
 
 	const handleSubmit = async () => {
@@ -91,14 +88,7 @@ export default function TestSuiteFormModal({
 			onRequestSubmit={handleSubmit}
 			primaryButtonDisabled={isSaving}
 		>
-			{formError && (
-				<InlineNotification
-					kind="error"
-					title="Error"
-					subtitle={formError}
-					hideCloseButton
-				/>
-			)}
+			{formError && <InlineNotification kind="error" title="Error" subtitle={formError} hideCloseButton />}
 			<Form>
 				<Stack gap={7}>
 					<TextInput
@@ -127,7 +117,9 @@ export default function TestSuiteFormModal({
 					{formData.tags && (
 						<div className={styles.previewTags}>
 							{getTags(formData.tags).map((tag, index) => (
-								<Tag key={index} type="blue" size="sm">{tag}</Tag>
+								<Tag key={index} type="blue" size="sm">
+									{tag}
+								</Tag>
 							))}
 						</div>
 					)}

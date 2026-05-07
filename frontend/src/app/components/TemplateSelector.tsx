@@ -1,12 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-	ComboBox,
-	Button,
-	Stack,
-	InlineLoading
-} from '@carbon/react';
+import { useState, useEffect, useCallback } from 'react';
+import { ComboBox, Button, Stack, InlineLoading } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { api, RequestTemplate, ResponseMap } from '../../lib/api';
 import TemplateFormModal from './TemplateFormModal';
@@ -66,11 +61,9 @@ export default function TemplateSelector({
 	const loadTemplates = useCallback(async () => {
 		setLoading(true);
 		try {
-			const data = isRequestTemplate
-				? await api.getTemplates(capability)
-				: await api.getResponseMaps(capability);
+			const data = isRequestTemplate ? await api.getTemplates(capability) : await api.getResponseMaps(capability);
 
-			const items: TemplateItem[] = data.map(t => ({
+			const items: TemplateItem[] = data.map((t) => ({
 				id: t.id!,
 				name: t.name,
 				capability: extractCapabilityName(t.capability),
@@ -81,7 +74,7 @@ export default function TemplateSelector({
 
 			// Set initial selection
 			if (selectedId) {
-				const selected = items.find(item => item.id === selectedId);
+				const selected = items.find((item) => item.id === selectedId);
 				setSelectedItem(selected || null);
 			}
 		} catch {
@@ -94,13 +87,13 @@ export default function TemplateSelector({
 
 	useEffect(() => {
 		loadTemplates();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Update selection when selectedId changes
 	useEffect(() => {
 		if (selectedId) {
-			const selected = templates.find(item => item.id === selectedId);
+			const selected = templates.find((item) => item.id === selectedId);
 			setSelectedItem(selected || null);
 		} else {
 			setSelectedItem(null);
@@ -120,7 +113,7 @@ export default function TemplateSelector({
 			template
 		};
 
-		setTemplates(prev => [newItem, ...prev]);
+		setTemplates((prev) => [newItem, ...prev]);
 		setSelectedItem(newItem);
 		onSelect(template);
 
@@ -162,7 +155,9 @@ export default function TemplateSelector({
 					)}
 				</div>
 				{showAddNew && (
-					<div style={{ alignSelf: 'flex-end', paddingBottom: helperText || defaultHelperText ? '20px' : '0' }}>
+					<div
+						style={{ alignSelf: 'flex-end', paddingBottom: helperText || defaultHelperText ? '20px' : '0' }}
+					>
 						<Button
 							kind="ghost"
 							size="md"
@@ -217,7 +212,7 @@ export function TemplatePreviewSelector({
 					? await api.getTemplates(capability)
 					: await api.getResponseMaps(capability);
 
-				const items: TemplateItem[] = data.map(t => ({
+				const items: TemplateItem[] = data.map((t) => ({
 					id: t.id!,
 					name: t.name,
 					capability: extractCapabilityName(t.capability),
@@ -273,14 +268,16 @@ export function TemplatePreviewSelector({
 
 			{selectedItem && (
 				<div style={{ marginTop: '1rem' }}>
-					<pre style={{
-						background: '#f4f4f4',
-						padding: '1rem',
-						borderRadius: '4px',
-						fontSize: '12px',
-						overflow: 'auto',
-						maxHeight: '200px'
-					}}>
+					<pre
+						style={{
+							background: '#f4f4f4',
+							padding: '1rem',
+							borderRadius: '4px',
+							fontSize: '12px',
+							overflow: 'auto',
+							maxHeight: '200px'
+						}}
+					>
 						{isRequestTemplate
 							? (selectedItem.template as RequestTemplate).body
 							: (selectedItem.template as ResponseMap).spec}

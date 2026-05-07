@@ -2,7 +2,12 @@ import type { PaginatedResponse, TestResult } from './types';
 import { API_URL, fetchJson } from './fetchJson';
 
 export const resultsApi = {
-	async getResults(filters?: { agent_id?: number; test_id?: number; limit?: number; offset?: number }): Promise<TestResult[]> {
+	async getResults(filters?: {
+		agent_id?: number;
+		test_id?: number;
+		limit?: number;
+		offset?: number;
+	}): Promise<TestResult[]> {
 		const params = new URLSearchParams();
 		if (filters?.agent_id) params.append('agent_id', filters.agent_id.toString());
 		if (filters?.test_id) params.append('test_id', filters.test_id.toString());
@@ -17,7 +22,12 @@ export const resultsApi = {
 		return Array.isArray(result) ? result : result.data;
 	},
 
-	async getResultsWithCount(filters?: { agent_id?: number; test_id?: number; limit?: number; offset?: number }): Promise<PaginatedResponse<TestResult>> {
+	async getResultsWithCount(filters?: {
+		agent_id?: number;
+		test_id?: number;
+		limit?: number;
+		offset?: number;
+	}): Promise<PaginatedResponse<TestResult>> {
 		const params = new URLSearchParams();
 		if (filters?.agent_id) {
 			params.append('agent_id', filters.agent_id.toString());

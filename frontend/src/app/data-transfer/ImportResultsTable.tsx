@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import type { ImportResultSummary } from '@ibm-vibe/types';
 import styles from './page.module.scss';
 

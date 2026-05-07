@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -20,15 +20,7 @@ import {
 	OverflowMenu,
 	OverflowMenuItem
 } from '@carbon/react';
-import {
-	ChartLine,
-	Time,
-	CheckmarkFilled,
-	ErrorFilled,
-	Information,
-	ArrowLeft,
-	ArrowRight
-} from '@carbon/icons-react';
+import { ChartLine, Time, CheckmarkFilled, ErrorFilled, Information, ArrowLeft, ArrowRight } from '@carbon/icons-react';
 import { api, ExecutionSession, SessionMessage, Conversation, Agent, ConversationTurnTarget } from '../../../lib/api';
 import SessionViewer from '../../components/SessionViewer';
 import TokenUsageTile from '../../components/TokenUsageTile';
@@ -84,7 +76,7 @@ export default function SessionDetailPage() {
 
 			if (sessionData.agent_id) {
 				const agents = await api.getAgents();
-				const agentData = agents.find(a => a.id === sessionData.agent_id);
+				const agentData = agents.find((a) => a.id === sessionData.agent_id);
 				setAgent(agentData || null);
 			}
 
@@ -92,13 +84,12 @@ export default function SessionDetailPage() {
 			const assistantMessages = filterMessagesByRole(messagesData, 'assistant');
 			const tokenTotals = calculateTotalTokens(messagesData);
 
-			const totalDuration = sessionData.completed_at && sessionData.started_at
-				? new Date(sessionData.completed_at).getTime() - new Date(sessionData.started_at).getTime()
-				: 0;
+			const totalDuration =
+				sessionData.completed_at && sessionData.started_at
+					? new Date(sessionData.completed_at).getTime() - new Date(sessionData.started_at).getTime()
+					: 0;
 
-			const responseTimes = assistantMessages.map(m =>
-				calculateResponseTime(m)
-			).filter(t => t > 0);
+			const responseTimes = assistantMessages.map((m) => calculateResponseTime(m)).filter((t) => t > 0);
 
 			// Calculate average response time from message metadata, fallback to session duration
 			let avgResponseTime = 0;
@@ -121,12 +112,16 @@ export default function SessionDetailPage() {
 					similarityScore = scoredMessage.similarity_score!;
 					// Determine user turn index for this assistant message
 					const assistantIndex = scoredMessage.sequence;
-					const userTurnsBefore = messagesData.filter(m => m.role === 'user' && m.sequence <= assistantIndex).length;
+					const userTurnsBefore = messagesData.filter(
+						(m) => m.role === 'user' && m.sequence <= assistantIndex
+					).length;
 					let threshold = 70;
 					try {
 						if (sessionData.conversation_id) {
-							const targets: ConversationTurnTarget[] = await api.getConversationTurnTargets(sessionData.conversation_id);
-							const match = targets.find(t => t.user_sequence === userTurnsBefore);
+							const targets: ConversationTurnTarget[] = await api.getConversationTurnTargets(
+								sessionData.conversation_id
+							);
+							const match = targets.find((t) => t.user_sequence === userTurnsBefore);
 							if (match && typeof match.threshold === 'number') {
 								threshold = match.threshold;
 							}
@@ -150,7 +145,6 @@ export default function SessionDetailPage() {
 				similarityScore,
 				success
 			});
-
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Failed to load session');
 		} finally {
@@ -183,7 +177,7 @@ export default function SessionDetailPage() {
 
 	useEffect(() => {
 		loadSession();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.id]);
 
 	if (loading) {
@@ -220,7 +214,8 @@ export default function SessionDetailPage() {
 					</div>
 					<div className={styles.metadata}>
 						<span className={styles.metaItem}>
-							<strong>Started:</strong> {session.started_at ? new Date(session.started_at).toLocaleString() : 'Unknown'}
+							<strong>Started:</strong>{' '}
+							{session.started_at ? new Date(session.started_at).toLocaleString() : 'Unknown'}
 						</span>
 						{session.completed_at && (
 							<span className={styles.metaItem}>
@@ -238,16 +233,18 @@ export default function SessionDetailPage() {
 						{conversation && (
 							<span className={styles.metaItem}>
 								<strong>Conversation:</strong>{' '}
-								<Link href={`/conversations/${conversation.id}`}>
-									{conversation.name}
-								</Link>
+								<Link href={`/conversations/${conversation.id}`}>{conversation.name}</Link>
 							</span>
 						)}
 					</div>
 				</div>
 				<div className={styles.headerRight}>
 					<OverflowMenu flipped>
-						<OverflowMenuItem itemText="Regenerate similarity score" onClick={handleRegenerateScore} disabled={regenerating} />
+						<OverflowMenuItem
+							itemText="Regenerate similarity score"
+							onClick={handleRegenerateScore}
+							disabled={regenerating}
+						/>
 						<OverflowMenuItem itemText="Export transcript" disabled />
 						<OverflowMenuItem itemText="Download logs" disabled />
 						<OverflowMenuItem itemText="Compare with others" disabled />
@@ -256,7 +253,11 @@ export default function SessionDetailPage() {
 						Back to sessions
 					</Button>
 					{session.conversation_id && (
-						<Button kind="primary" onClick={() => router.push(`/conversations/${session.conversation_id}`)} renderIcon={ArrowRight}>
+						<Button
+							kind="primary"
+							onClick={() => router.push(`/conversations/${session.conversation_id}`)}
+							renderIcon={ArrowRight}
+						>
 							View conversation
 						</Button>
 					)}
@@ -339,8 +340,12 @@ export default function SessionDetailPage() {
 				<div className={styles.sectionHeader}>
 					<h4 className={styles.sectionTitle}>Conversation transcript</h4>
 					<div className={styles.transcriptStats}>
-						<Tag type="gray" size="sm">{messages.length} messages</Tag>
-						<Tag type="blue" size="sm">{metrics.turnCount} assistant responses</Tag>
+						<Tag type="gray" size="sm">
+							{messages.length} messages
+						</Tag>
+						<Tag type="blue" size="sm">
+							{metrics.turnCount} assistant responses
+						</Tag>
 					</div>
 				</div>
 				<SessionViewer session={session} messages={messages} />
@@ -352,57 +357,75 @@ export default function SessionDetailPage() {
 					<div className={styles.sectionHeader}>
 						<h4 className={styles.sectionTitle}>Message analysis</h4>
 					</div>
-					<DataTable rows={(() => {
-						// Calculate total duration for fallback response time calculation.
-						const totalDuration = session?.completed_at && session?.started_at
-							? new Date(session.completed_at).getTime() - new Date(session.started_at).getTime()
-							: 0;
-						const assistantCount = messages.filter(m => m.role === 'assistant').length;
+					<DataTable
+						rows={(() => {
+							// Calculate total duration for fallback response time calculation.
+							const totalDuration =
+								session?.completed_at && session?.started_at
+									? new Date(session.completed_at).getTime() - new Date(session.started_at).getTime()
+									: 0;
+							const assistantCount = messages.filter((m) => m.role === 'assistant').length;
 
-						return messages.map((message, index) => ({
-							id: message.id?.toString() || index.toString(),
-							sequence: message.sequence,
-							role: message.role,
-							content: message.content.substring(0, 100) + (message.content.length > 100 ? '...' : ''),
-							tokens: calculateMessageTokens(message),
-							responseTime: (() => {
-								const responseTime = calculateResponseTime(message, totalDuration, assistantCount);
-								if (responseTime > 0) {
-									return `${(responseTime / 1000).toFixed(1)}s`;
-								}
-								return '-';
-							})(),
-							similarityScore: message.similarity_score !== undefined ? message.similarity_score : null,
-							timestamp: message.timestamp ? new Date(message.timestamp).toLocaleString() : '-'
-						}));
-					})()} headers={[
-						{ key: 'sequence', header: '#' },
-						{ key: 'role', header: 'Role' },
-						{ key: 'content', header: 'Content' },
-						{ key: 'tokens', header: 'Tokens' },
-						{ key: 'responseTime', header: 'Response time' },
-						{ key: 'similarityScore', header: 'Similarity score' },
-						{ key: 'timestamp', header: 'Timestamp' }
-					]}>
+							return messages.map((message, index) => ({
+								id: message.id?.toString() || index.toString(),
+								sequence: message.sequence,
+								role: message.role,
+								content:
+									message.content.substring(0, 100) + (message.content.length > 100 ? '...' : ''),
+								tokens: calculateMessageTokens(message),
+								responseTime: (() => {
+									const responseTime = calculateResponseTime(message, totalDuration, assistantCount);
+									if (responseTime > 0) {
+										return `${(responseTime / 1000).toFixed(1)}s`;
+									}
+									return '-';
+								})(),
+								similarityScore:
+									message.similarity_score !== undefined ? message.similarity_score : null,
+								timestamp: message.timestamp ? new Date(message.timestamp).toLocaleString() : '-'
+							}));
+						})()}
+						headers={[
+							{ key: 'sequence', header: '#' },
+							{ key: 'role', header: 'Role' },
+							{ key: 'content', header: 'Content' },
+							{ key: 'tokens', header: 'Tokens' },
+							{ key: 'responseTime', header: 'Response time' },
+							{ key: 'similarityScore', header: 'Similarity score' },
+							{ key: 'timestamp', header: 'Timestamp' }
+						]}
+					>
 						{({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
 							<Table {...getTableProps()}>
 								<TableHead>
 									<TableRow>
 										{headers.map((header, index) => (
-											<TableHeader {...getHeaderProps({ header })} key={`header-${header.key}-${index}`}>
+											<TableHeader
+												{...getHeaderProps({ header })}
+												key={`header-${header.key}-${index}`}
+											>
 												{header.header}
 											</TableHeader>
 										))}
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{rows.map(row => (
+									{rows.map((row) => (
 										<TableRow {...getRowProps({ row })} key={row.id}>
-											{row.cells.map(cell => {
+											{row.cells.map((cell) => {
 												if (cell.info.header === 'role') {
 													return (
 														<TableCell key={cell.id}>
-															<Tag type={cell.value === 'user' ? 'blue' : cell.value === 'assistant' ? 'green' : 'purple'} size="sm">
+															<Tag
+																type={
+																	cell.value === 'user'
+																		? 'blue'
+																		: cell.value === 'assistant'
+																			? 'green'
+																			: 'purple'
+																}
+																size="sm"
+															>
 																{cell.value}
 															</Tag>
 														</TableCell>
@@ -412,7 +435,10 @@ export default function SessionDetailPage() {
 													const score = cell.value as number | null;
 													return (
 														<TableCell key={cell.id}>
-															<SimilarityScoreDisplay score={score || undefined} size="sm" />
+															<SimilarityScoreDisplay
+																score={score || undefined}
+																size="sm"
+															/>
 														</TableCell>
 													);
 												}

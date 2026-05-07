@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, TextArea, Loading, InlineNotification, FormLabel } from '@carbon/react';
 import { useLLMConfigs } from '../../../lib/AppDataContext';
 import type { LLMRequestOptions, LLMResponse } from '@ibm-vibe/types';
@@ -60,12 +60,7 @@ export default function TestLLMModal({ isOpen, configId, onClose }: TestLLMModal
 				{loading && <Loading description="Calling LLM..." withOverlay={false} small />}
 
 				{error && (
-					<InlineNotification
-						kind="error"
-						title="Error"
-						subtitle={error}
-						className={styles.notification}
-					/>
+					<InlineNotification kind="error" title="Error" subtitle={error} className={styles.notification} />
 				)}
 
 				{response && (

@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Tile, ProgressBar } from '@carbon/react';
 import styles from './TokenUsageTile.module.scss';
 
@@ -11,12 +10,7 @@ interface TokenUsageTileProps {
 	className?: string;
 }
 
-export default function TokenUsageTile({
-	inputTokens,
-	outputTokens,
-	totalTokens,
-	className
-}: TokenUsageTileProps) {
+export default function TokenUsageTile({ inputTokens, outputTokens, totalTokens, className }: TokenUsageTileProps) {
 	return (
 		<div className={`${styles.tokenBreakdown} ${className || ''}`}>
 			<Tile className={styles.tokenTile}>

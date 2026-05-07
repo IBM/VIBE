@@ -1,10 +1,5 @@
 import type React from 'react';
-import {
-	Accordion,
-	Dropdown,
-	TextArea,
-	TextInput
-} from '@carbon/react';
+import { Accordion, Dropdown, TextArea, TextInput } from '@carbon/react';
 import { AgentRequestTemplatesSection } from './AgentRequestTemplatesSection';
 import { AgentResponseMapsSection } from './AgentResponseMapsSection';
 import type { RequestTemplate, ResponseMap } from './AgentFormModal.types';

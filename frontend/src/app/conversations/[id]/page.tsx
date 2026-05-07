@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
 	Button,
@@ -14,15 +14,7 @@ import {
 	OverflowMenuItem,
 	TextArea
 } from '@carbon/react';
-import {
-	Edit,
-	Play,
-	ChartLine,
-	Information,
-	Warning,
-	CheckmarkFilled,
-	ArrowLeft
-} from '@carbon/icons-react';
+import { Edit, Play, ChartLine, Information, Warning, CheckmarkFilled, ArrowLeft } from '@carbon/icons-react';
 import { api, Conversation, ExecutionSession, SessionMessage, Agent } from '../../../lib/api';
 import { loadSessionMessages, calculateSessionStats } from '../../../lib/utils';
 import SessionViewer from '../../components/SessionViewer';
@@ -46,8 +38,12 @@ export default function ConversationDetailPage() {
 	const [agents, setAgents] = useState<Agent[]>([]);
 	const [execModalOpen, setExecModalOpen] = useState(false);
 	const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-	const [agentTemplates, setAgentTemplates] = useState<Array<{ id: number; name: string; body: string; is_default?: number }>>([]);
-	const [agentResponseMaps, setAgentResponseMaps] = useState<Array<{ id: number; name: string; spec: string; is_default?: number }>>([]);
+	const [agentTemplates, setAgentTemplates] = useState<
+		Array<{ id: number; name: string; body: string; is_default?: number }>
+	>([]);
+	const [agentResponseMaps, setAgentResponseMaps] = useState<
+		Array<{ id: number; name: string; spec: string; is_default?: number }>
+	>([]);
 	const [selectedTemplate, setSelectedTemplate] = useState<{ id: number; name: string } | null>(null);
 	const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
 	const [runVariables, setRunVariables] = useState<string>('');
@@ -85,16 +81,17 @@ export default function ConversationDetailPage() {
 				setLatestMessages(transcriptData.messages || []);
 
 				// Calculate stats using similarity-based success
-				const successfulRuns = allSessions.filter(session => {
+				const successfulRuns = allSessions.filter((session) => {
 					let success = session.success || false;
 					if (session.id) {
 						const messages = messagesMap.get(session.id);
 						if (messages && messages.length > 0) {
-							const assistantMessages = messages.filter(m => m.role === 'assistant');
+							const assistantMessages = messages.filter((m) => m.role === 'assistant');
 							if (assistantMessages.length > 0) {
-								const scoredMessage = assistantMessages.find(m =>
-									m.similarity_scoring_status === 'completed' &&
-									typeof m.similarity_score === 'number'
+								const scoredMessage = assistantMessages.find(
+									(m) =>
+										m.similarity_scoring_status === 'completed' &&
+										typeof m.similarity_score === 'number'
 								);
 								if (scoredMessage) {
 									success = scoredMessage.similarity_score! >= 70; // Default threshold TODO
@@ -127,7 +124,9 @@ export default function ConversationDetailPage() {
 
 	useEffect(() => {
 		load();
-		api.getAgents().then(setAgents).catch(() => { });
+		api.getAgents()
+			.then(setAgents)
+			.catch(() => {});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.id]);
 
@@ -148,22 +147,22 @@ export default function ConversationDetailPage() {
 				setAgentResponseMaps(maps || []);
 				// Pre-select conversation defaults if present
 				if (conversation?.default_request_template_id) {
-					const t = (tpls || []).find(t => t.id === conversation.default_request_template_id);
+					const t = (tpls || []).find((t) => t.id === conversation.default_request_template_id);
 					setSelectedTemplate(t ? { id: t.id, name: t.name } : null);
 				} else {
-					const def = (tpls || []).find(t => Number(t.is_default) === 1);
+					const def = (tpls || []).find((t) => Number(t.is_default) === 1);
 					setSelectedTemplate(def ? { id: def.id, name: def.name } : null);
 				}
 				if (conversation?.default_response_map_id) {
-					const m = (maps || []).find(m => m.id === conversation.default_response_map_id);
+					const m = (maps || []).find((m) => m.id === conversation.default_response_map_id);
 					setSelectedMap(m ? { id: m.id, name: m.name } : null);
 				} else {
-					const defm = (maps || []).find(m => Number(m.is_default) === 1);
+					const defm = (maps || []).find((m) => Number(m.is_default) === 1);
 					setSelectedMap(defm ? { id: defm.id, name: defm.name } : null);
 				}
 				// Seed run variables from conversation
 				setRunVariables(conversation?.variables || '');
-			} catch { }
+			} catch {}
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedAgent, execModalOpen]);
@@ -179,7 +178,7 @@ export default function ConversationDetailPage() {
 					default_response_map_id: selectedMap?.id,
 					variables: runVariables || undefined
 				});
-			} catch { }
+			} catch {}
 			await api.executeConversation(agentId, conversation.id);
 			// refresh after a short delay or navigate to jobs
 			setTimeout(load, 1000);
@@ -235,19 +234,24 @@ export default function ConversationDetailPage() {
 			<div className={styles.headerRow}>
 				<div className={styles.headerLeft}>
 					<h2 className={styles.title}>{conversation.name}</h2>
-					{conversation.description && (
-						<p className={styles.description}>{conversation.description}</p>
-					)}
+					{conversation.description && <p className={styles.description}>{conversation.description}</p>}
 					<div className={styles.metadata}>
-						{conversation.tags ? JSON.parse(conversation.tags).map((t: string, i: number) => (
-							<Tag key={i} type="blue" size="sm">{t}</Tag>
-						)) : null}
+						{conversation.tags
+							? JSON.parse(conversation.tags).map((t: string, i: number) => (
+									<Tag key={i} type="blue" size="sm">
+										{t}
+									</Tag>
+								))
+							: null}
 						<Tag type="gray" size="sm">
 							{stats.totalRuns} runs
 						</Tag>
-					<Tag type={stats.successRate >= 80 ? 'green' : stats.successRate >= 60 ? 'cool-gray' : 'red'} size="sm">
-						{stats.successRate.toFixed(0)}% success
-					</Tag>
+						<Tag
+							type={stats.successRate >= 80 ? 'green' : stats.successRate >= 60 ? 'cool-gray' : 'red'}
+							size="sm"
+						>
+							{stats.successRate.toFixed(0)}% success
+						</Tag>
 					</div>
 				</div>
 				<div className={styles.headerRight}>
@@ -260,7 +264,12 @@ export default function ConversationDetailPage() {
 					<Button kind="tertiary" onClick={() => router.push('/conversations')} renderIcon={ArrowLeft}>
 						Back
 					</Button>
-					<Button kind="primary" disabled={executing} onClick={() => setExecModalOpen(true)} renderIcon={Play}>
+					<Button
+						kind="primary"
+						disabled={executing}
+						onClick={() => setExecModalOpen(true)}
+						renderIcon={Play}
+					>
 						Execute
 					</Button>
 				</div>
@@ -319,9 +328,9 @@ export default function ConversationDetailPage() {
 								Edit
 							</Button>
 						</div>
-				{conversation.messages && conversation.messages.length > 0 ? (
+						{conversation.messages && conversation.messages.length > 0 ? (
 							<div className={styles.scriptContent}>
-						{conversation.messages.map((m) => (
+								{conversation.messages.map((m) => (
 									<div key={m.sequence} className={styles.scriptMessage}>
 										<Tag type="purple" size="sm" className={styles.messageRole}>
 											{m.role}
@@ -335,8 +344,8 @@ export default function ConversationDetailPage() {
 								<Information />
 								<span>No messages defined</span>
 							</div>
-				)}
-			</Tile>
+						)}
+					</Tile>
 				</div>
 
 				{/* Latest session section */}
@@ -361,8 +370,8 @@ export default function ConversationDetailPage() {
 								<Play />
 								<span>No executions yet</span>
 							</div>
-				)}
-			</Tile>
+						)}
+					</Tile>
 				</div>
 			</div>
 
@@ -419,10 +428,12 @@ export default function ConversationDetailPage() {
 							<ComboBox
 								id="template-selector"
 								titleText="Default request template"
-								items={agentTemplates.map(t => ({ id: t.id, name: t.name }))}
+								items={agentTemplates.map((t) => ({ id: t.id, name: t.name }))}
 								itemToString={(item) => (item ? `${item.name}` : '')}
 								selectedItem={selectedTemplate}
-								onChange={({ selectedItem }) => setSelectedTemplate(selectedItem as { id: number; name: string } | null)}
+								onChange={({ selectedItem }) =>
+									setSelectedTemplate(selectedItem as { id: number; name: string } | null)
+								}
 								placeholder="Select template (optional)"
 							/>
 						</div>
@@ -430,10 +441,12 @@ export default function ConversationDetailPage() {
 							<ComboBox
 								id="map-selector"
 								titleText="Default response map"
-								items={agentResponseMaps.map(m => ({ id: m.id, name: m.name }))}
+								items={agentResponseMaps.map((m) => ({ id: m.id, name: m.name }))}
 								itemToString={(item) => (item ? `${item.name}` : '')}
 								selectedItem={selectedMap}
-								onChange={({ selectedItem }) => setSelectedMap(selectedItem as { id: number; name: string } | null)}
+								onChange={({ selectedItem }) =>
+									setSelectedMap(selectedItem as { id: number; name: string } | null)
+								}
 								placeholder="Select response map (optional)"
 							/>
 						</div>

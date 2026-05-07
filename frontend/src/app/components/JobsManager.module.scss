@@ -2,15 +2,15 @@
 @use '@carbon/styles/scss/type' as *;
 
 .errorSection {
-  margin-top: $spacing-05;
+	margin-top: $spacing-05;
 
-  h5 {
-    @include type-style('heading-compact-01');
-    margin-bottom: $spacing-03;
-  }
+	h5 {
+		@include type-style('heading-compact-01');
+		margin-bottom: $spacing-03;
+	}
 }
 
 .jobDetailsHeading {
-  @include type-style('heading-compact-01');
-  margin-bottom: $spacing-05;
+	@include type-style('heading-compact-01');
+	margin-bottom: $spacing-05;
 }
