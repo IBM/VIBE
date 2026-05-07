@@ -1,17 +1,23 @@
 import dataTransferRoutes from '../data-transfer';
 import { ExportableDataType } from '@ibm-vibe/types';
 import * as exportService from '../../services/data-transfer/export';
-import * as analyzeService from '../../services/data-transfer/analyze';
 import * as executeService from '../../services/data-transfer/execute';
+import * as importPlanService from '../../services/data-transfer/import-plan';
 const { ImportValidationError } = jest.requireActual('../../services/data-transfer/execute');
 
+jest.mock('../../db/database', () => ({
+	__esModule: true,
+	default: {
+		transaction: jest.fn((callback: () => void) => callback)
+	}
+}));
 jest.mock('../../services/data-transfer/export');
-jest.mock('../../services/data-transfer/analyze');
 jest.mock('../../services/data-transfer/execute');
+jest.mock('../../services/data-transfer/import-plan');
 
 const mockedExportService = exportService as jest.Mocked<typeof exportService>;
-const mockedAnalyzeService = analyzeService as jest.Mocked<typeof analyzeService>;
 const mockedExecuteService = executeService as jest.Mocked<typeof executeService>;
+const mockedImportPlanService = importPlanService as jest.Mocked<typeof importPlanService>;
 
 type MockResponse = {
 	statusCode: number;
@@ -113,13 +119,26 @@ describe('data transfer routes', () => {
 	});
 
 	describe('POST /api/data-transfer/analyze', () => {
-		it('calls analyze service and returns report', async () => {
-			const report = {
+		it('calls import plan service and returns plan', async () => {
+			const plan = {
 				items: [],
-				totals: { new: 0, conflict: 0, dependency_missing: 0 },
-				has_issues: false
+				totals: {
+					new: 0,
+					conflict: 0,
+					dependency_missing: 0,
+					selected: 0,
+					executable: 0,
+					blocked: 0,
+					create_new: 0,
+					overwrite: 0,
+					skip: 0
+				},
+				has_issues: false,
+				executable: true,
+				issues: [],
+				resolutions: {}
 			} as any;
-			mockedAnalyzeService.analyzeImportBundle.mockReturnValue(report);
+			mockedImportPlanService.buildImportPlan.mockReturnValue(plan);
 
 			const payload = {
 				bundle: {
@@ -132,17 +151,33 @@ describe('data transfer routes', () => {
 			const response = await callRoute(dataTransferRoutes, 'post', '/analyze', { body: payload });
 
 			expect(response.statusCode).toBe(200);
-			expect(response.body).toEqual(report);
-			expect(mockedAnalyzeService.analyzeImportBundle).toHaveBeenCalledWith(payload.bundle, undefined);
+			expect(response.body).toEqual(plan);
+			expect(mockedImportPlanService.buildImportPlan).toHaveBeenCalledWith({
+				bundle: payload.bundle,
+				resolutions: {}
+			});
 		});
 
-		it('passes optional resolutions through to the analyze service', async () => {
-			const report = {
+		it('passes optional resolutions through to the import plan service', async () => {
+			const plan = {
 				items: [],
-				totals: { new: 0, conflict: 0, dependency_missing: 0 },
-				has_issues: false
+				totals: {
+					new: 0,
+					conflict: 0,
+					dependency_missing: 0,
+					selected: 0,
+					executable: 0,
+					blocked: 0,
+					create_new: 0,
+					overwrite: 0,
+					skip: 0
+				},
+				has_issues: false,
+				executable: true,
+				issues: [],
+				resolutions: {}
 			} as any;
-			mockedAnalyzeService.analyzeImportBundle.mockReturnValue(report);
+			mockedImportPlanService.buildImportPlan.mockReturnValue(plan);
 
 			const payload = {
 				bundle: {
@@ -161,8 +196,11 @@ describe('data transfer routes', () => {
 			const response = await callRoute(dataTransferRoutes, 'post', '/analyze', { body: payload });
 
 			expect(response.statusCode).toBe(200);
-			expect(response.body).toEqual(report);
-			expect(mockedAnalyzeService.analyzeImportBundle).toHaveBeenCalledWith(payload.bundle, payload.resolutions);
+			expect(response.body).toEqual(plan);
+			expect(mockedImportPlanService.buildImportPlan).toHaveBeenCalledWith({
+				bundle: payload.bundle,
+				resolutions: payload.resolutions
+			});
 		});
 
 		it('returns 400 when bundle is missing required version', async () => {
@@ -176,7 +214,7 @@ describe('data transfer routes', () => {
 			});
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body).toEqual({ error: 'Invalid bundle payload' });
+			expect(response.body).toEqual({ error: 'Invalid analyze payload' });
 		});
 
 		it('returns 400 when bundle collections are malformed', async () => {
@@ -193,8 +231,8 @@ describe('data transfer routes', () => {
 			});
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body).toEqual({ error: 'Invalid bundle payload' });
-			expect(mockedAnalyzeService.analyzeImportBundle).not.toHaveBeenCalled();
+			expect(response.body).toEqual({ error: 'Invalid analyze payload' });
+			expect(mockedImportPlanService.buildImportPlan).not.toHaveBeenCalled();
 		});
 
 		it('returns 400 when bundle version is unsupported', async () => {
@@ -210,7 +248,7 @@ describe('data transfer routes', () => {
 
 			expect(response.statusCode).toBe(400);
 			expect(response.body).toEqual({ error: 'Unsupported bundle version: 2' });
-			expect(mockedAnalyzeService.analyzeImportBundle).not.toHaveBeenCalled();
+			expect(mockedImportPlanService.buildImportPlan).not.toHaveBeenCalled();
 		});
 
 		it('returns 400 when resolutions payload is invalid', async () => {
@@ -226,7 +264,7 @@ describe('data transfer routes', () => {
 			});
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body).toEqual({ error: 'Invalid resolutions payload' });
+			expect(response.body).toEqual({ error: 'Invalid analyze payload' });
 		});
 
 		it('returns 400 when a resolution record key does not match item_key', async () => {
@@ -247,7 +285,7 @@ describe('data transfer routes', () => {
 			});
 
 			expect(response.statusCode).toBe(400);
-			expect(response.body).toEqual({ error: 'Invalid resolutions payload' });
+			expect(response.body).toEqual({ error: 'Invalid analyze payload' });
 		});
 
 		it('returns 400 when bundle semantics are invalid', async () => {
@@ -257,11 +295,13 @@ describe('data transfer routes', () => {
 						version: 1,
 						exported_at: '2026-03-03T12:00:00.000Z',
 						data: {
-							conversations: [{
-								name: 'Greeting flow',
-								reference_key: 'conversation:forged',
-								messages: [{ sequence: 1, role: 'user', content: 'hello' }]
-							}]
+							conversations: [
+								{
+									name: 'Greeting flow',
+									reference_key: 'conversation:forged',
+									messages: [{ sequence: 1, role: 'user', content: 'hello' }]
+								}
+							]
 						}
 					}
 				}
@@ -269,7 +309,7 @@ describe('data transfer routes', () => {
 
 			expect(response.statusCode).toBe(400);
 			expect(response.body).toEqual({ error: 'Conversation "Greeting flow" has an invalid reference key' });
-			expect(mockedAnalyzeService.analyzeImportBundle).not.toHaveBeenCalled();
+			expect(mockedImportPlanService.buildImportPlan).not.toHaveBeenCalled();
 		});
 	});
 
@@ -371,7 +411,9 @@ describe('data transfer routes', () => {
 
 		it('returns 400 when import execution rejects invalid decisions', async () => {
 			mockedExecuteService.executeImportBundle.mockImplementation(() => {
-				throw new ImportValidationError('Invalid decision "create_new" for conversations "Broken" with status dependency_missing');
+				throw new ImportValidationError(
+					'Invalid decision "create_new" for conversations "Broken" with status dependency_missing'
+				);
 			});
 
 			const response = await callRoute(dataTransferRoutes, 'post', '/import', {
