@@ -27,6 +27,50 @@ const createDeferred = <T,>() => {
 	return { promise, resolve, reject };
 };
 
+const createPlan = (items: any[] = []) => {
+	const normalizedItems = items.map((item) => ({
+		allowed_decisions:
+			item.status === 'new'
+				? ['skip', 'create_new']
+				: item.status === 'conflict'
+					? ['skip', 'overwrite', 'create_new']
+					: ['skip'],
+		selected_decision: item.status === 'new' ? 'create_new' : 'skip',
+		executable: true,
+		action: item.status === 'new' ? 'created' : 'skipped',
+		...item
+	}));
+	const resolutions = Object.fromEntries(
+		normalizedItems.map((item) => [
+			item.item_key,
+			{
+				item_key: item.item_key,
+				decision: item.selected_decision
+			}
+		])
+	);
+	return {
+		version: 1,
+		generated_at: '2026-03-03T12:00:00.000Z',
+		items: normalizedItems,
+		totals: {
+			new: normalizedItems.filter((item) => item.status === 'new').length,
+			conflict: normalizedItems.filter((item) => item.status === 'conflict').length,
+			dependency_missing: normalizedItems.filter((item) => item.status === 'dependency_missing').length,
+			selected: normalizedItems.filter((item) => item.selected_decision !== 'skip').length,
+			executable: normalizedItems.filter((item) => item.executable).length,
+			blocked: normalizedItems.filter((item) => !item.executable).length,
+			create_new: normalizedItems.filter((item) => item.selected_decision === 'create_new').length,
+			overwrite: normalizedItems.filter((item) => item.selected_decision === 'overwrite').length,
+			skip: normalizedItems.filter((item) => item.selected_decision === 'skip').length
+		},
+		has_issues: normalizedItems.some((item) => item.status !== 'new' || (item.issues && item.issues.length > 0)),
+		executable: normalizedItems.every((item) => item.executable),
+		issues: [],
+		resolutions
+	};
+};
+
 describe('DataTransferPage', () => {
 	beforeAll(() => {
 		Object.defineProperty(window, 'matchMedia', {
@@ -50,11 +94,7 @@ describe('DataTransferPage', () => {
 		mockedApi.exportData.mockResolvedValue({
 			...createBundle()
 		} as any);
-		mockedApi.analyzeImport.mockResolvedValue({
-			items: [],
-			totals: { new: 0, conflict: 0, dependency_missing: 0 },
-			has_issues: false
-		} as any);
+		mockedApi.analyzeImport.mockResolvedValue(createPlan() as any);
 		mockedApi.executeImport.mockResolvedValue({
 			created: 0,
 			updated: 0,
@@ -116,20 +156,21 @@ describe('DataTransferPage', () => {
 				}
 			]
 		} as any);
-		mockedApi.analyzeImport.mockResolvedValue({
-			items: [
-				{
-					item_key: 'agents:Bot@1.0',
-					entity_type: 'agents',
-					entity_name: 'Bot@1.0',
-					status: 'conflict',
-					existing_id: 2,
-					issues: []
-				}
-			],
-			totals: { new: 0, conflict: 1, dependency_missing: 0 },
-			has_issues: true
-		} as any);
+		mockedApi.analyzeImport.mockImplementation(
+			async (_bundle, resolutions) =>
+				createPlan([
+					{
+						item_key: 'agents:Bot@1.0',
+						entity_type: 'agents',
+						entity_name: 'Bot@1.0',
+						status: 'conflict',
+						existing_id: 2,
+						issues: [],
+						selected_decision: resolutions?.['agents:Bot@1.0']?.decision || 'skip',
+						action: resolutions?.['agents:Bot@1.0']?.decision === 'overwrite' ? 'updated' : 'skipped'
+					}
+				]) as any
+		);
 
 		render(<DataTransferPage />);
 		await user.click(screen.getByRole('tab', { name: 'Import' }));
@@ -137,9 +178,11 @@ describe('DataTransferPage', () => {
 		const fileInput = await screen.findByLabelText(/import file/i);
 		const file = new File(
 			[
-				JSON.stringify(createBundle({
-					agents: [{ name: 'Bot', version: '1.0', prompt: 'test', settings: '{}' }]
-				}))
+				JSON.stringify(
+					createBundle({
+						agents: [{ name: 'Bot', version: '1.0', prompt: 'test', settings: '{}' }]
+					})
+				)
 			],
 			'bundle.json',
 			{ type: 'application/json' }
@@ -148,24 +191,21 @@ describe('DataTransferPage', () => {
 		await user.upload(fileInput, file);
 
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(1);
 		});
 		expect(await screen.findByText('Bot@1.0')).toBeInTheDocument();
 
 		const resolutionSelect = screen.getByLabelText('Resolution for agents Bot@1.0');
 		await user.selectOptions(resolutionSelect, 'overwrite');
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(3);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
 		});
-		expect(mockedApi.analyzeImport).toHaveBeenLastCalledWith(
-			expect.objectContaining({ version: 1 }),
-			{
-				'agents:Bot@1.0': {
-					item_key: 'agents:Bot@1.0',
-					decision: 'overwrite'
-				}
+		expect(mockedApi.analyzeImport).toHaveBeenLastCalledWith(expect.objectContaining({ version: 1 }), {
+			'agents:Bot@1.0': {
+				item_key: 'agents:Bot@1.0',
+				decision: 'overwrite'
 			}
-		);
+		});
 
 		await user.click(screen.getByRole('button', { name: /import selected/i }));
 
@@ -187,8 +227,8 @@ describe('DataTransferPage', () => {
 
 	it('renders dependency-missing items with issue details and only allows skip', async () => {
 		const user = userEvent.setup();
-		mockedApi.analyzeImport.mockResolvedValue({
-			items: [
+		mockedApi.analyzeImport.mockResolvedValue(
+			createPlan([
 				{
 					item_key: 'conversations:conversation:abc123',
 					entity_type: 'conversations',
@@ -196,10 +236,8 @@ describe('DataTransferPage', () => {
 					status: 'dependency_missing',
 					issues: ['Missing request template dependency in message #1: missing-template']
 				}
-			],
-			totals: { new: 0, conflict: 0, dependency_missing: 1 },
-			has_issues: true
-		} as any);
+			]) as any
+		);
 
 		render(<DataTransferPage />);
 		await user.click(screen.getByRole('tab', { name: 'Import' }));
@@ -208,12 +246,14 @@ describe('DataTransferPage', () => {
 		const file = new File([JSON.stringify(createBundle())], 'bundle.json', { type: 'application/json' });
 		await user.upload(fileInput, file);
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(1);
 		});
 
 		expect(await screen.findByText('Broken flow [abc123]')).toBeInTheDocument();
 		expect(screen.getByText(/items with dependency issues can only be skipped/i)).toBeInTheDocument();
-		expect(screen.getByText(/missing request template dependency in message #1: missing-template/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/missing request template dependency in message #1: missing-template/i)
+		).toBeInTheDocument();
 
 		const resolutionSelect = screen.getByLabelText('Resolution for conversations Broken flow [abc123]');
 		expect(resolutionSelect).toBeDisabled();
@@ -222,22 +262,43 @@ describe('DataTransferPage', () => {
 		expect(options[0]).toHaveValue('skip');
 	});
 
+	it('rejects malformed bundle files before calling analyze', async () => {
+		const user = userEvent.setup();
+		render(<DataTransferPage />);
+		await user.click(screen.getByRole('tab', { name: 'Import' }));
+
+		const fileInput = await screen.findByLabelText(/import file/i);
+		const file = new File(
+			[JSON.stringify({ version: 1, exported_at: '2026-03-03T12:00:00.000Z' })],
+			'bundle.json',
+			{
+				type: 'application/json'
+			}
+		);
+
+		await user.upload(fileInput, file);
+
+		expect(await screen.findByText(/selected file is not a valid data transfer bundle/i)).toBeInTheDocument();
+		expect(mockedApi.analyzeImport).not.toHaveBeenCalled();
+	});
+
 	it('shows inline error when import fails', async () => {
 		const user = userEvent.setup();
-		mockedApi.analyzeImport.mockResolvedValue({
-			items: [
-				{
-					item_key: 'agents:Bot@1.0',
-					entity_type: 'agents',
-					entity_name: 'Bot@1.0',
-					status: 'conflict',
-					existing_id: 2,
-					issues: []
-				}
-			],
-			totals: { new: 0, conflict: 1, dependency_missing: 0 },
-			has_issues: true
-		} as any);
+		mockedApi.analyzeImport.mockImplementation(
+			async (_bundle, resolutions) =>
+				createPlan([
+					{
+						item_key: 'agents:Bot@1.0',
+						entity_type: 'agents',
+						entity_name: 'Bot@1.0',
+						status: 'conflict',
+						existing_id: 2,
+						issues: [],
+						selected_decision: resolutions?.['agents:Bot@1.0']?.decision || 'skip',
+						action: resolutions?.['agents:Bot@1.0']?.decision === 'overwrite' ? 'updated' : 'skipped'
+					}
+				]) as any
+		);
 		mockedApi.executeImport.mockRejectedValue(new Error('Invalid decision "overwrite" for agents "Bot@1.0"'));
 
 		render(<DataTransferPage />);
@@ -247,13 +308,13 @@ describe('DataTransferPage', () => {
 		const file = new File([JSON.stringify(createBundle())], 'bundle.json', { type: 'application/json' });
 		await user.upload(fileInput, file);
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(1);
 		});
 
 		const resolutionSelect = await screen.findByLabelText('Resolution for agents Bot@1.0');
 		await user.selectOptions(resolutionSelect, 'overwrite');
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(3);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
 		});
 		await user.click(screen.getByRole('button', { name: /import selected/i }));
 
@@ -262,25 +323,20 @@ describe('DataTransferPage', () => {
 
 	it('keeps the latest analysis response when earlier requests resolve later', async () => {
 		const user = userEvent.setup();
-		const initialReport = {
-			items: [
-				{
-					item_key: 'agents:Bot@1.0',
-					entity_type: 'agents',
-					entity_name: 'Bot@1.0',
-					status: 'conflict',
-					existing_id: 2,
-					issues: []
-				}
-			],
-			totals: { new: 0, conflict: 1, dependency_missing: 0 },
-			has_issues: true
-		};
+		const initialReport = createPlan([
+			{
+				item_key: 'agents:Bot@1.0',
+				entity_type: 'agents',
+				entity_name: 'Bot@1.0',
+				status: 'conflict',
+				existing_id: 2,
+				issues: []
+			}
+		]);
 		const staleAnalysis = createDeferred<any>();
 		const latestAnalysis = createDeferred<any>();
 
 		mockedApi.analyzeImport
-			.mockResolvedValueOnce(initialReport as any)
 			.mockResolvedValueOnce(initialReport as any)
 			.mockImplementationOnce(() => staleAnalysis.promise)
 			.mockImplementationOnce(() => latestAnalysis.promise);
@@ -291,9 +347,11 @@ describe('DataTransferPage', () => {
 		const fileInput = await screen.findByLabelText(/import file/i);
 		const file = new File(
 			[
-				JSON.stringify(createBundle({
-					agents: [{ name: 'Bot', version: '1.0', prompt: 'test', settings: '{}' }]
-				}))
+				JSON.stringify(
+					createBundle({
+						agents: [{ name: 'Bot', version: '1.0', prompt: 'test', settings: '{}' }]
+					})
+				)
 			],
 			'bundle.json',
 			{ type: 'application/json' }
@@ -301,51 +359,51 @@ describe('DataTransferPage', () => {
 
 		await user.upload(fileInput, file);
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(1);
 		});
 
 		const resolutionSelect = await screen.findByLabelText('Resolution for agents Bot@1.0');
 		await user.selectOptions(resolutionSelect, 'overwrite');
 		await user.selectOptions(resolutionSelect, 'create_new');
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(4);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(3);
 		});
 
 		await act(async () => {
-			latestAnalysis.resolve({
-				items: [
+			latestAnalysis.resolve(
+				createPlan([
 					{
 						item_key: 'agents:Bot@1.0',
 						entity_type: 'agents',
 						entity_name: 'Bot latest',
 						status: 'conflict',
 						existing_id: 2,
-						issues: []
+						issues: [],
+						selected_decision: 'create_new',
+						action: 'created'
 					}
-				],
-				totals: { new: 0, conflict: 1, dependency_missing: 0 },
-				has_issues: true
-			} as any);
+				]) as any
+			);
 		});
 
 		expect(await screen.findByText('Bot latest')).toBeInTheDocument();
 		expect(screen.getByLabelText('Resolution for agents Bot latest')).toHaveValue('create_new');
 
 		await act(async () => {
-			staleAnalysis.resolve({
-				items: [
+			staleAnalysis.resolve(
+				createPlan([
 					{
 						item_key: 'agents:Bot@1.0',
 						entity_type: 'agents',
 						entity_name: 'Bot stale',
 						status: 'conflict',
 						existing_id: 2,
-						issues: []
+						issues: [],
+						selected_decision: 'overwrite',
+						action: 'updated'
 					}
-				],
-				totals: { new: 0, conflict: 1, dependency_missing: 0 },
-				has_issues: true
-			} as any);
+				]) as any
+			);
 		});
 
 		await waitFor(() => {
@@ -365,13 +423,12 @@ describe('DataTransferPage', () => {
 
 		await user.upload(fileInput, file);
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(1);
 		});
 
 		await user.upload(fileInput, file);
 		await waitFor(() => {
-			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(4);
+			expect(mockedApi.analyzeImport).toHaveBeenCalledTimes(2);
 		});
 	});
 });
-

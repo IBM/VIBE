@@ -1,7 +1,7 @@
 import type {
-	AnalysisReport,
 	ExportBundle,
 	ExportableDataType,
+	ImportPlan,
 	ImportResolution,
 	ImportRequest,
 	ImportResultSummary
@@ -18,11 +18,8 @@ export const dataTransferApi = {
 		);
 	},
 
-	async analyzeImport(
-		bundle: ExportBundle,
-		resolutions?: Record<string, ImportResolution>
-	): Promise<AnalysisReport> {
-		return fetchJson<AnalysisReport>(
+	async analyzeImport(bundle: ExportBundle, resolutions?: Record<string, ImportResolution>): Promise<ImportPlan> {
+		return fetchJson<ImportPlan>(
 			`${API_URL}/api/data-transfer/analyze`,
 			{
 				method: 'POST',
@@ -48,4 +45,3 @@ export const dataTransferApi = {
 		);
 	}
 };
-
