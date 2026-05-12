@@ -2,7 +2,9 @@
 
 ## Overview
 
-The system uses SQLite for data persistence with better-sqlite3 driver. The schema supports both legacy single-turn tests and modern multi-turn conversations.
+The system uses SQLite for data persistence with the better-sqlite3 driver. The schema supports both legacy single-turn tests and modern multi-turn conversations.
+
+This document is an orientation guide, not a generated schema dump. For exact DDL, read [`backend/src/db/migrations/`](../backend/src/db/migrations/), [`backend/src/db/legacyTransitionMigrations.ts`](../backend/src/db/legacyTransitionMigrations.ts), and startup guards in [`backend/src/db/database.ts`](../backend/src/db/database.ts).
 
 **Database File**: Configured via `DB_PATH` environment variable (default: `./data/agent-testing.db`)
 
@@ -11,6 +13,8 @@ The system uses SQLite for data persistence with better-sqlite3 driver. The sche
 Migrations are versioned and sequential, tracked in the `migrations` table.
 
 **Location**: [`backend/src/db/migrations/`](../backend/src/db/migrations/)
+
+Additional legacy transition guards run during database initialization. They create/repair bridge tables such as `suite_entries` and `conversation_turn_targets`, backfill legacy expected outputs into turn targets, and may drop old legacy tables when startup checks decide it is safe.
 
 **Migration Structure**:
 ```typescript
@@ -66,9 +70,10 @@ CREATE TABLE agents (
   backstory?: string,
   llm_config?: object,
   // For External API:
-  api_url?: string,
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  api_endpoint?: string,
+  http_method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   headers?: object,
+  token_mapping?: object,
   success_criteria?: object
 }
 ```
@@ -85,13 +90,15 @@ CREATE TABLE conversations (
   default_request_template_id INTEGER,
   default_response_map_id INTEGER,
   variables TEXT,  -- JSON object
+  required_request_template_capabilities TEXT,
+  required_response_map_capabilities TEXT,
   stop_on_failure BOOLEAN DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (default_request_template_id) REFERENCES request_templates(id),
-  FOREIGN KEY (default_response_map_id) REFERENCES response_maps(id)
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
+
+The template, capability, variables, and `stop_on_failure` columns are added after the initial conversation migration.
 
 ### conversation_messages
 Ordered messages within a conversation.
@@ -109,8 +116,7 @@ CREATE TABLE conversation_messages (
   set_variables TEXT,  -- JSON: variable assignments
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
-  FOREIGN KEY (request_template_id) REFERENCES request_templates(id),
-  FOREIGN KEY (response_map_id) REFERENCES response_maps(id),
+  -- request_template_id, response_map_id, and set_variables are added by later migrations
   UNIQUE(conversation_id, sequence)
 );
 ```
@@ -124,11 +130,13 @@ CREATE TABLE conversation_turn_targets (
   conversation_id INTEGER NOT NULL,
   user_sequence INTEGER NOT NULL,  -- matches conversation_messages.sequence
   target_reply TEXT NOT NULL,
-  threshold REAL,  -- 0-100, default 70
-  weight REAL,  -- default 1.0
+  threshold INTEGER,  -- 0-100; app code defaults to 70 when missing
+  weight REAL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+  FOREIGN KEY (conversation_id, user_sequence)
+    REFERENCES conversation_messages(conversation_id, sequence)
+    ON DELETE CASCADE,
   UNIQUE(conversation_id, user_sequence)
 );
 ```
@@ -147,7 +155,7 @@ CREATE TABLE execution_sessions (
   success BOOLEAN,
   error_message TEXT,
   metadata TEXT,  -- JSON: metrics, similarity scores, token usage
-  variables TEXT,  -- JSON: resolved variables snapshot
+  variables TEXT,  -- JSON: resolved variables snapshot, added by later migration
   FOREIGN KEY (conversation_id) REFERENCES conversations(id),
   FOREIGN KEY (agent_id) REFERENCES agents(id)
 );
@@ -170,8 +178,7 @@ CREATE TABLE session_messages (
   similarity_scoring_status TEXT CHECK(similarity_scoring_status IN ('pending', 'running', 'completed', 'failed')),
   similarity_scoring_error TEXT,
   similarity_scoring_metadata TEXT,  -- JSON
-  FOREIGN KEY (session_id) REFERENCES execution_sessions(id) ON DELETE CASCADE,
-  UNIQUE(session_id, sequence)
+  FOREIGN KEY (session_id) REFERENCES execution_sessions(id) ON DELETE CASCADE
 );
 ```
 
@@ -184,7 +191,7 @@ CREATE TABLE jobs (
   agent_id INTEGER NOT NULL,
   test_id INTEGER,  -- Legacy, nullable
   conversation_id INTEGER,  -- Preferred
-  status TEXT NOT NULL CHECK(status IN ('pending', 'running', 'completed', 'failed', 'timeout')),
+  status TEXT NOT NULL,  -- JobStatus: pending/running/completed/failed/timeout
   progress INTEGER DEFAULT 0,  -- 0-100
   partial_result TEXT,
   result_id INTEGER,  -- Legacy result reference
@@ -197,7 +204,7 @@ CREATE TABLE jobs (
   claimed_by TEXT,  -- Service identifier
   claimed_at DATETIME,
   FOREIGN KEY (agent_id) REFERENCES agents(id),
-  FOREIGN KEY (test_id) REFERENCES tests(id),
+  -- legacy test/result FKs can be removed by startup transition guards
   FOREIGN KEY (conversation_id) REFERENCES conversations(id),
   FOREIGN KEY (result_id) REFERENCES results(id),
   FOREIGN KEY (session_id) REFERENCES execution_sessions(id),
@@ -226,18 +233,18 @@ Entries in a suite (tests, conversations, or nested suites).
 CREATE TABLE suite_entries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   parent_suite_id INTEGER NOT NULL,
-  sequence INTEGER NOT NULL,
+  sequence INTEGER,
   test_id INTEGER,  -- Legacy
   conversation_id INTEGER,  -- Preferred
   child_suite_id INTEGER,  -- For nested suites
   agent_id_override INTEGER,  -- Override agent for this entry
   FOREIGN KEY (parent_suite_id) REFERENCES test_suites(id) ON DELETE CASCADE,
-  FOREIGN KEY (test_id) REFERENCES tests(id),
-  FOREIGN KEY (conversation_id) REFERENCES conversations(id),
-  FOREIGN KEY (child_suite_id) REFERENCES test_suites(id),
-  FOREIGN KEY (agent_id_override) REFERENCES agents(id)
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+  FOREIGN KEY (child_suite_id) REFERENCES test_suites(id) ON DELETE CASCADE
 );
 ```
+
+`test_id` and `agent_id_override` are still used by application code, but the final transition table intentionally avoids legacy test and agent foreign-key constraints.
 
 ### suite_runs
 Execution tracking for suite runs.
@@ -247,7 +254,7 @@ CREATE TABLE suite_runs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   suite_id INTEGER NOT NULL,
   agent_id INTEGER NOT NULL,
-  agent_name TEXT,
+  -- agent_name is returned by repository joins, not stored in the table
   status TEXT NOT NULL CHECK(status IN ('pending', 'running', 'completed', 'failed', 'timeout')),
   progress INTEGER DEFAULT 0,
   total_tests INTEGER NOT NULL,
@@ -255,7 +262,8 @@ CREATE TABLE suite_runs (
   successful_tests INTEGER DEFAULT 0,
   failed_tests INTEGER DEFAULT 0,
   average_execution_time REAL,
-  avg_similarity_score REAL,
+  total_execution_time REAL,
+  -- avg_similarity_score is computed for API responses
   total_input_tokens INTEGER,
   total_output_tokens INTEGER,
   started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -300,14 +308,13 @@ Links agents to request templates.
 
 ```sql
 CREATE TABLE agent_template_links (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   agent_id INTEGER NOT NULL,
   template_id INTEGER NOT NULL,
   is_default BOOLEAN DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  linked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (agent_id, template_id),
   FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE CASCADE,
-  FOREIGN KEY (template_id) REFERENCES request_templates(id) ON DELETE CASCADE,
-  UNIQUE(agent_id, template_id)
+  FOREIGN KEY (template_id) REFERENCES request_templates(id) ON DELETE CASCADE
 );
 ```
 
@@ -316,16 +323,17 @@ Links agents to response maps.
 
 ```sql
 CREATE TABLE agent_response_map_links (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   agent_id INTEGER NOT NULL,
   response_map_id INTEGER NOT NULL,
   is_default BOOLEAN DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  linked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (agent_id, response_map_id),
   FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE CASCADE,
-  FOREIGN KEY (response_map_id) REFERENCES response_maps(id) ON DELETE CASCADE,
-  UNIQUE(agent_id, response_map_id)
+  FOREIGN KEY (response_map_id) REFERENCES response_maps(id) ON DELETE CASCADE
 );
 ```
+
+Default template/map links are guarded by partial unique indexes on `agent_id WHERE is_default = 1`.
 
 ## Legacy Tables (Migration Phase)
 
@@ -371,7 +379,7 @@ CREATE TABLE results (
 );
 ```
 
-**Migration Status**: Supported for backward compatibility. New executions create sessions instead.
+**Migration Status**: Supported for backward compatibility where legacy tables still exist. New executions create sessions, and startup guards may remove legacy table constraints/tables after migration checks pass.
 
 ### Legacy Agent-Scoped Templates (Deprecated)
 
@@ -430,11 +438,14 @@ Key indexes for performance:
 
 ```sql
 CREATE INDEX idx_jobs_status ON jobs(status);
-CREATE INDEX idx_jobs_agent_id ON jobs(agent_id);
-CREATE INDEX idx_jobs_suite_run_id ON jobs(suite_run_id);
-CREATE INDEX idx_session_messages_session_id ON session_messages(session_id);
-CREATE INDEX idx_execution_sessions_conversation_id ON execution_sessions(conversation_id);
-CREATE INDEX idx_execution_sessions_agent_id ON execution_sessions(agent_id);
+CREATE INDEX idx_jobs_status_type ON jobs(status, job_type);
+CREATE INDEX idx_jobs_conversation ON jobs(conversation_id);
+CREATE INDEX idx_jobs_session ON jobs(session_id);
+CREATE INDEX idx_jobs_suite_run ON jobs(suite_run_id);
+CREATE INDEX idx_session_messages_session ON session_messages(session_id);
+CREATE INDEX idx_execution_sessions_conversation ON execution_sessions(conversation_id);
+CREATE INDEX idx_execution_sessions_agent ON execution_sessions(agent_id);
+CREATE INDEX idx_suite_entries_conversation ON suite_entries(conversation_id);
 ```
 
 ## Data Relationships
