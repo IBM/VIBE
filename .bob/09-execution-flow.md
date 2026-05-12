@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes how test execution jobs are created, queued, claimed, executed, and completed in the IBM VIBE system. The execution flow involves coordination between the Backend, Agent Service API, and external AI services.
+This document describes how execution jobs are created, queued, claimed, executed, and completed in the IBM VIBE system. The primary maintained flow is conversation execution through the TypeScript `agent-service-api`; legacy tests are adapted into that model where possible.
 
 ## Key Components
 
@@ -108,7 +108,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
 │                   │ 8. Updates job status                │
 │                   ▼                                     │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │ PATCH /api/jobs/:id                              │  │
+│  │ PUT /api/jobs/:id                                │  │
 │  │ • status: 'completed' (or 'failed')              │  │
 │  │ • progress: 100                                  │  │
 │  │ • session_id: <created_session_id>               │  │
@@ -182,7 +182,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
 
 **Polling Strategy**:
 - Starts on service startup ([`index.ts`](../agent-service-api/src/index.ts))
-- Polls `GET /api/jobs/available/external_api?limit=10`
+- Polls `GET /api/jobs/available/external_api?limit=5` in the current service implementation
 - Adaptive intervals:
   - 5 seconds when jobs are available
   - Exponential backoff up to 60 seconds when idle
@@ -209,7 +209,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
 **Request Body**:
 ```json
 {
-  "claimed_by": "agent-service-api-instance-1"
+  "service_id": "agent-service-api-instance-1"
 }
 ```
 
@@ -217,9 +217,9 @@ This document describes how test execution jobs are created, queued, claimed, ex
 1. Checks job exists and is pending
 2. Updates job:
    - `status`: `"running"`
-   - `claimed_by`: service identifier
+   - `claimed_by`: value from `service_id`
    - `claimed_at`: current timestamp
-3. Returns updated job
+3. Returns `{ message, job_id }`
 
 **Purpose**: Prevents multiple services from executing the same job
 
@@ -238,7 +238,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
    - Resolve conversation script with variables
    - Apply default templates/maps if not specified per-message
 
-3. **Update Progress**: `PATCH /api/jobs/:id` → `progress: 30`
+3. **Update Progress**: `PUT /api/jobs/:id` → `progress: 30`
 
 4. **Execute Turn-by-Turn**:
    - For each message in conversation:
@@ -249,7 +249,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
      - Store message in transcript
      - Check stop_on_failure condition
 
-5. **Update Progress**: `PATCH /api/jobs/:id` → `progress: 80`
+5. **Update Progress**: `PUT /api/jobs/:id` → `progress: 80`
 
 6. **Save Results**:
    - `POST /api/sessions`
@@ -262,7 +262,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
      - Error messages if any
 
 7. **Complete Job**:
-   - `PATCH /api/jobs/:id`
+   - `PUT /api/jobs/:id`
    - `status`: `"completed"` or `"failed"`
    - `progress`: `100`
    - `session_id`: created session ID
@@ -289,7 +289,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
     "prompt_tokens": 800,
     "completion_tokens": 450,
     "duration_ms": 45000,
-    "similarity_scores": [0.95, 0.88, 0.92]
+    "similarity_scores": [95, 88, 92]
   },
   "messages": [
     {
@@ -303,7 +303,7 @@ This document describes how test execution jobs are created, queued, claimed, ex
       "role": "assistant",
       "content": "I'm doing well, thank you!",
       "timestamp": "2026-05-12T14:00:15Z",
-      "similarity_score": 0.95
+      "similarity_score": 95
     }
   ]
 }
@@ -348,7 +348,7 @@ pending → running → completed
 - `running`: Job claimed by service, execution in progress
 - `completed`: Execution finished successfully
 - `failed`: Execution encountered an error
-- `timeout`: Job stale (claimed but not updated for >5 minutes)
+- `timeout`: Job stale according to backend job queue timeout handling
 
 ## Error Handling
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The backend is an Express.js application written in TypeScript that provides the REST API, manages the job queue, coordinates test execution, and handles data persistence.
+The backend is an Express.js application written in TypeScript. It provides the REST API, owns SQLite persistence, manages the job queue, coordinates execution, and exposes compatibility adapters while the app moves from legacy tests to conversations.
 
 **Location**: `backend/`  
 **Entry Point**: [`backend/src/index.ts`](../backend/src/index.ts)  
@@ -18,8 +18,10 @@ backend/src/
 ├── exports.ts               # Public API exports
 │
 ├── routes/                  # API route handlers
-│   ├── agents.ts           # Agent CRUD + templates + response maps
+│   ├── agents.ts           # Composes agent CRUD + template/map subroutes
+│   ├── agents/             # Agent CRUD, templates, response map subroutes
 │   ├── conversations.ts    # Conversation CRUD + messages
+│   ├── data-transfer.ts    # Export/import endpoints
 │   ├── execute.ts          # Test/conversation execution
 │   ├── execute-suite.ts    # Suite execution
 │   ├── jobs.ts             # Job management
@@ -27,6 +29,7 @@ backend/src/
 │   ├── session-messages.ts # Session message CRUD + scoring
 │   ├── results.ts          # Legacy results (with session fallback)
 │   ├── test-suites.ts      # Suite CRUD + entries
+│   ├── test-suites/        # Suite CRUD, entries, legacy test entry routes
 │   ├── tests.ts            # Legacy test CRUD
 │   ├── llm-configs.ts      # LLM configuration management
 │   ├── templates.ts        # Global request templates
@@ -88,7 +91,7 @@ backend/src/
 
 ### Routes Layer
 
-Routes handle HTTP requests, validate input, call services/repositories, and return responses.
+Routes handle HTTP requests, validate input, call services/repositories, and return responses. Most routes are mounted in [`backend/src/index.ts`](../backend/src/index.ts) under `/api/*`.
 
 **Pattern**:
 ```typescript
@@ -121,6 +124,7 @@ export default router;
 - [`routes/execute.ts`](../backend/src/routes/execute.ts) - Execution endpoints
 - [`routes/jobs.ts`](../backend/src/routes/jobs.ts) - Job management and claiming
 - [`routes/sessions.ts`](../backend/src/routes/sessions.ts) - Session queries
+- [`routes/data-transfer.ts`](../backend/src/routes/data-transfer.ts) - Export/import workflows
 
 ### Services Layer
 
@@ -231,8 +235,8 @@ export const validateBody = (req, res, schema, options?) => {
    → Returns job_id
 
 4. Agent-service-api polls and claims job
-   → GET /api/jobs/available/external_api
-   → POST /api/jobs/:id/claim
+   → GET /api/jobs/available/external_api?limit=5
+   → POST /api/jobs/:id/claim { service_id }
 
 5. Agent-service-api executes and posts results
    → POST /api/sessions
@@ -319,9 +323,7 @@ Tests are located in `__tests__` directories alongside source files.
 - Unit tests for services, utilities, and repositories
 - Integration tests for routes
 - Mock database and external dependencies
-- 90% coverage threshold
-
-See [`08-testing-strategy.md`](./08-testing-strategy.md) for details.
+- Jest config sets a 90% global coverage threshold for backend, frontend, and agent-service-api coverage runs
 
 ## Common Patterns
 
