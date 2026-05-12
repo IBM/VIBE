@@ -72,3 +72,24 @@ E2E*_LOG.md
 # Python test cache artifacts
 .pytest_cache/
 **/.pytest_cache/
+
+# =====================
+# macOS system files
+# =====================
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
