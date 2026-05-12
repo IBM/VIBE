@@ -1,6 +1,8 @@
 # IBM VIBE Codebase Guide
 
-This directory contains comprehensive documentation about the IBM VIBE (AI Agent Testing Suite) codebase to help AI assistants understand the project structure, architecture, and development practices.
+This directory contains orientation documentation for the IBM VIBE (AI Agent Testing Suite) codebase. It is meant to help coding agents find the right files quickly, understand the big-picture architecture, and spend less context on broad discovery.
+
+It is not a replacement for reading source before making changes. Treat these files as a map: enough to know where to look and how major pieces fit together, while source code remains the authority for exact behavior.
 
 ## Quick Navigation
 
@@ -21,12 +23,12 @@ This directory contains comprehensive documentation about the IBM VIBE (AI Agent
 
 ## Purpose
 
-This documentation serves as a knowledge base for AI coding assistants (like Bob) to:
+This documentation serves as a compact knowledge base for AI coding assistants (like Bob) to:
 - Quickly understand the codebase structure
 - Find where specific functionality lives
 - Understand data flow and execution patterns
 - Follow established patterns when making changes
-- Maintain consistency with the existing architecture
+- Use fewer exploratory reads before landing in the relevant source
 
 ## Last Updated
 

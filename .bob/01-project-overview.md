@@ -2,7 +2,7 @@
 
 ## What is IBM VIBE?
 
-IBM VIBE (AI Agent Testing Suite) is a comprehensive platform for testing, evaluating, and improving AI agents. It provides structured testing of agent performance, behavior, and outputs across different configurations and inputs.
+IBM VIBE (AI Agent Testing Suite) is a platform for testing, evaluating, and improving AI agents. It treats tests as inspectable conversations: users define agent configurations, conversations or legacy tests, run them through queued execution, and inspect transcripts, scores, and run metadata.
 
 ## Core Purpose
 
@@ -31,7 +31,7 @@ Multi-turn test definitions that represent realistic interaction patterns. Conve
 - Stop-on-failure configuration
 
 ### Tests (Legacy)
-Single-turn test cases with input and expected output. Being migrated to single-message conversations.
+Single-turn test cases with input and expected output. Legacy endpoints remain available, but new behavior should prefer conversations. Legacy tests are adapted into single-message conversations during execution where possible.
 
 ### Execution Sessions
 Concrete runs of a conversation by a specific agent, capturing:
@@ -57,7 +57,7 @@ Collections of tests/conversations that can be executed together:
 ## Technology Stack
 
 ### Frontend
-- **Framework**: Next.js 14 (React 18)
+- **Framework**: Next.js 16 (React 18)
 - **UI Library**: IBM Carbon Design System
 - **Language**: TypeScript
 - **Styling**: SCSS modules
@@ -77,7 +77,7 @@ Collections of tests/conversations that can be executed together:
 - **Framework**: FastAPI
 - **Language**: Python
 - **Role**: CrewAI execution (currently out of date)
-- **Status**: Maintained but not primary execution path
+- **Status**: Present in the repo but not the primary maintained execution path
 
 ### Shared Packages
 - **@ibm-vibe/types** - Shared TypeScript types
@@ -111,9 +111,9 @@ ai-agent-testing-suite/
 ## Key Features
 
 ### Test Management
-- Create, edit, and organize test cases
-- Group tests into suites
-- Track test history and version performance
+- Create, edit, and organize conversations and legacy tests
+- Group conversations/tests into nested suites
+- Track run history, transcripts, scores, and version performance
 
 ### Agent Configuration
 - Configure agent roles, goals, and capabilities
@@ -122,10 +122,11 @@ ai-agent-testing-suite/
 - Request templates and response maps for external APIs
 
 ### Execution Engine
-- Run tests individually or in batches
+- Run conversations/tests individually or in batches
 - Execute with different agent versions
-- Support for various LLM providers
-- Job queue for asynchronous execution
+- Route `external_api` jobs through `agent-service-api`
+- Keep legacy CrewAI compatibility through the older Python service path
+- Use a backend job queue for asynchronous execution
 
 ### Results Analysis
 - Detailed view of test results with pass/fail status
@@ -140,8 +141,8 @@ The project is currently in a **legacy-to-conversation migration phase**:
 
 - **Legacy System**: Single-turn tests with `tests` and `results` tables
 - **New System**: Multi-turn conversations with `conversations`, `execution_sessions`, and `session_messages` tables
-- **Current State**: Both systems supported, with adapters for backward compatibility
-- **Future**: Legacy tables will be dropped once migration is complete
+- **Current State**: Both systems are supported, with adapters and startup guards for backward compatibility
+- **Future**: Legacy tables may be dropped once migration is complete
 
 ## Port Configuration
 

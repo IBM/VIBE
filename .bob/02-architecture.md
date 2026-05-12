@@ -2,7 +2,7 @@
 
 ## High-Level Architecture
 
-The IBM VIBE system consists of four main components that work together to provide comprehensive AI agent testing capabilities.
+The IBM VIBE system consists of a Next.js frontend, an Express/SQLite backend, a TypeScript external API executor, and an older Python CrewAI service. The TypeScript path is the primary maintained execution path.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -31,14 +31,14 @@ The IBM VIBE system consists of four main components that work together to provi
 
 ### 1. Frontend (`frontend/`)
 
-**Technology**: Next.js 14, TypeScript, SCSS, Carbon React
+**Technology**: Next.js 16, React 18, TypeScript, SCSS modules, Carbon React
 
 **Responsibilities**:
-- User interface for test and agent management
-- Results visualization with intermediate steps
-- Comparison views for different agent versions
-- Real-time job status monitoring
-- Session transcript viewer
+- User interface for conversations, legacy tests, agents, suites, jobs, sessions, and configs
+- Results visualization with transcripts, intermediate steps, scores, and token metadata
+- Comparison and analytics views for different agent versions
+- Polling-based job status monitoring
+- Data transfer UI for export/import workflows
 
 **Key Features**:
 - Server-side rendering with Next.js App Router
@@ -53,8 +53,11 @@ frontend/src/
 │   ├── page.tsx           # Dashboard
 │   ├── agents/            # Agent management
 │   ├── conversations/     # Conversation management
+│   ├── jobs/              # Job list/status views
 │   ├── sessions/          # Session viewer
 │   ├── test-suites/       # Suite management
+│   ├── suite-runs/        # Suite run views
+│   ├── llm-configs/       # Scoring provider config
 │   └── components/        # Shared UI components
 └── lib/                   # Utilities and API client
     └── api/               # Backend API client
@@ -85,11 +88,13 @@ backend/src/
 ├── config.ts              # Configuration management
 ├── types.ts               # TypeScript type definitions
 ├── routes/                # API route handlers
-│   ├── agents.ts
+│   ├── agents.ts          # Composes agents/* subroutes
 │   ├── conversations.ts
+│   ├── data-transfer.ts
 │   ├── execute.ts
 │   ├── jobs.ts
 │   ├── sessions.ts
+│   ├── test-suites.ts     # Composes test-suites/* subroutes
 │   └── ...
 ├── services/              # Business logic layer
 │   ├── job-queue.ts       # Job management
@@ -131,6 +136,8 @@ agent-service-api/src/
 ├── services/              # Core services
 │   ├── job-poller.ts      # Job polling logic
 │   ├── api-service.ts     # External API execution
+│   ├── job-poller-conversation-executor.ts
+│   ├── job-poller-legacy-executor.ts
 │   └── conversation-script-resolver.ts
 └── routes/                # Health check endpoints
 ```
@@ -139,7 +146,7 @@ agent-service-api/src/
 
 **Technology**: FastAPI, Python, CrewAI
 
-**Status**: Currently out of date, maintained but not primary execution path
+**Status**: Present in the repo but not the primary maintained execution path
 
 **Responsibilities**:
 - Execute CrewAI agent workflows
@@ -180,7 +187,7 @@ agent-service-api/src/
 Meanwhile:
 6. Agent-service-api polls Backend for available jobs
 7. Backend marks job as claimed/running
-8. Agent-service-api fetches conversation script + agent config
+8. Agent-service-api fetches conversation, agent config, templates, and response maps
 9. Agent-service-api executes conversation turn-by-turn
 10. Agent-service-api posts session + transcript to Backend
 11. Backend persists execution_session + session_messages
@@ -202,13 +209,13 @@ Meanwhile:
 ### Frontend ↔ Backend
 - **Protocol**: HTTP REST API
 - **Format**: JSON
-- **Authentication**: Session-based (future enhancement)
-- **Key Endpoints**: `/api/agents`, `/api/conversations`, `/api/execute`, `/api/sessions`
+- **Authentication**: Not implemented in the current app
+- **Key Endpoints**: `/api/agents`, `/api/conversations`, `/api/execute`, `/api/jobs`, `/api/sessions`, `/api/test-suites`, `/api/suite-runs`, `/api/data-transfer`
 
 ### Backend ↔ Agent Service API
 - **Protocol**: HTTP API
 - **Pattern**: Polling (agent-service-api pulls work)
-- **Key Endpoints**: `/api/jobs/available`, `/api/jobs/:id/claim`, `/api/sessions`
+- **Key Endpoints**: `GET /api/jobs/available/:job_type?`, `POST /api/jobs/:id/claim`, `PUT /api/jobs/:id`, `POST /api/sessions`
 
 ### Agent Service API ↔ External AI APIs
 - **Protocol**: HTTP (configurable method)
@@ -241,8 +248,8 @@ localhost:5002  → Agent Service Python (optional)
 
 ### Current Limitations
 - SQLite is single-writer (suitable for moderate load)
-- Job polling introduces latency (5-60 second intervals)
-- No horizontal scaling of job execution
+- Job polling introduces latency (default 5-60 second intervals)
+- Job execution concurrency is configurable per `agent-service-api` instance
 
 ### Future Enhancements
 - WebSocket support for real-time updates
