@@ -14,6 +14,110 @@
 	width: 100%;
 }
 
+.heroPanel {
+	display: flex;
+	justify-content: space-between;
+	gap: 2rem;
+	margin: 1rem 0 1.5rem;
+	padding: 2rem;
+	background: var(--cds-layer);
+	border: 1px solid var(--cds-border-subtle);
+
+	h2 {
+		max-width: 44rem;
+		margin: 0;
+		font-size: 2rem;
+		font-weight: 400;
+	}
+}
+
+.eyebrow {
+	margin: 0 0 0.5rem;
+	color: var(--cds-text-secondary);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.heroText {
+	max-width: 50rem;
+	margin: 1rem 0 0;
+	color: var(--cds-text-secondary);
+	line-height: 1.5;
+}
+
+.heroActions {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	gap: 0.75rem;
+	min-width: 18rem;
+}
+
+.primaryAction,
+.secondaryAction {
+	display: inline-flex;
+	align-items: center;
+	min-height: 3rem;
+	padding: 0 1rem;
+	text-decoration: none;
+}
+
+.primaryAction {
+	color: var(--cds-text-on-color);
+	background: var(--cds-button-primary);
+
+	&:hover {
+		background: var(--cds-button-primary-hover);
+		color: var(--cds-text-on-color);
+	}
+}
+
+.secondaryAction {
+	color: var(--cds-link-primary);
+	border: 1px solid var(--cds-button-secondary);
+
+	&:hover {
+		background: var(--cds-layer-hover);
+	}
+}
+
+.checklistGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+	gap: 1rem;
+}
+
+.checklistItem {
+	min-height: 12rem;
+	padding: 1rem;
+	background: var(--cds-layer-accent);
+
+	h4 {
+		margin: 0.75rem 0 0.5rem;
+	}
+
+	p {
+		min-height: 4.5rem;
+		margin: 0 0 1rem;
+		color: var(--cds-text-secondary);
+		line-height: 1.4;
+	}
+}
+
+.stepNumber {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	color: var(--cds-text-on-color);
+	background: var(--cds-interactive);
+	border-radius: 50%;
+	font-weight: 600;
+}
+
 .panelHeader {
 	display: flex;
 	justify-content: space-between;
@@ -46,4 +150,14 @@
 
 .runLabel {
 	margin-left: 10px;
+}
+
+@media (max-width: 66rem) {
+	.heroPanel {
+		flex-direction: column;
+	}
+
+	.heroActions {
+		min-width: 0;
+	}
 }

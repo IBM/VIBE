@@ -191,11 +191,72 @@ export default function Home() {
 		return total + inputTokens + outputTokens;
 	}, 0);
 
+	const firstRunSteps = [
+		{
+			title: 'Configure an LLM',
+			description: 'Add the model or API settings your agents will use for execution.',
+			href: '/llm-configs',
+			action: 'Open LLM configs'
+		},
+		{
+			title: 'Choose an agent',
+			description: 'Select or create the agent version that should handle the conversation.',
+			href: '/agents',
+			action: 'Manage agents'
+		},
+		{
+			title: 'Create a conversation',
+			description: 'Script the realistic multi-turn exchange you want to evaluate repeatedly.',
+			href: '/conversations',
+			action: 'Create conversation'
+		},
+		{
+			title: 'Execute and inspect',
+			description: 'Run the conversation, follow the job, then review the session transcript.',
+			href: '/execute',
+			action: 'Quick execute'
+		}
+	];
+
 	return (
 		<div>
 			<h1>Dashboard</h1>
 
+			<section className={styles.heroPanel}>
+				<div>
+					<p className={styles.eyebrow}>Conversation-first agent evaluation</p>
+					<h2>Run repeatable conversations and inspect every session.</h2>
+					<p className={styles.heroText}>
+						Start with an LLM config, choose an agent, create a conversation script, then use Quick execute
+						to create a job and review the resulting transcript.
+					</p>
+				</div>
+				<div className={styles.heroActions}>
+					<Link href="/conversations" className={styles.primaryAction}>
+						Create a conversation
+					</Link>
+					<Link href="/execute" className={styles.secondaryAction}>
+						Quick execute
+					</Link>
+				</div>
+			</section>
+
 			<Grid fullWidth narrow className={styles.content}>
+				<Column sm={4} md={8} lg={16}>
+					<TileWrapper title="First run checklist">
+						<div className={styles.checklistGrid}>
+							{firstRunSteps.map((step, index) => (
+								<div key={step.href} className={styles.checklistItem}>
+									<div className={styles.stepNumber}>{index + 1}</div>
+									<h4>{step.title}</h4>
+									<p>{step.description}</p>
+									<Link href={step.href}>{step.action}</Link>
+								</div>
+							))}
+						</div>
+					</TileWrapper>
+				</Column>
+
 				{/* Summary Metrics */}
 				<Column sm={4} md={4} lg={4}>
 					<TileWrapper title="Agents">
