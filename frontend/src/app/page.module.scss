@@ -106,6 +106,22 @@
 	}
 }
 
+.checklistItemComplete {
+	opacity: 0.78;
+
+	h4,
+	p {
+		text-decoration: line-through;
+	}
+}
+
+.checklistItemHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
 .stepNumber {
 	display: inline-flex;
 	align-items: center;
@@ -116,6 +132,13 @@
 	background: var(--cds-interactive);
 	border-radius: 50%;
 	font-weight: 600;
+}
+
+.stepStatus {
+	color: var(--cds-support-success);
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
 }
 
 .panelHeader {

@@ -29,7 +29,7 @@ interface AgentPerformanceMetrics {
 }
 
 export default function Home() {
-	const { agents, tests, fetchAgents } = useAppData();
+	const { agents, tests, llmConfigs, fetchAgents, fetchLLMConfigs } = useAppData();
 	const { getResults } = useResultOperations();
 	const [results, setResults] = useState<ResultWithStatus[]>([]);
 	const [suiteRuns, setSuiteRuns] = useState<SuiteRun[]>([]);
@@ -37,33 +37,38 @@ export default function Home() {
 	const [loading, setLoading] = useState(true);
 	const [agentMetrics, setAgentMetrics] = useState<AgentPerformanceMetrics[]>([]);
 	const [stats, setStats] = useState<StatsResponse | null>(null);
+	const [conversationCount, setConversationCount] = useState(0);
 
 	useEffect(() => {
 		const fetchDashboardData = async () => {
 			try {
-				const [suiteRunsData, jobsData, resultsData, statsData] = await Promise.all([
+				const [suiteRunsData, jobsData, resultsData, statsData, conversationsData] = await Promise.all([
 					api.getSuiteRuns(),
 					api.getJobs(),
 					getResults(),
 					api.getStats(),
-					fetchAgents()
+					api.getConversations({ limit: 1, offset: 0 }),
+					fetchAgents(),
+					fetchLLMConfigs()
 				]);
 				setSuiteRuns(suiteRunsData);
 				setJobs(jobsData);
 				setResults(resultsData.data as ResultWithStatus[]);
 				setStats(statsData);
+				setConversationCount(conversationsData.total);
 			} catch {
 				setSuiteRuns([]);
 				setJobs([]);
 				setResults([]);
 				setStats(null);
+				setConversationCount(0);
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchDashboardData();
-	}, [fetchAgents, getResults]);
+	}, [fetchAgents, fetchLLMConfigs, getResults]);
 
 	// Calculate agent performance metrics whenever results or agents change
 	useEffect(() => {
@@ -196,27 +201,33 @@ export default function Home() {
 			title: 'Configure an LLM',
 			description: 'Add the model or API settings your agents will use for execution.',
 			href: '/llm-configs',
-			action: 'Open LLM configs'
+			action: 'Open LLM configs',
+			completed: llmConfigs.length > 0
 		},
 		{
 			title: 'Choose an agent',
 			description: 'Select or create the agent version that should handle the conversation.',
 			href: '/agents',
-			action: 'Manage agents'
+			action: 'Manage agents',
+			completed: (stats ? stats.agents_total : agents.length) > 0
 		},
 		{
 			title: 'Create a conversation',
 			description: 'Script the realistic multi-turn exchange you want to evaluate repeatedly.',
 			href: '/conversations',
-			action: 'Create conversation'
+			action: 'Create conversation',
+			completed: conversationCount > 0
 		},
 		{
 			title: 'Execute and inspect',
 			description: 'Run the conversation, follow the job, then review the session transcript.',
 			href: '/execute',
-			action: 'Quick execute'
+			action: 'Quick execute',
+			completed: jobs.length > 0 || results.length > 0
 		}
 	];
+	const completedFirstRunSteps = firstRunSteps.filter((step) => step.completed).length;
+	const isFirstRunComplete = !loading && completedFirstRunSteps === firstRunSteps.length;
 
 	return (
 		<div>
@@ -242,20 +253,30 @@ export default function Home() {
 			</section>
 
 			<Grid fullWidth narrow className={styles.content}>
-				<Column sm={4} md={8} lg={16}>
-					<TileWrapper title="First run checklist">
-						<div className={styles.checklistGrid}>
-							{firstRunSteps.map((step, index) => (
-								<div key={step.href} className={styles.checklistItem}>
-									<div className={styles.stepNumber}>{index + 1}</div>
-									<h4>{step.title}</h4>
-									<p>{step.description}</p>
-									<Link href={step.href}>{step.action}</Link>
-								</div>
-							))}
-						</div>
-					</TileWrapper>
-				</Column>
+				{!isFirstRunComplete && (
+					<Column sm={4} md={8} lg={16}>
+						<TileWrapper
+							title={`First run checklist (${completedFirstRunSteps}/${firstRunSteps.length} complete)`}
+						>
+							<div className={styles.checklistGrid}>
+								{firstRunSteps.map((step, index) => (
+									<div
+										key={step.href}
+										className={`${styles.checklistItem} ${step.completed ? styles.checklistItemComplete : ''}`}
+									>
+										<div className={styles.checklistItemHeader}>
+											<div className={styles.stepNumber}>{index + 1}</div>
+											{step.completed && <span className={styles.stepStatus}>Done</span>}
+										</div>
+										<h4>{step.title}</h4>
+										<p>{step.description}</p>
+										<Link href={step.href}>{step.action}</Link>
+									</div>
+								))}
+							</div>
+						</TileWrapper>
+					</Column>
+				)}
 
 				{/* Summary Metrics */}
 				<Column sm={4} md={4} lg={4}>
