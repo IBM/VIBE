@@ -1,209 +1,126 @@
 # IBM VIBE
 
-## Overview
+[![CI](https://github.com/IBM/VIBE/actions/workflows/ci.yml/badge.svg)](https://github.com/IBM/VIBE/actions/workflows/ci.yml)
 
-IBM VIBE is a comprehensive platform designed to test, evaluate, and improve AI agents. It provides a structured approach to testing agent performance, behavior, and outputs across different configurations and inputs.
+IBM VIBE is a conversation-centric testing suite for evaluating AI agents through repeatable runs, inspectable transcripts, and clear execution history.
 
-## Purpose
+Use it to script realistic agent conversations, run them against agent configurations, and inspect the resulting sessions, jobs, token usage, similarity scores, and failures.
 
-When building AI agents, it's essential to ensure they perform consistently and accurately. This testing suite serves several key purposes:
+## Why VIBE?
 
-- **Quality Assurance**: Verify agent outputs against expected responses
-- **Regression Testing**: Ensure new agent versions don't break existing functionality
-- **Performance Optimization**: Measure and improve agent execution metrics
-- **Configuration Testing**: Compare different agent settings and prompts
-- **Iterative Development**: Quickly identify and fix issues in agent behavior
+- **Test conversations, not just prompts**: model the multi-turn exchanges your users actually have.
+- **Make failures inspectable**: review sessions and transcripts instead of treating an agent run as a black box.
+- **Compare agent versions**: iterate on prompts, tools, and LLM settings with consistent evaluation inputs.
+- **Keep evaluation local and reproducible**: run the maintained TypeScript stack with SQLite-backed storage.
 
-## Architecture
-
-The application is separated into four main components:
-
-1. **Frontend** - User interface for managing tests and viewing results
-    - Built with Next.js and Carbon React
-    - Provides test management UI, agent configuration, results visualization, and comparison views
-
-2. **Backend** - API server for test management and data storage
-    - Built with TypeScript, Express.js, and SQLite
-    - Handles REST API for test management, coordination with agent service, and data persistence
-
-3. **Agent Service** - Python service for executing CrewAI tests
-    - Built with Python, FastAPI, and CrewAI
-    - Handles agent execution, LLM provider integration, and result collection
-    - Status: currently out of date and needs TLC before relying on it in production
-
-4. **Agent Service API** - TypeScript service for external API style agents
-    - Built with TypeScript and Express.js
-    - Polls jobs from backend, executes conversations against external APIs, and posts sessions/transcripts back
-
-## Key Features
-
-### Test Management
-
-- Create, edit, and organize test cases with expected outputs
-- Group tests into test suites for comprehensive evaluation
-- Track test history and version performance
-
-### Agent Configuration
-
-- Configure agent roles, goals, backstories, and capabilities
-- Create and manage multiple agent versions
-- Compare performance across different configurations
-
-### Execution Engine
-
-- Run tests individually or in batches
-- Execute tests with different agent versions
-- Support for various LLM providers (currently Ollama)
-
-### Results Analysis
-
-- Detailed view of test results with pass/fail status
-- Visualization of intermediate agent steps
-- Performance metrics collection (token usage, execution time, etc.)
-- Side-by-side comparison of different agent versions
-
-## Getting Started
+## Quickstart
 
 ### Prerequisites
 
-- Node.js (v18.17+, v20 recommended)
-- Python (v3.10+)
-- Ollama or another LLM provider
+- Node.js `18.17+` (`20` is recommended; see `.nvmrc`)
+- npm
 
-### Installation
+Optional:
 
-#### 1. Core Setup (Required)
+- Python `3.10+` only if you are working on the legacy CrewAI service
+- Ollama or another local LLM only if your selected agent path requires it
+
+### Start the maintained TypeScript stack
 
 ```bash
-# Install all dependencies (including workspaces)
 npm install
-```
-
-#### 2. Run the app (recommended)
-
-From the repository root:
-
-```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+cp agent-service-api/.env.example agent-service-api/.env
 npm run dev
 ```
 
-This starts:
+This starts the three services used by the current conversation-first workflow:
 
-- **Backend**: `http://localhost:5000`
-- **Agent Service API**: `http://localhost:5003`
-- **Frontend**: `http://localhost:3000`
+| Service           | Default URL             | Role                                         |
+| ----------------- | ----------------------- | -------------------------------------------- |
+| Frontend          | `http://localhost:3000` | UI for conversations, sessions, and analysis |
+| Backend           | `http://localhost:5000` | System API, storage, job orchestration       |
+| Agent Service API | `http://localhost:5003` | External API executor and backend job poller |
 
-Note: the Python `agent-service` is not started by `npm run dev`. Start it separately if you want CrewAI executions.
+Open [http://localhost:3000](http://localhost:3000), then follow the first-run path:
 
-For multi-instance local setups, use `env.instance1.example` as a template and create your own `env.instance*` files locally. Instance env files are intentionally gitignored.
+1. Add or confirm an LLM configuration.
+2. Create or choose an agent.
+3. Create a conversation script.
+4. Use **Quick execute** to enqueue a run.
+5. Inspect the job and resulting session transcript.
 
-## Service topology and ports
+For more detail, see [`docs/quickstart.md`](docs/quickstart.md) and [`docs/product-tour.md`](docs/product-tour.md).
 
-| Service                | Default port | Role                                         |
-| ---------------------- | -----------: | -------------------------------------------- |
-| Frontend               |         3000 | UI for conversations, sessions, and analysis |
-| Backend                |         5000 | System API, storage, job orchestration       |
-| Agent Service API      |         5003 | External API executor and backend job poller |
-| Agent Service (Python) |         5002 | CrewAI execution service                     |
+## Product workflow
 
-Key integration paths:
+VIBE's preferred workflow is conversation-first:
 
-- Backend creates jobs and stores data.
-- Agent Service API polls backend jobs, executes external API conversations, then posts sessions and messages.
-- Backend can be configured to call the Python Agent Service directly for CrewAI execution paths via `AGENT_SERVICE_URL`.
+1. **Configure** the LLM/API and agent version you want to evaluate.
+2. **Choose** or create the agent version that should handle the evaluation.
+3. **Script** one or more conversations with realistic user and assistant messages.
+4. **Execute** a conversation against an agent, which creates a queued job.
+5. **Inspect** the session transcript, intermediate outputs, token usage, timing, and scoring signals.
+6. **Iterate** on the agent configuration or conversation script and rerun.
 
-#### 3. Services Setup (advanced)
+Legacy test and suite flows still exist for compatibility, but new work should prefer conversations, sessions, and jobs.
 
-##### Frontend
+## Architecture
+
+The repository is an npm workspace monorepo:
+
+| Workspace           | Technology                  | Purpose                                                |
+| ------------------- | --------------------------- | ------------------------------------------------------ |
+| `frontend`          | Next.js, TypeScript, Carbon | Web UI for evaluation workflows                        |
+| `backend`           | Express, TypeScript, SQLite | API, persistence, job orchestration                    |
+| `agent-service-api` | Express, TypeScript         | Polls backend jobs and executes external API agents    |
+| `packages/*`        | TypeScript                  | Shared contracts, config, and utilities                |
+| `agent-service`     | Python, FastAPI, CrewAI     | Legacy CrewAI path; currently not the maintained stack |
+
+Key integration path:
+
+```text
+Frontend -> Backend -> Job queue -> Agent Service API -> Backend -> Sessions/transcripts
+```
+
+The Python `agent-service` is not started by `npm run dev`. Prefer `backend` + `agent-service-api` unless you are explicitly working on CrewAI integration.
+
+## Development
+
+Common commands from the repository root:
 
 ```bash
-cd frontend
 npm run dev
+npm run format
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test:ts
 ```
-
-##### Backend
-
-```bash
-cd backend
-# Copy the environment file and configure it
-cp .env.example .env
-# Note: Backend auto-loads .env when using `npm run dev` only.
-# For production (`npm run start`), provide environment variables explicitly
-# (or use runner scripts such as start-instance.sh).
-# AGENT_SERVICE_URL should point to the Python agent-service (default http://localhost:5002)
-# Or use start-instance.sh which handles this automatically
-npm run dev
-```
-
-##### Agent Service (Python)
-
-```bash
-cd agent-service
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: .\venv\Scripts\activate
-pip install -r requirements.txt
-# Copy the environment file and configure it
-cp .env.example .env
-python run.py
-```
-
-Note: the Python `agent-service` implementation is currently out of date and needs TLC. Prefer the TypeScript path (`backend` + `agent-service-api`) unless you are explicitly working on CrewAI integration.
-
-##### Agent Service API
-
-```bash
-cd agent-service-api
-npm run dev
-```
-
-## Workflow
-
-1. **Create Tests**: Define test inputs and expected outputs
-2. **Configure Agents**: Create agent configurations with specific settings
-3. **Run Tests**: Execute tests with your chosen agent configuration
-4. **Analyze Results**: Review test results and agent performance
-5. **Iterate**: Modify agent configurations based on results and retest
-
-## Development tooling
-
-To keep the monorepo healthy, run the shared quality gates before opening a PR:
-
-- `npm run format` - format supported files with Prettier
-- `npm run format:check` - verify formatting in CI style
-- `npm run lint` - run eslint across backend, frontend, and agent-service-api
-- `npm run typecheck` - ensure all TypeScript workspaces type-check cleanly
-- `npm run test:ts` - execute Jest suites (backend, frontend, agent-service-api)
 
 Each workspace also exposes its own `lint`, `typecheck`, and `test` scripts if you want to run a single service in isolation.
 
-The Python agent service test suite is available via `npm run test:agent-service` (requires the `agent-service` Python environment).
+For multi-instance local setups, use `env.instance1.example` as a template and create your own `env.instance*` files locally. Instance env files are intentionally gitignored.
 
-## Why This Matters
+## Documentation
 
-AI agents are increasingly being deployed to handle complex, multi-step tasks. However, their performance can be unpredictable and dependent on specific prompts, configurations, and inputs. This testing suite provides:
+- [`docs/quickstart.md`](docs/quickstart.md) - first local run from a clean checkout
+- [`docs/product-tour.md`](docs/product-tour.md) - how the main product concepts fit together
+- [`docs/README.md`](docs/README.md) - full documentation index
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) - contributor workflow
+- [`SECURITY.md`](SECURITY.md) - private vulnerability reporting
 
-- **Confidence**: Know your agents will perform as expected in production
-- **Insights**: Understand which configurations yield the best results
-- **Efficiency**: Save time through automated testing rather than manual verification
-- **Consistency**: Ensure reliability across different inputs and edge cases
-- **Documentation**: Create a record of expected behaviors and outputs
+## Visuals to add before a public push
 
-## Future Enhancements
+The repo will read much better on GitHub with a small visual set under `docs/assets/`:
 
-- Support for additional agent frameworks beyond CrewAI
-- Advanced analytics and reporting
-- Integration with CI/CD pipelines
-- Real-time monitoring via WebSockets
-- Enhanced comparison tools
+- Dashboard screenshot with first-run guidance visible
+- Conversation editor screenshot
+- Quick execute screenshot
+- Session transcript screenshot
 
-## Contributing
-
-Contributions are welcome. Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
-
-## Security
-
-Please report security vulnerabilities privately. See [`SECURITY.md`](SECURITY.md).
+Add those images to this README once captured from a representative local instance.
 
 ## License
 
