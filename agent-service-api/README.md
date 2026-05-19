@@ -177,6 +177,12 @@ The service has a default timeout of 60 seconds for API calls. You can configure
 DEFAULT_TIMEOUT=60000
 ```
 
+For long-running agent responses, increase the value. For example, use a 5 minute timeout:
+
+```env
+DEFAULT_TIMEOUT=300000
+```
+
 ### HTTP Method
 
 The service supports different HTTP methods for API calls. Specify the `http_method` field in your request:

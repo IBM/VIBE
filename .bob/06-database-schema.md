@@ -17,15 +17,17 @@ Migrations are versioned and sequential, tracked in the `migrations` table.
 Additional legacy transition guards run during database initialization. They create/repair bridge tables such as `suite_entries` and `conversation_turn_targets`, backfill legacy expected outputs into turn targets, and may drop old legacy tables when startup checks decide it is safe.
 
 **Migration Structure**:
+
 ```typescript
 interface Migration {
-  version: number;
-  name: string;
-  up: (db: Database) => void;
+	version: number;
+	name: string;
+	up: (db: Database) => void;
 }
 ```
 
 **Current Migrations**:
+
 1. `001_initial_schema.ts` - Base tables (agents, tests, results, jobs, suites)
 2. `002_add_suite_run_id_to_jobs.ts` - Suite run tracking
 3. `003_add_token_usage_to_suite_runs.ts` - Token metrics
@@ -46,6 +48,7 @@ interface Migration {
 ## Core Tables
 
 ### agents
+
 Stores agent configurations and versions.
 
 ```sql
@@ -61,6 +64,7 @@ CREATE TABLE agents (
 ```
 
 **Settings JSON Structure**:
+
 ```typescript
 {
   type: 'crewai' | 'external_api',
@@ -79,6 +83,7 @@ CREATE TABLE agents (
 ```
 
 ### conversations
+
 Multi-turn test definitions.
 
 ```sql
@@ -101,6 +106,7 @@ CREATE TABLE conversations (
 The template, capability, variables, and `stop_on_failure` columns are added after the initial conversation migration.
 
 ### conversation_messages
+
 Ordered messages within a conversation.
 
 ```sql
@@ -122,6 +128,7 @@ CREATE TABLE conversation_messages (
 ```
 
 ### conversation_turn_targets
+
 Expected outcomes for specific conversation turns.
 
 ```sql
@@ -142,6 +149,7 @@ CREATE TABLE conversation_turn_targets (
 ```
 
 ### execution_sessions
+
 Concrete runs of conversations by agents.
 
 ```sql
@@ -162,6 +170,7 @@ CREATE TABLE execution_sessions (
 ```
 
 ### session_messages
+
 Full execution transcript with per-turn scoring.
 
 ```sql
@@ -183,6 +192,7 @@ CREATE TABLE session_messages (
 ```
 
 ### jobs
+
 Work queue for asynchronous execution.
 
 ```sql
@@ -213,6 +223,7 @@ CREATE TABLE jobs (
 ```
 
 ### test_suites
+
 Collections of tests/conversations for batch execution.
 
 ```sql
@@ -227,6 +238,7 @@ CREATE TABLE test_suites (
 ```
 
 ### suite_entries
+
 Entries in a suite (tests, conversations, or nested suites).
 
 ```sql
@@ -247,6 +259,7 @@ CREATE TABLE suite_entries (
 `test_id` and `agent_id_override` are still used by application code, but the final transition table intentionally avoids legacy test and agent foreign-key constraints.
 
 ### suite_runs
+
 Execution tracking for suite runs.
 
 ```sql
@@ -276,6 +289,7 @@ CREATE TABLE suite_runs (
 ## Communication Configuration Tables
 
 ### request_templates
+
 Global request templates for external API agents.
 
 ```sql
@@ -290,6 +304,7 @@ CREATE TABLE request_templates (
 ```
 
 ### response_maps
+
 Global response mapping configurations.
 
 ```sql
@@ -304,6 +319,7 @@ CREATE TABLE response_maps (
 ```
 
 ### agent_template_links
+
 Links agents to request templates.
 
 ```sql
@@ -319,6 +335,7 @@ CREATE TABLE agent_template_links (
 ```
 
 ### agent_response_map_links
+
 Links agents to response maps.
 
 ```sql
@@ -338,6 +355,7 @@ Default template/map links are guarded by partial unique indexes on `agent_id WH
 ## Legacy Tables (Migration Phase)
 
 ### tests
+
 Legacy single-turn tests.
 
 ```sql
@@ -355,6 +373,7 @@ CREATE TABLE tests (
 **Migration Status**: Being phased out in favor of single-message conversations.
 
 ### results
+
 Legacy test results.
 
 ```sql
@@ -418,6 +437,7 @@ CREATE TABLE agent_response_maps (
 ## LLM Configuration
 
 ### llm_configs
+
 LLM provider configurations for scoring.
 
 ```sql
@@ -474,21 +494,25 @@ jobs ──┬─→ execution_sessions (via session_id)
 ## Migration Path
 
 **Current State**: Dual system support
+
 - Legacy: `tests` → `results`
 - Modern: `conversations` → `execution_sessions` → `session_messages`
 
 **Transition Strategy**:
+
 1. New features use conversation system
 2. Legacy endpoints map to conversations internally
 3. Both result types accessible via unified API
 4. Legacy tables will be dropped when migration complete
 
 **Checking Migration Status**:
+
 ```sql
 -- Check for remaining legacy-only jobs
-SELECT COUNT(*) FROM jobs 
+SELECT COUNT(*) FROM jobs
 WHERE test_id IS NOT NULL AND conversation_id IS NULL;
 
 -- Check for remaining legacy-only suite entries
-SELECT COUNT(*) FROM suite_entries 
+SELECT COUNT(*) FROM suite_entries
 WHERE test_id IS NOT NULL AND conversation_id IS NULL;
+```

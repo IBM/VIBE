@@ -94,6 +94,7 @@ backend/src/
 Routes handle HTTP requests, validate input, call services/repositories, and return responses. Most routes are mounted in [`backend/src/index.ts`](../backend/src/index.ts) under `/api/*`.
 
 **Pattern**:
+
 ```typescript
 import { Router } from 'express';
 import { asyncHandler } from '../lib/asyncHandler';
@@ -102,23 +103,30 @@ import * as repo from '../db/repositories/someRepo';
 
 const router = Router();
 
-router.get('/', asyncHandler(async (req, res) => {
-  const data = await repo.getAll();
-  res.json(data);
-}));
+router.get(
+	'/',
+	asyncHandler(async (req, res) => {
+		const data = await repo.getAll();
+		res.json(data);
+	})
+);
 
-router.post('/', asyncHandler(async (req, res) => {
-  const validated = validateBody(req, res, schema);
-  if (!validated) return;
-  
-  const created = await repo.create(validated);
-  res.status(201).json(created);
-}));
+router.post(
+	'/',
+	asyncHandler(async (req, res) => {
+		const validated = validateBody(req, res, schema);
+		if (!validated) return;
+
+		const created = await repo.create(validated);
+		res.status(201).json(created);
+	})
+);
 
 export default router;
 ```
 
 **Key Routes**:
+
 - [`routes/agents.ts`](../backend/src/routes/agents.ts) - Agent CRUD, templates, response maps
 - [`routes/conversations.ts`](../backend/src/routes/conversations.ts) - Conversation CRUD, messages
 - [`routes/execute.ts`](../backend/src/routes/execute.ts) - Execution endpoints
@@ -131,6 +139,7 @@ export default router;
 Services contain business logic and orchestrate between repositories.
 
 **Job Queue Service** ([`services/job-queue.ts`](../backend/src/services/job-queue.ts)):
+
 - Manages asynchronous job execution
 - In-memory job cache with database persistence
 - Automatic stale job detection and reset
@@ -138,17 +147,20 @@ Services contain business logic and orchestrate between repositories.
 - Job claiming for distributed execution
 
 **Scoring Service** ([`services/scoring-service.ts`](../backend/src/services/scoring-service.ts)):
+
 - Similarity scoring using LLM providers
 - Prompt generation for scoring
 - Score parsing and validation
 - Metadata tracking
 
 **LLM Config Service** ([`services/llm-config-service.ts`](../backend/src/services/llm-config-service.ts)):
+
 - Abstraction over multiple LLM providers (OpenAI, Anthropic, Ollama, Watsonx)
 - Fallback mechanism with priority ordering
 - Provider-specific request formatting
 
 **Suite Processing Service** ([`services/suite-processing-service.ts`](../backend/src/services/suite-processing-service.ts)):
+
 - Flattens nested suite structures
 - Counts leaf tests
 - Handles agent overrides
@@ -157,12 +169,14 @@ Services contain business logic and orchestrate between repositories.
 ### Database Layer
 
 **Database Initialization** ([`db/database.ts`](../backend/src/db/database.ts)):
+
 - SQLite connection setup
 - Foreign key enforcement
 - Migration execution
 - Legacy table cleanup
 
 **Queries** ([`db/queries.ts`](../backend/src/db/queries.ts)):
+
 - Raw SQL query functions
 - Prepared statements for performance
 - Type-safe query results
@@ -178,6 +192,7 @@ Repositories provide a clean interface for data access:
 - **configRepo** - LLM configuration management
 
 **Migrations** ([`db/migrations/`](../backend/src/db/migrations/)):
+
 - Sequential, versioned migrations
 - Each migration has `version`, `name`, and `up` function
 - Automatically tracked in `migrations` table
@@ -186,32 +201,36 @@ Repositories provide a clean interface for data access:
 ### Library Utilities
 
 **Async Handler** ([`lib/asyncHandler.ts`](../backend/src/lib/asyncHandler.ts)):
+
 ```typescript
 // Wraps async route handlers to catch errors
 export const asyncHandler = (fn: Function) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
+	Promise.resolve(fn(req, res, next)).catch(next);
 };
 ```
 
 **Validate Body** ([`lib/validateBody.ts`](../backend/src/lib/validateBody.ts)):
+
 ```typescript
 // Validates request body with Zod schema
 export const validateBody = (req, res, schema, options?) => {
-  const result = schema.safeParse(req.body);
-  if (!result.success) {
-    res.status(400).json({ error: 'Validation failed' });
-    return null;
-  }
-  return result.data;
+	const result = schema.safeParse(req.body);
+	if (!result.success) {
+		res.status(400).json({ error: 'Validation failed' });
+		return null;
+	}
+	return result.data;
 };
 ```
 
 **Conversation Preflight** ([`lib/conversationPreflight.ts`](../backend/src/lib/conversationPreflight.ts)):
+
 - Validates conversation before execution
 - Checks template/map capabilities
 - Ensures all required configs are present
 
 **Communication Capabilities** ([`lib/communicationCapabilities.ts`](../backend/src/lib/communicationCapabilities.ts)):
+
 - Matches template/map capabilities with conversation requirements
 - Validates capability compatibility
 
@@ -284,6 +303,7 @@ export const dbConfig = backendConfig.database;
 ```
 
 **Environment Variables**:
+
 - `PORT` - Server port (default: 5000)
 - `HOST` - Server host (default: localhost)
 - `DB_PATH` - SQLite database path (default: ./data/agent-testing.db)
@@ -293,26 +313,30 @@ export const dbConfig = backendConfig.database;
 ## Error Handling
 
 **Pattern**:
+
 1. Use `asyncHandler` wrapper for all async routes
 2. Validate input with Zod schemas via `validateBody`
 3. Return appropriate HTTP status codes
 4. Include error details in response
 
 ```typescript
-router.post('/', asyncHandler(async (req, res) => {
-  const validated = validateBody(req, res, schema);
-  if (!validated) return; // 400 already sent
-  
-  try {
-    const result = await service.doSomething(validated);
-    res.status(201).json(result);
-  } catch (error) {
-    if (error instanceof NotFoundError) {
-      return res.status(404).json({ error: error.message });
-    }
-    throw error; // Let asyncHandler catch it
-  }
-}));
+router.post(
+	'/',
+	asyncHandler(async (req, res) => {
+		const validated = validateBody(req, res, schema);
+		if (!validated) return; // 400 already sent
+
+		try {
+			const result = await service.doSomething(validated);
+			res.status(201).json(result);
+		} catch (error) {
+			if (error instanceof NotFoundError) {
+				return res.status(404).json({ error: error.message });
+			}
+			throw error; // Let asyncHandler catch it
+		}
+	})
+);
 ```
 
 ## Testing
@@ -320,6 +344,7 @@ router.post('/', asyncHandler(async (req, res) => {
 Tests are located in `__tests__` directories alongside source files.
 
 **Test Structure**:
+
 - Unit tests for services, utilities, and repositories
 - Integration tests for routes
 - Mock database and external dependencies
@@ -328,6 +353,7 @@ Tests are located in `__tests__` directories alongside source files.
 ## Common Patterns
 
 ### Repository Pattern
+
 ```typescript
 // db/repositories/exampleRepo.ts
 export function getAll(): Entity[] {
@@ -347,36 +373,45 @@ export function create(data: Omit<Entity, 'id'>): Entity {
 ```
 
 ### Service Pattern
+
 ```typescript
 // services/exampleService.ts
 export class ExampleService {
-  async processData(input: Input): Promise<Output> {
-    // 1. Validate
-    // 2. Transform
-    // 3. Call repositories
-    // 4. Return result
-  }
+	async processData(input: Input): Promise<Output> {
+		// 1. Validate
+		// 2. Transform
+		// 3. Call repositories
+		// 4. Return result
+	}
 }
 
 export const exampleService = new ExampleService();
 ```
 
 ### Route Pattern
+
 ```typescript
 // routes/example.ts
 const router = Router();
 
-router.get('/', asyncHandler(async (req, res) => {
-  const data = await repo.getAll();
-  res.json(data);
-}));
+router.get(
+	'/',
+	asyncHandler(async (req, res) => {
+		const data = await repo.getAll();
+		res.json(data);
+	})
+);
 
-router.post('/', asyncHandler(async (req, res) => {
-  const validated = validateBody(req, res, schema);
-  if (!validated) return;
-  
-  const created = await repo.create(validated);
-  res.status(201).json(created);
-}));
+router.post(
+	'/',
+	asyncHandler(async (req, res) => {
+		const validated = validateBody(req, res, schema);
+		if (!validated) return;
+
+		const created = await repo.create(validated);
+		res.status(201).json(created);
+	})
+);
 
 export default router;
+```

@@ -28,6 +28,8 @@ Each helper parses `process.env` with `zod`, applies sensible defaults, and expo
 | `POLLER_BACKOFF_MULTIPLIER`  | `1.5`                   | Exponential backoff multiplier for empty polls |
 | `POLLER_MAX_CONCURRENT_JOBS` | `3`                     | Max concurrent jobs to execute                 |
 
+For long-running external agent responses, set `DEFAULT_TIMEOUT=300000` for a 5 minute request timeout.
+
 ## Frontend (`loadFrontendConfig`)
 
 | Variable                    | Default                 | Description                              |

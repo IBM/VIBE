@@ -34,6 +34,7 @@ The IBM VIBE system consists of a Next.js frontend, an Express/SQLite backend, a
 **Technology**: Next.js 16, React 18, TypeScript, SCSS modules, Carbon React
 
 **Responsibilities**:
+
 - User interface for conversations, legacy tests, agents, suites, jobs, sessions, and configs
 - Results visualization with transcripts, intermediate steps, scores, and token metadata
 - Comparison and analytics views for different agent versions
@@ -41,12 +42,14 @@ The IBM VIBE system consists of a Next.js frontend, an Express/SQLite backend, a
 - Data transfer UI for export/import workflows
 
 **Key Features**:
+
 - Server-side rendering with Next.js App Router
 - Carbon Design System components
 - Responsive dashboard with metrics
 - Agent analytics and performance tracking
 
 **Structure**:
+
 ```
 frontend/src/
 ├── app/                    # Next.js app router pages
@@ -68,6 +71,7 @@ frontend/src/
 **Technology**: Express.js, TypeScript, SQLite (better-sqlite3)
 
 **Responsibilities**:
+
 - REST API for all CRUD operations
 - Job queue management
 - Test execution coordination
@@ -75,6 +79,7 @@ frontend/src/
 - Similarity scoring orchestration
 
 **Key Features**:
+
 - Versioned database migrations
 - Repository pattern for data access
 - Service layer for business logic
@@ -82,6 +87,7 @@ frontend/src/
 - Support for both legacy and conversation-based testing
 
 **Structure**:
+
 ```
 backend/src/
 ├── index.ts               # Express app setup
@@ -115,6 +121,7 @@ backend/src/
 **Technology**: Express.js, TypeScript
 
 **Responsibilities**:
+
 - Poll backend for pending jobs
 - Execute external API conversations
 - Post session results back to backend
@@ -122,6 +129,7 @@ backend/src/
 - Token usage extraction
 
 **Key Features**:
+
 - Adaptive polling with exponential backoff
 - Concurrent job execution (configurable limit)
 - Handlebars template engine for requests
@@ -129,6 +137,7 @@ backend/src/
 - Automatic token usage detection
 
 **Structure**:
+
 ```
 agent-service-api/src/
 ├── index.ts               # Express app + poller startup
@@ -149,6 +158,7 @@ agent-service-api/src/
 **Status**: Present in the repo but not the primary maintained execution path
 
 **Responsibilities**:
+
 - Execute CrewAI agent workflows
 - Support for various LLM providers
 - Detailed logging of intermediate steps
@@ -159,16 +169,19 @@ agent-service-api/src/
 ### 5. Shared Packages (`packages/`)
 
 **@ibm-vibe/types**:
+
 - Shared TypeScript type definitions
 - Enums (JobStatus, etc.)
 - Interfaces for all entities
 
 **@ibm-vibe/config**:
+
 - Environment configuration loading
 - Zod schemas for validation
 - Configuration for all services
 
 **@ibm-vibe/utils**:
+
 - Token extraction utilities
 - Path traversal helpers
 - Popular token format detection
@@ -207,22 +220,26 @@ Meanwhile:
 ## Integration Points
 
 ### Frontend ↔ Backend
+
 - **Protocol**: HTTP REST API
 - **Format**: JSON
 - **Authentication**: Not implemented in the current app
 - **Key Endpoints**: `/api/agents`, `/api/conversations`, `/api/execute`, `/api/jobs`, `/api/sessions`, `/api/test-suites`, `/api/suite-runs`, `/api/data-transfer`
 
 ### Backend ↔ Agent Service API
+
 - **Protocol**: HTTP API
 - **Pattern**: Polling (agent-service-api pulls work)
 - **Key Endpoints**: `GET /api/jobs/available/:job_type?`, `POST /api/jobs/:id/claim`, `PUT /api/jobs/:id`, `POST /api/sessions`
 
 ### Agent Service API ↔ External AI APIs
+
 - **Protocol**: HTTP (configurable method)
 - **Format**: Template-based requests, mapped responses
 - **Features**: Custom headers, authentication, retry logic
 
 ### Backend ↔ Database
+
 - **Protocol**: SQLite (better-sqlite3)
 - **Pattern**: Repository pattern with prepared statements
 - **Migrations**: Versioned, sequential migrations
@@ -230,6 +247,7 @@ Meanwhile:
 ## Deployment Architecture
 
 ### Development
+
 ```
 localhost:3000  → Frontend (Next.js dev server)
 localhost:5000  → Backend (ts-node-dev)
@@ -238,6 +256,7 @@ localhost:5002  → Agent Service Python (optional)
 ```
 
 ### Production Considerations
+
 - **Frontend**: Static site deployment (Vercel, Netlify) or Node.js server
 - **Backend**: Node.js server with process manager (PM2)
 - **Agent Service API**: Node.js server with process manager
@@ -247,11 +266,13 @@ localhost:5002  → Agent Service Python (optional)
 ## Scalability Considerations
 
 ### Current Limitations
+
 - SQLite is single-writer (suitable for moderate load)
 - Job polling introduces latency (default 5-60 second intervals)
 - Job execution concurrency is configurable per `agent-service-api` instance
 
 ### Future Enhancements
+
 - WebSocket support for real-time updates
 - PostgreSQL migration for multi-writer support
 - Distributed job queue (Redis, RabbitMQ)
@@ -260,11 +281,13 @@ localhost:5002  → Agent Service Python (optional)
 ## Security Considerations
 
 ### Current State
+
 - No authentication/authorization implemented
 - API keys stored in agent settings (encrypted storage recommended)
 - CORS enabled for development
 
 ### Recommended Enhancements
+
 - User authentication and session management
 - Role-based access control (RBAC)
 - API key encryption at rest

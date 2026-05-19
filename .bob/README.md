@@ -24,6 +24,7 @@ It is not a replacement for reading source before making changes. Treat these fi
 ## Purpose
 
 This documentation serves as a compact knowledge base for AI coding assistants (like Bob) to:
+
 - Quickly understand the codebase structure
 - Find where specific functionality lives
 - Understand data flow and execution patterns
