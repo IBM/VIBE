@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ConversationFormModal from '../ConversationFormModal';
 import { api } from '../../../lib/api';
 
@@ -42,16 +41,14 @@ beforeEach(() => {
 
 describe('ConversationFormModal', () => {
 	it('shows validation error when name is missing', async () => {
-		const user = userEvent.setup();
 		render(<ConversationFormModal isOpen onClose={jest.fn()} onSave={jest.fn()} />);
 
-		await user.click(screen.getByRole('button', { name: 'Save' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Name is required')).toBeInTheDocument();
 	});
 
 	it('creates a conversation and closes on success', async () => {
-		const user = userEvent.setup();
 		const onSave = jest.fn();
 		const onClose = jest.fn();
 
@@ -66,11 +63,11 @@ describe('ConversationFormModal', () => {
 
 		render(<ConversationFormModal isOpen onClose={onClose} onSave={onSave} />);
 
-		await user.type(screen.getByLabelText('Name'), 'New conversation');
-		await user.click(screen.getByRole('button', { name: /Add message/i }));
+		fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'New conversation' } });
+		fireEvent.click(screen.getByRole('button', { name: /Add message/i }));
 		const contentFields = screen.getAllByLabelText('Content');
-		await user.type(contentFields[0], 'Hello world');
-		await user.click(screen.getByRole('button', { name: 'Save' }));
+		fireEvent.change(contentFields[0], { target: { value: 'Hello world' } });
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => {
 			expect(mockedApi.createConversation).toHaveBeenCalled();

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AppDataProvider, useAgents, useTests, useLLMConfigs, useResultOperations } from '../AppDataContext';
 import { api } from '../api';
 import type { LLMRequestOptions } from '@ibm-vibe/types';
@@ -260,8 +259,6 @@ describe('AppDataContext (more coverage)', () => {
 	});
 
 	it('covers agent/test/llm hooks and CRUD flows', async () => {
-		const user = userEvent.setup();
-
 		render(
 			<AppDataProvider>
 				<AgentsHarness />
@@ -271,53 +268,52 @@ describe('AppDataContext (more coverage)', () => {
 		);
 
 		// Agents
-		await user.click(screen.getByRole('button', { name: 'Fetch agents' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Fetch agents' }));
 		await waitFor(() => expect(screen.getByTestId('agents-count').textContent).toBe('1'));
 
-		await user.click(screen.getByRole('button', { name: 'Create agent' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Create agent' }));
 		await waitFor(() => expect(screen.getByTestId('agents-count').textContent).toBe('2'));
 
-		await user.click(screen.getByRole('button', { name: 'Update agent' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Update agent' }));
 		await waitFor(() => expect(screen.getByTestId('agents-first-name').textContent).toBe('Agent A+'));
 
-		await user.click(screen.getByRole('button', { name: 'Delete agent' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Delete agent' }));
 		await waitFor(() => expect(screen.getByTestId('agents-count').textContent).toBe('1'));
 
 		// Tests
-		await user.click(screen.getByRole('button', { name: 'Fetch tests' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Fetch tests' }));
 		await waitFor(() => expect(screen.getByTestId('tests-count').textContent).toBe('1'));
 
-		await user.click(screen.getByRole('button', { name: 'Create test' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Create test' }));
 		await waitFor(() => expect(screen.getByTestId('tests-count').textContent).toBe('2'));
 
-		await user.click(screen.getByRole('button', { name: 'Update test' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Update test' }));
 		await waitFor(() => expect(screen.getByTestId('tests-first-name').textContent).toBe('Test A+'));
 
-		await user.click(screen.getByRole('button', { name: 'Delete test' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Delete test' }));
 		await waitFor(() => expect(screen.getByTestId('tests-count').textContent).toBe('1'));
 
 		// LLM configs + call actions
-		await user.click(screen.getByRole('button', { name: 'Fetch llm configs' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Fetch llm configs' }));
 		await waitFor(() => expect(screen.getByTestId('llm-count').textContent).toBe('1'));
 
-		await user.click(screen.getByRole('button', { name: 'Create llm config' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Create llm config' }));
 		await waitFor(() => expect(screen.getByTestId('llm-count').textContent).toBe('2'));
 
-		await user.click(screen.getByRole('button', { name: 'Update llm config' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Update llm config' }));
 		await waitFor(() => expect(screen.getByTestId('llm-first-name').textContent).toBe('LLM A+'));
 
-		await user.click(screen.getByRole('button', { name: 'Call llm' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Call llm' }));
 		await waitFor(() => expect(screen.getByTestId('llm-result').textContent).toContain('ok'));
 
-		await user.click(screen.getByRole('button', { name: 'Call llm fallback' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Call llm fallback' }));
 		await waitFor(() => expect(screen.getByTestId('llm-result').textContent).toContain('ok-fallback'));
 
-		await user.click(screen.getByRole('button', { name: 'Delete llm config' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Delete llm config' }));
 		await waitFor(() => expect(screen.getByTestId('llm-count').textContent).toBe('1'));
 	});
 
 	it('sets errors when fetch fails', async () => {
-		const user = userEvent.setup();
 		mockedApi.getTests.mockRejectedValueOnce(new Error('No tests for you'));
 
 		render(
@@ -326,7 +322,7 @@ describe('AppDataContext (more coverage)', () => {
 			</AppDataProvider>
 		);
 
-		await user.click(screen.getByRole('button', { name: 'Fetch tests' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Fetch tests' }));
 
 		await waitFor(() => {
 			expect(screen.getByTestId('tests-error').textContent).toBe('No tests for you');
@@ -334,23 +330,21 @@ describe('AppDataContext (more coverage)', () => {
 	});
 
 	it('covers useResultOperations success and failure branches', async () => {
-		const user = userEvent.setup();
-
 		render(<ResultOpsHarness />);
 
-		await user.click(screen.getByRole('button', { name: 'Get results' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Get results' }));
 		await waitFor(() => expect(screen.getByTestId('resultsops-value').textContent).toContain('"total":1'));
 
 		mockedApi.getResultsWithCount.mockRejectedValueOnce(new Error('Results failed'));
-		await user.click(screen.getByRole('button', { name: 'Get results' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Get results' }));
 		await waitFor(() => expect(screen.getByTestId('resultsops-error').textContent).toBe('Results failed'));
 
 		mockedApi.getResultById.mockRejectedValueOnce(new Error('Missing result'));
-		await user.click(screen.getByRole('button', { name: 'Get result by id' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Get result by id' }));
 		await waitFor(() => expect(screen.getByTestId('resultsops-caught').textContent).toBe('Missing result'));
 
 		mockedApi.scoreResult.mockRejectedValueOnce(new Error('Score failed'));
-		await user.click(screen.getByRole('button', { name: 'Score result' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Score result' }));
 		await waitFor(() => expect(screen.getByTestId('resultsops-caught').textContent).toBe('Score failed'));
 	});
 });
