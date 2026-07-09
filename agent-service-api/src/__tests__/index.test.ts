@@ -4,7 +4,7 @@ describe('agent-service-api bootstrap', () => {
 		jest.clearAllMocks();
 	});
 
-	it('wires middleware and starts server', () => {
+	it('wires middleware and starts server', async () => {
 		const use = jest.fn();
 		const listen = jest.fn((_port: number, cb?: () => void) => {
 			if (cb) cb();
@@ -28,11 +28,15 @@ describe('agent-service-api bootstrap', () => {
 
 		const startPolling = jest.fn();
 		const stopPolling = jest.fn();
+		const healthCheck = jest.fn().mockResolvedValue(true);
 		jest.doMock('../services/job-poller', () => ({
-			jobPoller: { startPolling, stopPolling }
+			jobPoller: { healthCheck, startPolling, stopPolling }
 		}));
 
-		jest.doMock('../config', () => ({ SERVER_CONFIG: { port: 1234, host: 'localhost' } }));
+		jest.doMock('../config', () => ({
+			POLLER_CONFIG: { baseIntervalMs: 5000 },
+			SERVER_CONFIG: { port: 1234, host: 'localhost' }
+		}));
 
 		const onSpy = jest.spyOn(process, 'on').mockImplementation(() => process);
 		const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -42,6 +46,8 @@ describe('agent-service-api bootstrap', () => {
 		});
 
 		expect(listen).toHaveBeenCalledWith(1234, expect.any(Function));
+		await Promise.resolve();
+		expect(healthCheck).toHaveBeenCalled();
 		expect(startPolling).toHaveBeenCalled();
 
 		const getHandler = (index: number) => {
