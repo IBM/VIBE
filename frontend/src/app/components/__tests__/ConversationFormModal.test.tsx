@@ -65,7 +65,7 @@ describe('ConversationFormModal', () => {
 
 		fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'New conversation' } });
 		fireEvent.click(screen.getByRole('button', { name: /Add message/i }));
-		const contentFields = screen.getAllByLabelText('Content');
+		const contentFields = await screen.findAllByLabelText('Content');
 		fireEvent.change(contentFields[0], { target: { value: 'Hello world' } });
 		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
