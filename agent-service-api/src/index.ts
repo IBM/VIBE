@@ -1,11 +1,22 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './routes';
-import { SERVER_CONFIG } from './config';
+import { POLLER_CONFIG, SERVER_CONFIG } from './config';
 import { jobPoller } from './services/job-poller';
 
 // Create Express app
 const app = express();
+
+const startJobPollerWhenBackendReady = async (): Promise<void> => {
+	if (await jobPoller.healthCheck()) {
+		jobPoller.startPolling();
+		return;
+	}
+
+	setTimeout(() => {
+		void startJobPollerWhenBackendReady();
+	}, POLLER_CONFIG.baseIntervalMs);
+};
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -47,8 +58,7 @@ app.listen(port, () => {
 		console.log('Press Ctrl+C to stop');
 	}
 
-	// Start job poller
-	jobPoller.startPolling();
+	void startJobPollerWhenBackendReady();
 });
 
 // Handle graceful shutdown
