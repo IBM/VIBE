@@ -66,7 +66,7 @@ Run production start with exported env only:
 
 ```bash
 cd backend
-export PORT=5000 DB_PATH=./data/agent-testing.db AGENT_SERVICE_URL=http://localhost:5002
+export PORT=5100 DB_PATH=./data/agent-testing.db AGENT_SERVICE_URL=http://localhost:5002
 npm run start
 ```
 

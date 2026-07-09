@@ -34,7 +34,7 @@ By default, `start-instance.sh` manages backend, agent-service-api, and frontend
 
 | Instance  | Backend | Agent Service | Agent Service API | Frontend | Database                            |
 | --------- | ------- | ------------- | ----------------- | -------- | ----------------------------------- |
-| instance1 | 5000    | 5001          | 5003              | 3000     | `./data/agent-testing-instance1.db` |
+| instance1 | 5100    | 5001          | 5003              | 3000     | `./data/agent-testing-instance1.db` |
 | instance2 | 5010    | 5011          | 5013              | 3010     | `./data/agent-testing-instance2.db` |
 | instance3 | 5020    | 5021          | 5023              | 3020     | `./data/agent-testing-instance3.db` |
 
@@ -72,7 +72,7 @@ cp env.instance1.example env.instance3
 
 ### 3. Access your instances
 
-- **Instance 1**: Frontend: <http://localhost:3000>, Backend: <http://localhost:5000>
+- **Instance 1**: Frontend: <http://localhost:3000>, Backend: <http://localhost:5100>
 - **Instance 2**: Frontend: <http://localhost:3010>, Backend: <http://localhost:5010>
 - **Instance 3**: Frontend: <http://localhost:3020>, Backend: <http://localhost:5020>
 
@@ -202,7 +202,7 @@ Each instance has its own local environment file (e.g., `env.instance1`):
 
 ```bash
 INSTANCE_NAME=instance1
-BACKEND_PORT=5000
+BACKEND_PORT=5100
 AGENT_SERVICE_PORT=5001
 AGENT_SERVICE_API_PORT=5003
 FRONTEND_PORT=3000

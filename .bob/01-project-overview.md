@@ -169,6 +169,6 @@ The project is currently in a **legacy-to-conversation migration phase**:
 | Service                | Default Port | Role                                         |
 | ---------------------- | -----------: | -------------------------------------------- |
 | Frontend               |         3000 | UI for conversations, sessions, and analysis |
-| Backend                |         5000 | System API, storage, job orchestration       |
+| Backend                |         5100 | System API, storage, job orchestration       |
 | Agent Service API      |         5003 | External API executor and backend job poller |
 | Agent Service (Python) |         5002 | CrewAI execution service                     |

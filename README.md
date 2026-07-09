@@ -40,7 +40,7 @@ This starts the three services used by the current conversation-first workflow:
 | Service           | Default URL             | Role                                         |
 | ----------------- | ----------------------- | -------------------------------------------- |
 | Frontend          | `http://localhost:3000` | UI for conversations, sessions, and analysis |
-| Backend           | `http://localhost:5000` | System API, storage, job orchestration       |
+| Backend           | `http://localhost:5100` | System API, storage, job orchestration       |
 | Agent Service API | `http://localhost:5003` | External API executor and backend job poller |
 
 Open [http://localhost:3000](http://localhost:3000), then follow the first-run path:

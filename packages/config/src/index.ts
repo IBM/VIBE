@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const backendEnvSchema = z.object({
-	PORT: z.coerce.number().default(5000),
+	PORT: z.coerce.number().default(5100),
 	HOST: z.string().default('localhost'),
 	AGENT_SERVICE_URL: z.string().default('http://localhost:5002'),
 	AGENT_SERVICE_TIMEOUT: z.coerce.number().nonnegative().default(0),
@@ -11,7 +11,7 @@ const backendEnvSchema = z.object({
 const agentServiceApiSchema = z.object({
 	PORT: z.coerce.number().default(5003),
 	HOST: z.string().default('localhost'),
-	BACKEND_URL: z.string().default('http://localhost:5000'),
+	BACKEND_URL: z.string().default('http://localhost:5100'),
 	BACKEND_TIMEOUT: z.coerce.number().positive().default(30000),
 	DEFAULT_TIMEOUT: z.coerce.number().positive().default(60000),
 	HEALTH_CHECK_INTERVAL: z.coerce.number().positive().default(60000),
@@ -22,7 +22,7 @@ const agentServiceApiSchema = z.object({
 });
 
 const frontendEnvSchema = z.object({
-	NEXT_PUBLIC_API_URL: z.string().default('http://localhost:5000'),
+	NEXT_PUBLIC_API_URL: z.string().default('http://localhost:5100'),
 	NEXT_PUBLIC_INSTANCE_NAME: z.string().optional()
 });
 

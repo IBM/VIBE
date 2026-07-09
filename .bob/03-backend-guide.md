@@ -6,7 +6,7 @@ The backend is an Express.js application written in TypeScript. It provides the 
 
 **Location**: `backend/`  
 **Entry Point**: [`backend/src/index.ts`](../backend/src/index.ts)  
-**Port**: 5000 (configurable via `PORT` env var)
+**Port**: 5100 (configurable via `PORT` env var)
 
 ## Directory Structure
 
@@ -304,7 +304,7 @@ export const dbConfig = backendConfig.database;
 
 **Environment Variables**:
 
-- `PORT` - Server port (default: 5000)
+- `PORT` - Server port (default: 5100)
 - `HOST` - Server host (default: localhost)
 - `DB_PATH` - SQLite database path (default: ./data/agent-testing.db)
 - `AGENT_SERVICE_URL` - CrewAI service URL (default: http://localhost:5002)

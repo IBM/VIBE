@@ -26,7 +26,7 @@ describe('data transfer API', () => {
 			bundle
 		);
 		expect(global.fetch).toHaveBeenCalledWith(
-			'http://localhost:5000/api/data-transfer/export?types=agents,conversations'
+			'http://localhost:5100/api/data-transfer/export?types=agents,conversations'
 		);
 	});
 
@@ -59,7 +59,7 @@ describe('data transfer API', () => {
 
 		await expect(api.analyzeImport(bundle)).resolves.toEqual(report);
 		expect(global.fetch).toHaveBeenCalledWith(
-			'http://localhost:5000/api/data-transfer/analyze',
+			'http://localhost:5100/api/data-transfer/analyze',
 			expect.objectContaining({
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -87,7 +87,7 @@ describe('data transfer API', () => {
 
 		await api.analyzeImport(bundle, resolutions);
 		expect(global.fetch).toHaveBeenCalledWith(
-			'http://localhost:5000/api/data-transfer/analyze',
+			'http://localhost:5100/api/data-transfer/analyze',
 			expect.objectContaining({
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -119,7 +119,7 @@ describe('data transfer API', () => {
 
 		await expect(api.executeImport(request as any)).resolves.toEqual(summary);
 		expect(global.fetch).toHaveBeenCalledWith(
-			'http://localhost:5000/api/data-transfer/import',
+			'http://localhost:5100/api/data-transfer/import',
 			expect.objectContaining({
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },

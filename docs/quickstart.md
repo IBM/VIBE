@@ -35,7 +35,7 @@ cp agent-service-api/.env.example agent-service-api/.env
 The defaults connect the local services together:
 
 - Frontend: `http://localhost:3000`
-- Backend: `http://localhost:5000`
+- Backend: `http://localhost:5100`
 - Agent Service API: `http://localhost:5003`
 
 The backend writes SQLite data to `backend/data/agent-testing.db` by default.
@@ -61,7 +61,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Troubleshooting
 
-- If the frontend cannot reach the API, confirm `frontend/.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:5000`.
+- If the frontend cannot reach the API, confirm `frontend/.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:5100`.
+- If you created local env files before the default backend port changed, update `backend/.env`, `frontend/.env.local`, and `agent-service-api/.env` together.
 - If jobs stay pending, confirm `agent-service-api/.env` points `BACKEND_URL` at the backend and that `npm run dev` is still running.
 - If shared package types look stale, run `npm run build:packages` or restart `npm run dev`.
 - If you are working on CrewAI, start `agent-service` separately and verify `backend/.env` has the correct `AGENT_SERVICE_URL`.

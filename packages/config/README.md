@@ -7,7 +7,7 @@ Each helper parses `process.env` with `zod`, applies sensible defaults, and expo
 
 | Variable                | Default                   | Description                    |
 | ----------------------- | ------------------------- | ------------------------------ |
-| `PORT`                  | `5000`                    | Express port                   |
+| `PORT`                  | `5100`                    | Express port                   |
 | `HOST`                  | `localhost`               | Bind address                   |
 | `AGENT_SERVICE_URL`     | `http://localhost:5002`   | CrewAI agent-service endpoint  |
 | `AGENT_SERVICE_TIMEOUT` | `0`                       | Axios timeout (0 = no timeout) |
@@ -19,7 +19,7 @@ Each helper parses `process.env` with `zod`, applies sensible defaults, and expo
 | ---------------------------- | ----------------------- | ---------------------------------------------- |
 | `PORT`                       | `5003`                  | API server port                                |
 | `HOST`                       | `localhost`             | Bind address                                   |
-| `BACKEND_URL`                | `http://localhost:5000` | Backend base URL                               |
+| `BACKEND_URL`                | `http://localhost:5100` | Backend base URL                               |
 | `BACKEND_TIMEOUT`            | `30000`                 | Timeout (ms) when calling backend              |
 | `DEFAULT_TIMEOUT`            | `60000`                 | Timeout (ms) for external API requests         |
 | `HEALTH_CHECK_INTERVAL`      | `60000`                 | Interval (ms) for polling health checks        |
@@ -34,5 +34,5 @@ For long-running external agent responses, set `DEFAULT_TIMEOUT=300000` for a 5 
 
 | Variable                    | Default                 | Description                              |
 | --------------------------- | ----------------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_API_URL`       | `http://localhost:5000` | Backend REST base URL                    |
+| `NEXT_PUBLIC_API_URL`       | `http://localhost:5100` | Backend REST base URL                    |
 | `NEXT_PUBLIC_INSTANCE_NAME` | _empty_                 | Optional label appended to the UI header |

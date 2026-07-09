@@ -21,7 +21,7 @@ describe('api client', () => {
 			} as Response);
 
 			await expect(api.getAgents()).resolves.toEqual(agents);
-			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5000/api/agents');
+			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5100/api/agents');
 		});
 
 		it('throws descriptive errors when the backend responds with an error', async () => {
@@ -43,7 +43,7 @@ describe('api client', () => {
 			} as Response);
 
 			await expect(api.getStats()).resolves.toEqual(stats);
-			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5000/api/stats');
+			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5100/api/stats');
 		});
 
 		it('throws error on failure', async () => {
@@ -65,7 +65,7 @@ describe('api client', () => {
 			} as Response);
 
 			await expect(api.getAgentRequestTemplates(1)).resolves.toEqual(templates);
-			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5000/api/agents/1/request-templates');
+			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5100/api/agents/1/request-templates');
 		});
 
 		it('createAgentRequestTemplate creates template', async () => {
@@ -206,7 +206,7 @@ describe('api client', () => {
 			} as Response);
 
 			await expect(api.getTemplates()).resolves.toEqual(templates);
-			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5000/api/templates?');
+			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5100/api/templates?');
 		});
 
 		it('getTemplates filters by capability', async () => {
@@ -217,7 +217,7 @@ describe('api client', () => {
 			} as Response);
 
 			await expect(api.getTemplates('test-cap')).resolves.toEqual(templates);
-			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5000/api/templates?capability=test-cap');
+			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5100/api/templates?capability=test-cap');
 		});
 
 		it('getTemplateById fetches single template', async () => {
@@ -281,7 +281,7 @@ describe('api client', () => {
 			} as Response);
 
 			await expect(api.getResponseMaps('test-cap')).resolves.toEqual(maps);
-			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5000/api/response-maps?capability=test-cap');
+			expect(global.fetch).toHaveBeenCalledWith('http://localhost:5100/api/response-maps?capability=test-cap');
 		});
 
 		it('getResponseMapById fetches single map', async () => {

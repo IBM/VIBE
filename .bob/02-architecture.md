@@ -250,7 +250,7 @@ Meanwhile:
 
 ```
 localhost:3000  → Frontend (Next.js dev server)
-localhost:5000  → Backend (ts-node-dev)
+localhost:5100  → Backend (ts-node-dev)
 localhost:5003  → Agent Service API (ts-node-dev)
 localhost:5002  → Agent Service Python (optional)
 ```

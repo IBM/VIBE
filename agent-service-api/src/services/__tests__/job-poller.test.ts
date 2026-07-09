@@ -12,7 +12,7 @@ jest.mock('../api-service', () => ({
 }));
 
 jest.mock('../../config', () => ({
-	BACKEND_CONFIG: { url: 'http://localhost:5000', timeout: 30000 },
+	BACKEND_CONFIG: { url: 'http://localhost:5100', timeout: 30000 },
 	POLLER_CONFIG: {
 		baseIntervalMs: 5000,
 		maxIntervalMs: 60000,
