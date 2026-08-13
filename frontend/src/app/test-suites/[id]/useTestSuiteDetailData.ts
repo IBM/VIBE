@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, type Agent, type Conversation, type SuiteEntry, type SuiteRun, type Test, type TestSuite } from '../../../lib/api';
+import {
+	api,
+	type Agent,
+	type Conversation,
+	type SuiteEntry,
+	type SuiteRun,
+	type Test,
+	type TestSuite
+} from '../../../lib/api';
 
 export function useTestSuiteDetailData(suiteId: number) {
 	const [suite, setSuite] = useState<TestSuite | null>(null);

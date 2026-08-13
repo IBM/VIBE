@@ -62,6 +62,7 @@ export default function TestSuiteDetailPage() {
 		loading,
 		error,
 		allTests,
+		allConversations,
 		allSuites,
 		entries,
 		suiteRuns,
@@ -260,6 +261,9 @@ export default function TestSuiteDetailPage() {
 		if (entry.test_id) {
 			const test = allTests.find((t) => t.id === entry.test_id);
 			return test ? test.name : `Test #${entry.test_id}`;
+		} else if (entry.conversation_id) {
+			const conversation = allConversations.find((c) => c.id === entry.conversation_id);
+			return conversation ? conversation.name : `Conversation #${entry.conversation_id}`;
 		} else if (entry.child_suite_id) {
 			const childSuite = allSuites.find((s) => s.id === entry.child_suite_id);
 			return childSuite ? childSuite.name : `Suite #${entry.child_suite_id}`;
@@ -573,7 +577,13 @@ export default function TestSuiteDetailPage() {
 																	<ArrowLeft size={16} />
 																</IconButton>
 															</TableCell>
-															<TableCell>{entry.test_id ? 'Test' : 'Suite'}</TableCell>
+															<TableCell>
+																{entry.test_id
+																	? 'Test'
+																	: entry.conversation_id
+																		? 'Conversation'
+																		: 'Suite'}
+															</TableCell>
 															<TableCell>
 																<div className={styles.entryName}>
 																	{getEntryName(entry)}
