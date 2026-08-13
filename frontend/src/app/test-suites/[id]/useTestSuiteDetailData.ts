@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, type Agent, type SuiteEntry, type SuiteRun, type Test, type TestSuite } from '../../../lib/api';
+import {
+	api,
+	type Agent,
+	type Conversation,
+	type SuiteEntry,
+	type SuiteRun,
+	type Test,
+	type TestSuite
+} from '../../../lib/api';
 
 export function useTestSuiteDetailData(suiteId: number) {
 	const [suite, setSuite] = useState<TestSuite | null>(null);
@@ -9,6 +17,7 @@ export function useTestSuiteDetailData(suiteId: number) {
 	const [error, setError] = useState<string | null>(null);
 	const [allTests, setAllTests] = useState<Test[]>([]);
 	const [allSuites, setAllSuites] = useState<TestSuite[]>([]);
+	const [allConversations, setAllConversations] = useState<Conversation[]>([]);
 	const [entries, setEntries] = useState<SuiteEntry[]>([]);
 	const [suiteRuns, setSuiteRuns] = useState<SuiteRun[]>([]);
 
@@ -27,15 +36,17 @@ export function useTestSuiteDetailData(suiteId: number) {
 		try {
 			await loadSuiteMeta();
 
-			const [agentsData, allTestsData, entriesData, runsData] = await Promise.all([
+			const [agentsData, allTestsData, allConversationsData, entriesData, runsData] = await Promise.all([
 				api.getAgents(),
 				api.getTests(),
+				api.getConversations().then((r) => (Array.isArray(r) ? r : r.data)),
 				api.getSuiteEntries(suiteId),
 				api.getSuiteRuns({ suite_id: suiteId, limit: 250 })
 			]);
 
 			setAgents(agentsData);
 			setAllTests(allTestsData);
+			setAllConversations(allConversationsData);
 			setEntries(entriesData);
 			setSuiteRuns(runsData);
 			setSelectedAgentId((prev) => prev ?? agentsData[0]?.id ?? null);
@@ -62,6 +73,7 @@ export function useTestSuiteDetailData(suiteId: number) {
 		loading,
 		error,
 		allTests,
+		allConversations,
 		allSuites,
 		entries,
 		suiteRuns,
