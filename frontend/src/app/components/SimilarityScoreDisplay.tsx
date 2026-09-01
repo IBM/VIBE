@@ -1,4 +1,4 @@
-import { Tag, InlineLoading, Tooltip } from '@carbon/react';
+import { Tag, InlineLoading, DefinitionTooltip } from '@carbon/react';
 import { Error } from '@carbon/icons-react';
 import { TestResult } from '@/lib/api';
 import styles from './SimilarityScoreDisplay.module.scss';
@@ -37,11 +37,11 @@ export default function SimilarityScoreDisplay({ result, score, size = 'sm' }: S
 	// If a simple score is provided, use it directly
 	if (typeof score === 'number') {
 		return (
-			<Tooltip content={getScoreDescription(score)}>
+			<DefinitionTooltip definition={getScoreDescription(score)} openOnHover>
 				<Tag type={getScoreColor(score)} size={size}>
 					{score.toFixed(1)}%
 				</Tag>
-			</Tooltip>
+			</DefinitionTooltip>
 		);
 	}
 
@@ -70,23 +70,26 @@ export default function SimilarityScoreDisplay({ result, score, size = 'sm' }: S
 	// Scoring failed
 	if (similarity_scoring_status === 'failed') {
 		return (
-			<Tooltip content={similarity_scoring_error || 'Unknown error occurred during scoring'}>
+			<DefinitionTooltip
+				definition={similarity_scoring_error || 'Unknown error occurred during scoring'}
+				openOnHover
+			>
 				<div className={styles.errorContainer}>
 					<Error size={16} />
 					<span>Failed</span>
 				</div>
-			</Tooltip>
+			</DefinitionTooltip>
 		);
 	}
 
 	// Scoring completed
 	if (similarity_scoring_status === 'completed' && typeof similarity_score === 'number') {
 		return (
-			<Tooltip content={getScoreDescription(similarity_score)}>
+			<DefinitionTooltip definition={getScoreDescription(similarity_score)} openOnHover>
 				<Tag type={getScoreColor(similarity_score)} size={size}>
 					{similarity_score}%
 				</Tag>
-			</Tooltip>
+			</DefinitionTooltip>
 		);
 	}
 
