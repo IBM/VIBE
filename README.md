@@ -6,6 +6,16 @@ IBM VIBE is a conversation-centric testing suite for evaluating AI agents throug
 
 Use it to script realistic agent conversations, run them against agent configurations, and inspect the resulting sessions, jobs, token usage, similarity scores, and failures.
 
+## Screenshots
+
+| Dashboard                                                                                                                     | Conversation detail                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ![Dashboard showing first-run checklist, summary metrics, job status, and agent performance table](docs/assets/dashboard.png) | ![Conversation detail page showing the script alongside the latest session transcript](docs/assets/conversation.png) |
+
+| Quick execute                                                                                                               | Session                                                                                                          |
+| --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| ![Quick execute page with agent and conversation selectors and a conversation preview panel](docs/assets/quick-execute.png) | ![Session page showing turn-by-turn messages with similarity scores and token metadata](docs/assets/session.png) |
+
 ## Why VIBE?
 
 - **Test conversations, not just prompts**: model the multi-turn exchanges your users actually have.
@@ -110,17 +120,6 @@ For multi-instance local setups, use `env.instance1.example` as a template and c
 - [`docs/README.md`](docs/README.md) - full documentation index
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) - contributor workflow
 - [`SECURITY.md`](SECURITY.md) - private vulnerability reporting
-
-## Visuals to add before a public push
-
-The repo will read much better on GitHub with a small visual set under `docs/assets/`:
-
-- Dashboard screenshot with first-run guidance visible
-- Conversation editor screenshot
-- Quick execute screenshot
-- Session transcript screenshot
-
-Add those images to this README once captured from a representative local instance.
 
 ## License
 
