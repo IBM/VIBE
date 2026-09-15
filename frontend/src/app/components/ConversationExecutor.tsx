@@ -206,9 +206,9 @@ export default function ConversationExecutor() {
 				{successJobId !== null && (
 					<ActionableNotification
 						kind="success"
-						title={`Job #${successJobId} created successfully`}
-						subtitle="The job is now queued for execution."
-						actionButtonLabel={`View job #${successJobId}`}
+						title="Execution queued"
+						subtitle={`Job ${successJobId} was created successfully.`}
+						actionButtonLabel="View job"
 						onActionButtonClick={() => router.push(`/jobs?highlight=${successJobId}`)}
 						hideCloseButton={false}
 						onCloseButtonClick={() => setSuccessJobId(null)}
