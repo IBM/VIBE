@@ -27,7 +27,7 @@ Use it to script realistic agent conversations, run them against agent configura
 
 ### Prerequisites
 
-- Node.js `18.17+` (`20` is recommended; see `.nvmrc`)
+- Node.js `22+` (`24` is recommended; see `.nvmrc`)
 - npm
 
 Optional:

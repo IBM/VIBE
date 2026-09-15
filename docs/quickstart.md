@@ -6,7 +6,7 @@ This guide gets the maintained TypeScript stack running locally and points you a
 
 Required:
 
-- Node.js `18.17+` (`20` is recommended)
+- Node.js `22+` (`24` is recommended)
 - npm
 
 Optional:
