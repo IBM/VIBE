@@ -30,17 +30,15 @@
     "dev": "concurrently -n backend,agent-service-api,frontend -c blue,magenta,green \"npm run dev:backend\" \"npm run dev:agent-service-api\" \"npm run dev:frontend\""
   },
   "devDependencies": {
-    "brace-expansion": "^1.1.13",
-    "concurrently": "^9.2.1",
-    "postcss": "^8.5.10",
+    "brace-expansion": "^1.1.18",
+    "concurrently": "^9.2.4",
+    "postcss": "^8.5.28",
     "prettier": "^3.8.1"
   },
   "overrides": {
     "minimatch@3.1.5": {
-      "brace-expansion": "1.1.13"
+      "brace-expansion": "1.1.18"
     },
-    "next@16.2.6": {
-      "postcss": "8.5.10"
-    }
+    "qs": "6.16.0"
   }
 }
