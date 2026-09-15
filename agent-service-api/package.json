@@ -20,7 +20,7 @@
   "dependencies": {
     "@ibm-vibe/config": "*",
     "@ibm-vibe/utils": "*",
-    "axios": "^1.7.9",
+    "axios": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "@ibm-vibe/types": "*",
