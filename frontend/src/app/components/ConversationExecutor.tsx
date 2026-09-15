@@ -12,7 +12,7 @@ import {
 	Tag,
 	Grid,
 	Column,
-	InlineNotification
+	ActionableNotification
 } from '@carbon/react';
 import { PlayFilled, Chat } from '@carbon/icons-react';
 import { api, Conversation } from '@/lib/api';
@@ -204,26 +204,16 @@ export default function ConversationExecutor() {
 				{error && <Tile className={styles.errorTile}>{error}</Tile>}
 
 				{successJobId !== null && (
-					<InlineNotification
+					<ActionableNotification
 						kind="success"
-						title=""
-						subtitle=""
+						title={`Job #${successJobId} created successfully`}
+						subtitle="The job is now queued for execution."
+						actionButtonLabel={`View job #${successJobId}`}
+						onActionButtonClick={() => router.push(`/jobs?highlight=${successJobId}`)}
 						hideCloseButton={false}
 						onCloseButtonClick={() => setSuccessJobId(null)}
 						style={{ marginTop: '1rem' }}
-					>
-						<div>
-							<strong>Job #{successJobId} created successfully</strong> and is now queued for execution.
-							<div>
-								<button
-									className={styles.viewJobLink}
-									onClick={() => router.push(`/jobs?highlight=${successJobId}`)}
-								>
-									View job #{successJobId} →
-								</button>
-							</div>
-						</div>
-					</InlineNotification>
+					/>
 				)}
 			</Column>
 
