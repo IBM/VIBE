@@ -1,0 +1,33 @@
+{
+  "name": "@ibm-vibe/cli",
+  "version": "0.1.0",
+  "description": "CLI for interacting with an IBM VIBE deployment",
+  "main": "dist/index.js",
+  "bin": {
+    "vibe": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prepare": "npm run build",
+    "test:e2e": "npm run build && jest --config jest.e2e.config.js --testTimeout=30000 --forceExit"
+  },
+  "dependencies": {
+    "@ibm-vibe/types": "*"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.14.0",
+    "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.14.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
