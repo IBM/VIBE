@@ -1,3 +1,4 @@
+import type { SuiteEntry } from '@ibm-vibe/types';
 import type { VibeClient } from '../lib/client';
 import type { Output } from '../lib/output';
 import { bold, dim } from '../lib/output';
@@ -62,7 +63,7 @@ async function suiteShow(args: Record<string, unknown>, client: VibeClient, out:
 	if (entries.length > 0) {
 		out.table([
 			[bold('Entry ID'), bold('Seq'), bold('Conversation ID'), bold('Child suite ID')],
-			...entries.map((e) => [
+			...entries.map((e: SuiteEntry) => [
 				String(e.id),
 				String(e.sequence ?? ''),
 				e.conversation_id != null ? String(e.conversation_id) : '—',
@@ -125,7 +126,7 @@ async function suiteEntries(args: Record<string, unknown>, client: VibeClient, o
 	}
 	out.table([
 		[bold('Entry ID'), bold('Seq'), bold('Conversation ID'), bold('Child suite ID'), bold('Agent override')],
-		...entries.map((e) => [
+		...entries.map((e: SuiteEntry) => [
 			String(e.id),
 			String(e.sequence ?? ''),
 			e.conversation_id != null ? String(e.conversation_id) : '—',

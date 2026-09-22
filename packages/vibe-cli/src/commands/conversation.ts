@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as readline from 'readline';
+import type { ConversationMessageDraft } from '@ibm-vibe/types';
 import type { VibeClient } from '../lib/client';
 import type { Output } from '../lib/output';
 import { bold, dim } from '../lib/output';
@@ -56,7 +57,7 @@ async function conversationShow(args: Record<string, unknown>, client: VibeClien
 	if (conv.description) out.line(`  ${dim(conv.description)}`);
 	out.line();
 	const messages = conv.messages ?? [];
-	for (const msg of messages.sort((a, b) => a.sequence - b.sequence)) {
+	for (const msg of messages.sort((a: ConversationMessageDraft, b: ConversationMessageDraft) => a.sequence - b.sequence)) {
 		const target = targets.find((t) => t.user_sequence === msg.sequence);
 		out.line(`  [${msg.role}] seq=${msg.sequence}`);
 		out.line(`    ${msg.content.slice(0, 200)}${msg.content.length > 200 ? '…' : ''}`);
