@@ -43,6 +43,10 @@ vibe conversation add-message --conversation <id> --role user --content "Hello"
 vibe conversation set-target --conversation <id> --target "expected reply" --threshold 65
 vibe run conversation --conversation <id> --agent <agent_id> --json
 # exits 0 = passed, 1 = failed
+
+# Interactive REPL / Live Conversation Recorder:
+# Chat directly with an agent endpoint and automatically record the turns and targets
+vibe conversation record --agent-url "http://localhost:5003/chat" --threshold 65
 ```
 
 Add `--json` to any command for clean JSON stdout. Exit codes: `0` success, `1` test failures, `2` CLI/infrastructure error.
