@@ -28,9 +28,8 @@ describe('SuiteProcessingService', () => {
 		}));
 
 		jest.isolateModules(() => {
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			SuiteProcessingService = require('../suite-processing-service').SuiteProcessingService;
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 			dbQueries = require('../../db/queries') as DbQueries;
 		});
 
