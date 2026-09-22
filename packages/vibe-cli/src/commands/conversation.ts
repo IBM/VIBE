@@ -57,7 +57,9 @@ async function conversationShow(args: Record<string, unknown>, client: VibeClien
 	if (conv.description) out.line(`  ${dim(conv.description)}`);
 	out.line();
 	const messages = conv.messages ?? [];
-	for (const msg of messages.sort((a: ConversationMessageDraft, b: ConversationMessageDraft) => a.sequence - b.sequence)) {
+	for (const msg of messages.sort(
+		(a: ConversationMessageDraft, b: ConversationMessageDraft) => a.sequence - b.sequence
+	)) {
 		const target = targets.find((t) => t.user_sequence === msg.sequence);
 		out.line(`  [${msg.role}] seq=${msg.sequence}`);
 		out.line(`    ${msg.content.slice(0, 200)}${msg.content.length > 200 ? '…' : ''}`);
