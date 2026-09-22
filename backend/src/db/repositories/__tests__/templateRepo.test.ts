@@ -10,9 +10,8 @@ const bootstrapRepos = (): { templateRepo: TemplateRepoModule; agentRepo: AgentR
 	let templateRepo: TemplateRepoModule | undefined;
 	let agentRepo: AgentRepoModule | undefined;
 	jest.isolateModules(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		templateRepo = require('../templateRepo') as TemplateRepoModule;
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 		agentRepo = require('../agentRepo') as AgentRepoModule;
 	});
 	if (!templateRepo || !agentRepo) {

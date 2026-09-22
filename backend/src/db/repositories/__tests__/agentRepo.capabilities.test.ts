@@ -6,7 +6,6 @@ const bootstrapRepo = (): AgentRepoModule => {
 	process.env.DB_PATH = ':memory:';
 	let repo: AgentRepoModule | undefined;
 	jest.isolateModules(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		repo = require('../agentRepo') as AgentRepoModule;
 	});
 	if (!repo) {

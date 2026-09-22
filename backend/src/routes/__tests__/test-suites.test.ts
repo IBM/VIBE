@@ -893,7 +893,9 @@ describe('Test Suites Routes', () => {
 			await handler(mockReq, mockRes);
 
 			expect(mockStatus).toHaveBeenCalledWith(400);
-			expect(mockJson).toHaveBeenCalledWith({ error: 'Either test_id or child_suite_id must be provided' });
+			expect(mockJson).toHaveBeenCalledWith({
+				error: 'Either test_id, conversation_id, or child_suite_id must be provided'
+			});
 		});
 
 		it('should return 400 if both test_id and child_suite_id provided', async () => {
@@ -905,7 +907,9 @@ describe('Test Suites Routes', () => {
 
 			expect(mockStatus).toHaveBeenCalledWith(400);
 
-			expect(mockJson).toHaveBeenCalledWith({ error: 'Cannot specify both test_id and child_suite_id' });
+			expect(mockJson).toHaveBeenCalledWith({
+				error: 'Only one of test_id, conversation_id, or child_suite_id may be provided'
+			});
 		});
 
 		it('should return 404 if test suite not found', async () => {

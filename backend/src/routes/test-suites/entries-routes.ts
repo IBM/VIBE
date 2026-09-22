@@ -46,14 +46,19 @@ router.post(
 				return;
 			}
 
-			const { sequence, test_id, child_suite_id, agent_id_override } = req.body;
+			const { sequence, test_id, conversation_id, child_suite_id, agent_id_override } = req.body;
 
-			if (!test_id && !child_suite_id) {
-				return res.status(400).json({ error: 'Either test_id or child_suite_id must be provided' });
+			if (!test_id && !conversation_id && !child_suite_id) {
+				return res
+					.status(400)
+					.json({ error: 'Either test_id, conversation_id, or child_suite_id must be provided' });
 			}
 
-			if (test_id && child_suite_id) {
-				return res.status(400).json({ error: 'Cannot specify both test_id and child_suite_id' });
+			const entryTypeCount = [test_id, conversation_id, child_suite_id].filter(Boolean).length;
+			if (entryTypeCount > 1) {
+				return res
+					.status(400)
+					.json({ error: 'Only one of test_id, conversation_id, or child_suite_id may be provided' });
 			}
 
 			const existingTestSuite = await getTestSuiteById(suiteId);
@@ -65,6 +70,7 @@ router.post(
 				parent_suite_id: suiteId,
 				sequence,
 				test_id: test_id ? Number(test_id) : undefined,
+				conversation_id: conversation_id ? Number(conversation_id) : undefined,
 				child_suite_id: child_suite_id ? Number(child_suite_id) : undefined,
 				agent_id_override: agent_id_override ? Number(agent_id_override) : undefined
 			});
