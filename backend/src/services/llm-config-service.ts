@@ -102,6 +102,8 @@ export class LLMConfigService {
 				return this.callAnthropic(configData, options);
 			case 'watsonx':
 				return this.callWatsonx(configData, options);
+			case 'bob':
+				return this.callBob(configData, options);
 			default:
 				throw new Error(`Unsupported LLM provider: ${config.provider}`);
 		}
@@ -285,6 +287,60 @@ export class LLMConfigService {
 		} catch (error: any) {
 			logError('watsonx request failed:', error.message);
 			throw new Error(`watsonx request failed: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Call IBM Bob Gateway API (OpenAI-compatible chat/completions with Bob-specific auth)
+	 */
+	private async callBob(configData: any, options: LLMRequestOptions): Promise<LLMResponse> {
+		const apiKey = configData.api_key;
+		const instanceId = configData.instance_id;
+		const teamId = configData.team_id;
+
+		if (!apiKey) {
+			throw new Error('Bob API key is required');
+		}
+		if (!instanceId) {
+			throw new Error('Bob instance_id is required');
+		}
+		if (!teamId) {
+			throw new Error('Bob team_id is required');
+		}
+
+		const model = configData.model || 'premium';
+		const baseUrl = configData.base_url || 'https://api.us-east.bob.ibm.com';
+
+		try {
+			const response = await axios.post(
+				`${baseUrl}/inference/v1/chat/completions`,
+				{
+					model,
+					messages: [{ role: 'user', content: options.prompt }],
+					max_tokens: options.max_tokens,
+					temperature: options.temperature,
+					stop: options.stop
+				},
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						'x-api-key': apiKey,
+						'x-instance-id': instanceId,
+						'x-team-id': teamId,
+						'User-Agent': 'bob-ide/2.0.1'
+					}
+				}
+			);
+
+			return {
+				text: response.data.choices[0].message.content,
+				provider: 'bob',
+				model,
+				config_id: configData.id || 0
+			};
+		} catch (error: any) {
+			logError('Bob request failed:', error.message);
+			throw new Error(`Bob request failed: ${error.message}`);
 		}
 	}
 }
