@@ -378,6 +378,149 @@ describe('LLMConfigService', () => {
 		});
 	});
 
+	describe('Bob provider', () => {
+		it('should call Bob API with correct parameters', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'bob',
+				config: JSON.stringify({
+					model: 'premium',
+					api_key: 'test-key',
+					instance_id: 'test-instance-id',
+					team_id: 'test-team-id'
+				}),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+			mockedAxios.post.mockResolvedValue({
+				data: { choices: [{ message: { content: 'Bob response' } }] }
+			});
+
+			const result = await service.callLLM(1, {
+				prompt: 'Test prompt',
+				max_tokens: 100,
+				temperature: 0.5
+			});
+
+			expect(result.text).toBe('Bob response');
+			expect(result.provider).toBe('bob');
+			expect(result.model).toBe('premium');
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				'https://api.us-east.bob.ibm.com/inference/v1/chat/completions',
+				{
+					model: 'premium',
+					messages: [{ role: 'user', content: 'Test prompt' }],
+					max_tokens: 100,
+					temperature: 0.5,
+					stop: undefined
+				},
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						'x-api-key': 'test-key',
+						'x-instance-id': 'test-instance-id',
+						'x-team-id': 'test-team-id',
+						'User-Agent': 'bob-ide/2.0.1'
+					}
+				}
+			);
+		});
+
+		it('should use default model when not specified', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'bob',
+				config: JSON.stringify({
+					api_key: 'test-key',
+					instance_id: 'test-instance-id',
+					team_id: 'test-team-id'
+				}),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+			mockedAxios.post.mockResolvedValue({
+				data: { choices: [{ message: { content: 'Bob response' } }] }
+			});
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.model).toBe('premium');
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				expect.stringContaining('/inference/v1/chat/completions'),
+				expect.objectContaining({ model: 'premium' }),
+				expect.anything()
+			);
+		});
+
+		it('should use custom base_url when provided', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'bob',
+				config: JSON.stringify({
+					api_key: 'test-key',
+					instance_id: 'test-instance-id',
+					team_id: 'test-team-id',
+					base_url: 'https://api.eu-de.bob.ibm.com'
+				}),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+			mockedAxios.post.mockResolvedValue({
+				data: { choices: [{ message: { content: 'Bob response' } }] }
+			});
+
+			await service.callLLM(1, { prompt: 'Test' });
+
+			expect(mockedAxios.post).toHaveBeenCalledWith(
+				'https://api.eu-de.bob.ibm.com/inference/v1/chat/completions',
+				expect.anything(),
+				expect.anything()
+			);
+		});
+
+		it('should throw error when API key is missing', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'bob',
+				config: JSON.stringify({ instance_id: 'test-instance-id', team_id: 'test-team-id' }),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.error).toContain('Bob API key is required');
+		});
+
+		it('should throw error when instance_id is missing', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'bob',
+				config: JSON.stringify({ api_key: 'test-key', team_id: 'test-team-id' }),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.error).toContain('Bob instance_id is required');
+		});
+
+		it('should throw error when team_id is missing', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'bob',
+				config: JSON.stringify({ api_key: 'test-key', instance_id: 'test-instance-id' }),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.error).toContain('Bob team_id is required');
+		});
+	});
+
 	describe('Unsupported provider', () => {
 		it('should throw error for unsupported provider', async () => {
 			const mockConfig = {
