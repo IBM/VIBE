@@ -224,6 +224,23 @@ describe('LLMConfigService', () => {
 			);
 		});
 
+		it('should use default model when not specified', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'openai',
+				config: JSON.stringify({ api_key: 'test-key' }),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+			mockedAxios.post.mockResolvedValue({
+				data: { choices: [{ message: { content: 'OpenAI response' } }] }
+			});
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.model).toBe('gpt-6.1-sol');
+		});
+
 		it('should throw error when API key is missing', async () => {
 			const mockConfig = {
 				id: 1,
@@ -274,6 +291,23 @@ describe('LLMConfigService', () => {
 					}
 				}
 			);
+		});
+
+		it('should use default model when not specified', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'anthropic',
+				config: JSON.stringify({ api_key: 'test-key' }),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+			mockedAxios.post.mockResolvedValue({
+				data: { content: [{ text: 'Anthropic response' }] }
+			});
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.model).toBe('claude-sonnet-5-5');
 		});
 
 		it('should throw error when API key is missing', async () => {
@@ -347,6 +381,23 @@ describe('LLMConfigService', () => {
 					})
 				})
 			);
+		});
+
+		it('should use default model when not specified', async () => {
+			const mockConfig = {
+				id: 1,
+				provider: 'watsonx',
+				config: JSON.stringify({ api_key: 'test-key', project_id: 'test-project' }),
+				priority: 1
+			};
+			(dbQueries.getLLMConfigById as jest.Mock).mockReturnValue(mockConfig);
+			mockedAxios.post
+				.mockResolvedValueOnce({ data: { access_token: 'test-token' } })
+				.mockResolvedValueOnce({ data: { results: [{ generated_text: 'Watsonx response' }] } });
+
+			const result = await service.callLLM(1, { prompt: 'Test' });
+
+			expect(result.model).toBe('ibm/granite-3-8b-instruct');
 		});
 
 		it('should throw error when API key is missing', async () => {

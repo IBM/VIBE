@@ -147,7 +147,7 @@ export class LLMConfigService {
 			throw new Error('OpenAI API key is required');
 		}
 
-		const model = configData.model || 'gpt-4o';
+		const model = configData.model || 'gpt-6.1-sol';
 		const baseUrl = configData.base_url || 'https://api.openai.com/v1';
 
 		try {
@@ -189,7 +189,7 @@ export class LLMConfigService {
 			throw new Error('Anthropic API key is required');
 		}
 
-		const model = configData.model || 'claude-3-5-sonnet-20240620';
+		const model = configData.model || 'claude-sonnet-5-5';
 		const baseUrl = configData.base_url || 'https://api.anthropic.com/v1';
 
 		try {
@@ -237,7 +237,7 @@ export class LLMConfigService {
 			throw new Error('watsonx project ID is required');
 		}
 
-		const model = configData.model || 'ibm/granite-13b-instruct-v2';
+		const model = configData.model || 'ibm/granite-3-8b-instruct';
 		const baseUrl = configData.base_url || 'https://us-south.ml.cloud.ibm.com';
 
 		try {
