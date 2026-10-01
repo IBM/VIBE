@@ -9,6 +9,7 @@ It is not a replacement for reading source before making changes. Treat these fi
 - **[Project Overview](./01-project-overview.md)** - High-level understanding of what this project does
 - **[Architecture](./02-architecture.md)** - System architecture and component interactions
 - **[Backend Guide](./03-backend-guide.md)** - Backend structure, modules, and data flow
+- **[Contributing](./04-contributing.md)** - Branches, DCO signoff, quality gates, pre-push checklist
 - **[Database Schema](./06-database-schema.md)** - Database structure and migrations
 - **[Execution Flow](./09-execution-flow.md)** - How jobs are created and executed
 
