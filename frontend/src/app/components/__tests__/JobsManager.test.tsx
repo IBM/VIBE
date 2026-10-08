@@ -1,8 +1,13 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import JobsManager from '../JobsManager';
 import { api } from '@/lib/api';
 import { useAgents, useTests, useAppData } from '@/lib/AppDataContext';
+
+const mockPush = jest.fn();
+jest.mock('next/navigation', () => ({
+	useRouter: () => ({ push: mockPush })
+}));
 
 jest.mock('@/lib/api', () => ({
 	api: {
@@ -62,15 +67,13 @@ describe('JobsManager', () => {
 	it('shows empty state when no jobs exist', async () => {
 		mockedApi.getJobsWithCount.mockResolvedValue({ data: [], total: 0 });
 
-		render(<JobsManager onViewSession={jest.fn()} onViewConversation={jest.fn()} />);
+		render(<JobsManager />);
 
 		expect(await screen.findByText(/No jobs found/i)).toBeInTheDocument();
 	});
 
-	it('opens job details and allows rerun and view session', async () => {
+	it('navigates to job detail page when view button is clicked', async () => {
 		const user = userEvent.setup();
-		const onViewSession = jest.fn();
-		const onViewConversation = jest.fn();
 
 		mockedApi.getJobsWithCount.mockResolvedValue({
 			data: [
@@ -87,20 +90,12 @@ describe('JobsManager', () => {
 			],
 			total: 1
 		});
-		mockedApi.createJob.mockResolvedValue({ id: 'job-2' } as any);
 
-		render(<JobsManager onViewSession={onViewSession} onViewConversation={onViewConversation} />);
+		render(<JobsManager />);
 
 		await screen.findByText('Test Jobs');
 		await user.click(screen.getByLabelText('View job details'));
 
-		await user.click(screen.getByRole('button', { name: /Re-run Job/i }));
-		await waitFor(() => {
-			expect(mockedApi.createJob).toHaveBeenCalledWith(1, 2);
-		});
-
-		await user.click(screen.getByRole('button', { name: /View Session/i }));
-		expect(onViewSession).toHaveBeenCalledWith(44);
-		expect(onViewConversation).not.toHaveBeenCalled();
+		expect(mockPush).toHaveBeenCalledWith('/jobs/job-1');
 	}, 20000);
 });

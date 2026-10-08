@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import {
 	Table,
 	TableHead,
@@ -11,24 +12,16 @@ import {
 	Button,
 	Tag,
 	Modal,
-	ModalBody,
 	InlineLoading,
-	CodeSnippet,
 	InlineNotification,
 	Pagination
 } from '@carbon/react';
 import { ViewFilled, Renew, PlayFilled, TrashCan, StopFilled } from '@carbon/icons-react';
 import { api } from '@/lib/api';
 import type { Job, TestResult } from '@/lib/api';
-import styles from './JobsManager.module.scss';
 import { useAgents, useTests, useAppData } from '@/lib/AppDataContext';
 import SimilarityScoreDisplay from './SimilarityScoreDisplay';
 import { getJobId, getStatusTagType } from '@/lib/utils';
-
-interface JobsManagerProps {
-	onViewSession: (sessionId: number) => void;
-	onViewConversation: (conversationId: number) => void;
-}
 
 type JobTableRow = {
 	id: string;
@@ -42,15 +35,14 @@ type JobTableRow = {
 
 type JobTableHeaderKey = keyof JobTableRow;
 
-export default function JobsManager({ onViewSession, onViewConversation }: JobsManagerProps) {
+export default function JobsManager() {
+	const router = useRouter();
 	const { agents, fetchAgents } = useAgents();
 	const { tests, fetchTests } = useTests();
 	const { getResultById, fetchResults } = useAppData();
 
 	const [jobs, setJobs] = useState<Job[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
-	const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-	const [jobModalOpen, setJobModalOpen] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [rerunningJob, setRerunningJob] = useState(false);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -99,63 +91,9 @@ export default function JobsManager({ onViewSession, onViewConversation }: JobsM
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentPage]);
 
-	// Handle job selection for viewing details
-	const handleViewJob = (jobId: string) => {
-		const job = jobs.find((j) => j.id === jobId);
-		if (job) {
-			setSelectedJob(job);
-			setJobModalOpen(true);
-		}
-	};
-
-	// View session or conversation when available
-	const handleViewResult = () => {
-		if (!selectedJob) return;
-
-		if (selectedJob.session_id) {
-			onViewSession(selectedJob.session_id);
-		} else if (selectedJob.conversation_id) {
-			onViewConversation(selectedJob.conversation_id);
-		} else if (selectedJob.result_id) {
-			// Legacy fallback - navigate to sessions page
-			onViewSession(selectedJob.result_id);
-		}
-		setJobModalOpen(false);
-	};
-
 	// Refresh job list
 	const handleRefresh = () => {
 		fetchJobs();
-	};
-
-	// Re-run a job with the same agent and test
-	const handleRerunJob = async () => {
-		if (!selectedJob) return;
-
-		setRerunningJob(true);
-		setError(null);
-		setSuccessMessage(null);
-
-		try {
-			if (selectedJob.test_id) {
-				// Legacy test job
-				const newJob = await api.createJob(selectedJob.agent_id, selectedJob.test_id);
-				setSuccessMessage(`New job #${newJob.id} created successfully and is now queued for execution`);
-			} else if (selectedJob.conversation_id) {
-				// Conversation job
-				const result = await api.executeConversation(selectedJob.agent_id, selectedJob.conversation_id);
-				setSuccessMessage(
-					`Conversation job ${result.job_id} created successfully and is now queued for execution`
-				);
-			} else {
-				throw new Error('Job has neither test_id nor conversation_id');
-			}
-			fetchJobs();
-		} catch (error) {
-			setError(error instanceof Error ? error.message : 'Failed to re-run job');
-		} finally {
-			setRerunningJob(false);
-		}
 	};
 
 	// Open delete confirmation modal
@@ -257,7 +195,7 @@ export default function JobsManager({ onViewSession, onViewConversation }: JobsM
 							kind="ghost"
 							size="sm"
 							renderIcon={ViewFilled}
-							onClick={() => handleViewJob(job.id)}
+							onClick={() => router.push(`/jobs/${job.id}`)}
 							iconDescription="View job details"
 							hasIconOnly
 						/>
@@ -397,163 +335,6 @@ export default function JobsManager({ onViewSession, onViewConversation }: JobsM
 					forwardText="Next page"
 					itemsPerPageText="Items per page:"
 				/>
-			)}
-
-			{/* Job Details Modal */}
-			{selectedJob && (
-				<Modal
-					open={jobModalOpen}
-					onRequestClose={() => setJobModalOpen(false)}
-					modalHeading={`Job #${selectedJob.id} Details`}
-					primaryButtonText={
-						getJobId(selectedJob)
-							? 'View session'
-							: selectedJob.conversation_id
-								? 'View conversation'
-								: 'View'
-					}
-					primaryButtonDisabled={!Boolean(getJobId(selectedJob) || selectedJob.conversation_id)}
-					onRequestSubmit={handleViewResult}
-					secondaryButtonText="Close"
-					onSecondarySubmit={() => setJobModalOpen(false)}
-				>
-					<ModalBody>
-						<div>
-							<h5 className={styles.jobDetailsHeading}>Job Information</h5>
-							<Table size="sm" useZebraStyles={false}>
-								<TableHead>
-									<TableRow>
-										<TableHeader>Field</TableHeader>
-										<TableHeader>Value</TableHeader>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									<TableRow>
-										<TableCell>Agent</TableCell>
-										<TableCell>
-											{agents.find((a) => a.id === selectedJob.agent_id)?.name ||
-												`Agent ${selectedJob.agent_id}`}
-										</TableCell>
-									</TableRow>
-									<TableRow>
-										<TableCell>Test/Conversation</TableCell>
-										<TableCell>
-											{selectedJob.conversation_id
-												? `Conversation ${selectedJob.conversation_id}`
-												: tests.find((t) => t.id === selectedJob.test_id)?.name ||
-													`Test ${selectedJob.test_id}`}
-										</TableCell>
-									</TableRow>
-									<TableRow>
-										<TableCell>Status</TableCell>
-										<TableCell>
-											<Tag type={getStatusTagType(selectedJob.status)}>
-												{selectedJob.status.charAt(0).toUpperCase() +
-													selectedJob.status.slice(1)}
-											</Tag>
-										</TableCell>
-									</TableRow>
-									<TableRow>
-										<TableCell>Created</TableCell>
-										<TableCell>{new Date(selectedJob.created_at).toLocaleString()}</TableCell>
-									</TableRow>
-									<TableRow>
-										<TableCell>Last Updated</TableCell>
-										<TableCell>{new Date(selectedJob.updated_at).toLocaleString()}</TableCell>
-									</TableRow>
-									{getJobId(selectedJob) && (
-										<TableRow>
-											<TableCell>Result ID</TableCell>
-											<TableCell>{getJobId(selectedJob)}</TableCell>
-										</TableRow>
-									)}
-								</TableBody>
-							</Table>
-
-							{/* Re-run button */}
-							<div
-								style={{
-									marginTop: '1rem',
-									display: 'flex',
-									justifyContent: 'flex-start',
-									gap: '1rem'
-								}}
-							>
-								<Button
-									kind="primary"
-									size="sm"
-									renderIcon={PlayFilled}
-									onClick={handleRerunJob}
-									disabled={rerunningJob}
-								>
-									{rerunningJob ? <InlineLoading description="Creating job..." /> : 'Re-run Job'}
-								</Button>
-
-								{(selectedJob.status === 'pending' || selectedJob.status === 'running') && (
-									<Button
-										kind="danger"
-										size="sm"
-										renderIcon={StopFilled}
-										onClick={() => {
-											if (selectedJob) {
-												handleCancelJobOpen(selectedJob.id);
-												setJobModalOpen(false);
-											}
-										}}
-										disabled={cancelingJob}
-									>
-										{cancelingJob ? <InlineLoading description="Canceling..." /> : 'Cancel Job'}
-									</Button>
-								)}
-
-								<Button
-									kind="danger"
-									size="sm"
-									renderIcon={TrashCan}
-									onClick={() => {
-										if (selectedJob) {
-											handleDeleteJobOpen(selectedJob.id);
-											setJobModalOpen(false);
-										}
-									}}
-									disabled={deletingJob}
-								>
-									{deletingJob ? <InlineLoading description="Deleting..." /> : 'Delete Job'}
-								</Button>
-							</div>
-
-							{/* Success or error message */}
-							{successMessage && (
-								<InlineNotification
-									kind="success"
-									title="Success"
-									subtitle={successMessage}
-									hideCloseButton={true}
-									style={{ marginTop: '1rem' }}
-								/>
-							)}
-
-							{error && (
-								<InlineNotification
-									kind="error"
-									title="Error"
-									subtitle={error}
-									hideCloseButton={true}
-									style={{ marginTop: '1rem' }}
-								/>
-							)}
-
-							{selectedJob.error && (
-								<div className={styles.errorSection}>
-									<h5>Error</h5>
-									<CodeSnippet type="inline" className="error-snippet">
-										{selectedJob.error}
-									</CodeSnippet>
-								</div>
-							)}
-						</div>
-					</ModalBody>
-				</Modal>
 			)}
 
 			{/* Delete Job Confirmation Modal */}
