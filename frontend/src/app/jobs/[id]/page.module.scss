@@ -1,0 +1,127 @@
+@use '@carbon/react/scss/colors' as *;
+@use '@carbon/react/scss/theme' as *;
+@use '@carbon/react/scss/spacing' as *;
+
+.container {
+	padding: $spacing-06;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.headerRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: $spacing-06;
+	gap: $spacing-05;
+}
+
+.headerLeft {
+	flex: 1;
+}
+
+.title {
+	margin: 0 0 $spacing-03 0;
+	color: $text-primary;
+	font-size: 2rem;
+	font-weight: 600;
+}
+
+.headerMeta {
+	display: flex;
+	align-items: center;
+	gap: $spacing-03;
+	flex-wrap: wrap;
+}
+
+.headerRight {
+	display: flex;
+	align-items: center;
+	gap: $spacing-03;
+	flex-shrink: 0;
+}
+
+.detailsGrid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: $spacing-05;
+	margin-bottom: $spacing-06;
+}
+
+@media (max-width: 672px) {
+	.detailsGrid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.detailTile {
+	padding: $spacing-05;
+	background: $layer-01;
+	border: 1px solid $border-subtle;
+}
+
+.tileHeading {
+	margin: 0 0 $spacing-04 0;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: $text-secondary;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.fieldRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: $spacing-03 0;
+	border-bottom: 1px solid $border-subtle-00;
+	gap: $spacing-04;
+}
+
+.fieldRow:last-child {
+	border-bottom: none;
+}
+
+.fieldLabel {
+	font-size: 0.875rem;
+	color: $text-secondary;
+	flex-shrink: 0;
+}
+
+.fieldValue {
+	font-size: 0.875rem;
+	color: $text-primary;
+	text-align: right;
+	word-break: break-all;
+}
+
+.errorTile {
+	margin-bottom: $spacing-06;
+	padding: $spacing-05;
+	background: $layer-01;
+	border: 1px solid $support-error;
+}
+
+.errorHeading {
+	margin: 0 0 $spacing-03 0;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: $support-error;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.actionsRow {
+	display: flex;
+	gap: $spacing-03;
+	flex-wrap: wrap;
+	margin-bottom: $spacing-06;
+}
+
+.refreshIndicator {
+	display: flex;
+	align-items: center;
+	gap: $spacing-02;
+	color: $text-secondary;
+	font-size: 0.875rem;
+}
