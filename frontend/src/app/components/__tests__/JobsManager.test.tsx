@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import JobsManager from '../JobsManager';
 import { api } from '@/lib/api';
@@ -67,7 +67,7 @@ describe('JobsManager', () => {
 	it('shows empty state when no jobs exist', async () => {
 		mockedApi.getJobsWithCount.mockResolvedValue({ data: [], total: 0 });
 
-		render(<JobsManager onViewSession={jest.fn()} onViewConversation={jest.fn()} />);
+		render(<JobsManager />);
 
 		expect(await screen.findByText(/No jobs found/i)).toBeInTheDocument();
 	});
@@ -91,7 +91,7 @@ describe('JobsManager', () => {
 			total: 1
 		});
 
-		render(<JobsManager onViewSession={jest.fn()} onViewConversation={jest.fn()} />);
+		render(<JobsManager />);
 
 		await screen.findByText('Test Jobs');
 		await user.click(screen.getByLabelText('View job details'));

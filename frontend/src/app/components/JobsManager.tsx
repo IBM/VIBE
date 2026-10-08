@@ -19,15 +19,9 @@ import {
 import { ViewFilled, Renew, PlayFilled, TrashCan, StopFilled } from '@carbon/icons-react';
 import { api } from '@/lib/api';
 import type { Job, TestResult } from '@/lib/api';
-import styles from './JobsManager.module.scss';
 import { useAgents, useTests, useAppData } from '@/lib/AppDataContext';
 import SimilarityScoreDisplay from './SimilarityScoreDisplay';
 import { getJobId, getStatusTagType } from '@/lib/utils';
-
-interface JobsManagerProps {
-	onViewSession: (sessionId: number) => void;
-	onViewConversation: (conversationId: number) => void;
-}
 
 type JobTableRow = {
 	id: string;
@@ -41,7 +35,7 @@ type JobTableRow = {
 
 type JobTableHeaderKey = keyof JobTableRow;
 
-export default function JobsManager({ onViewSession, onViewConversation }: JobsManagerProps) {
+export default function JobsManager() {
 	const router = useRouter();
 	const { agents, fetchAgents } = useAgents();
 	const { tests, fetchTests } = useTests();
