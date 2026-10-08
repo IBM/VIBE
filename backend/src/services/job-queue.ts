@@ -126,11 +126,11 @@ export class JobQueueService {
 			job.suite_run_id = suite_run_id;
 		}
 
-		// Save to database
-		await dbCreateJob(job);
+		// Save to database — returns the job with DB-populated timestamps
+		const savedJob = await dbCreateJob(job);
 
-		// Add to in-memory queue
-		this.jobs.set(id, job);
+		// Add to in-memory queue (use savedJob to get created_at / updated_at)
+		this.jobs.set(id, savedJob);
 
 		return id;
 	}
@@ -166,11 +166,11 @@ export class JobQueueService {
 			job.suite_run_id = suite_run_id;
 		}
 
-		// Save to database
-		await dbCreateJob(job);
+		// Save to database — returns the job with DB-populated timestamps
+		const savedJob = await dbCreateJob(job);
 
-		// Add to in-memory queue
-		this.jobs.set(id, job);
+		// Add to in-memory queue (use savedJob to get created_at / updated_at)
+		this.jobs.set(id, savedJob);
 
 		return id;
 	}

@@ -208,8 +208,8 @@ export default function ConversationExecutor() {
 						kind="success"
 						title="Execution queued"
 						subtitle={`Job ${successJobId} was created successfully.`}
-						actionButtonLabel="View jobs"
-						onActionButtonClick={() => router.push('/jobs')}
+						actionButtonLabel="View job"
+						onActionButtonClick={() => router.push(`/jobs/${successJobId}`)}
 						hideCloseButton={false}
 						onCloseButtonClick={() => setSuccessJobId(null)}
 						style={{ marginTop: '1rem' }}
