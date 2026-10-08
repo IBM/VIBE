@@ -2,15 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-	Button,
-	InlineLoading,
-	InlineNotification,
-	Tag,
-	Tile,
-	CodeSnippet,
-	Modal
-} from '@carbon/react';
+import { Button, InlineLoading, InlineNotification, Tag, Tile, CodeSnippet, Modal } from '@carbon/react';
 import { ArrowLeft, PlayFilled, StopFilled, TrashCan, Renew } from '@carbon/icons-react';
 import { api } from '@/lib/api';
 import type { Job } from '@/lib/api';
@@ -118,15 +110,11 @@ export default function JobDetailPage() {
 		}
 	};
 
-	const agentName = job
-		? (agents.find((a) => a.id === job.agent_id)?.name ?? `Agent ${job.agent_id}`)
-		: '';
+	const agentName = job ? (agents.find((a) => a.id === job.agent_id)?.name ?? `Agent ${job.agent_id}`) : '';
 
 	const agentVersion = job ? agents.find((a) => a.id === job.agent_id)?.version : undefined;
 
-	const testName = job?.test_id
-		? (tests.find((t) => t.id === job.test_id)?.name ?? `Test ${job.test_id}`)
-		: null;
+	const testName = job?.test_id ? (tests.find((t) => t.id === job.test_id)?.name ?? `Test ${job.test_id}`) : null;
 
 	const isActive = job?.status === 'pending' || job?.status === 'running';
 
@@ -197,13 +185,7 @@ export default function JobDetailPage() {
 
 			{/* Actions */}
 			<div className={styles.actionsRow}>
-				<Button
-					kind="secondary"
-					size="sm"
-					renderIcon={PlayFilled}
-					onClick={handleRerun}
-					disabled={rerunning}
-				>
+				<Button kind="secondary" size="sm" renderIcon={PlayFilled} onClick={handleRerun} disabled={rerunning}>
 					{rerunning ? <InlineLoading description="Creating job…" /> : 'Re-run'}
 				</Button>
 				{isActive && (
@@ -226,13 +208,7 @@ export default function JobDetailPage() {
 				>
 					Delete
 				</Button>
-				<Button
-					kind="ghost"
-					size="sm"
-					renderIcon={Renew}
-					onClick={() => loadJob()}
-					disabled={loading}
-				>
+				<Button kind="ghost" size="sm" renderIcon={Renew} onClick={() => loadJob()} disabled={loading}>
 					Refresh
 				</Button>
 			</div>
