@@ -13,6 +13,10 @@ It is not a replacement for reading source before making changes. Treat these fi
 - **[Database Schema](./06-database-schema.md)** - Database structure and migrations
 - **[Execution Flow](./09-execution-flow.md)** - How jobs are created and executed
 
+## Pull requests and pushes
+
+**IMPORTANT**: Before pushing any branch or opening a PR, read and follow [`04-contributing.md`](./04-contributing.md) in full — DCO signoff, conventional commit messages, and the full pre-push checklist must pass locally first.
+
 ## Maintenance Instructions
 
 **IMPORTANT**: When making changes to the codebase, update the relevant documentation files in this directory to keep them in sync. Specifically:
