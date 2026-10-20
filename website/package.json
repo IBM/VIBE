@@ -1,0 +1,39 @@
+{
+  "name": "ibm-vibe-website",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Landing page, docs and blog for IBM VIBE (published to GitHub Pages)",
+  "scripts": {
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve",
+    "clear": "docusaurus clear",
+    "typecheck": "tsc"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@carbon/icons-react": "^11.90.0",
+    "@carbon/react": "^1.118.0",
+    "@carbon/styles": "^1.105.2",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-common": "3.10.2",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@mdx-js/react": "^3.0.0",
+    "clsx": "^2.1.1",
+    "docusaurus-plugin-sass": "^0.2.7",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sass": "^1.105.2"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "typescript": "~5.6.2"
+  }
+}

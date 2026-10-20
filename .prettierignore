@@ -21,3 +21,6 @@ venv/
 
 package-lock.json
 **/package-lock.json
+
+.docusaurus/
+**/.docusaurus/

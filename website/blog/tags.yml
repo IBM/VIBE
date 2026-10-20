@@ -1,0 +1,14 @@
+news:
+  label: News
+  permalink: /news
+  description: Announcements and release notes.
+
+learning:
+  label: Learning
+  permalink: /learning
+  description: Tutorials, concepts and best practices for testing AI agents.
+
+cli:
+  label: CLI
+  permalink: /cli
+  description: Posts about the vibe command line interface.

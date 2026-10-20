@@ -93,3 +93,9 @@ E2E*_LOG.md
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# =====================
+# Website (Docusaurus)
+# =====================
+website/.docusaurus/
+website/build/

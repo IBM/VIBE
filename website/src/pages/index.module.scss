@@ -1,0 +1,141 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/breakpoint' as *;
+
+.hero {
+	background-color: var(--cds-layer-01);
+	border-bottom: 1px solid var(--cds-border-subtle);
+	padding: $spacing-10 0 $spacing-09;
+}
+
+.title {
+	font-size: 2.625rem;
+	font-weight: 300;
+	line-height: 1.19;
+	margin: $spacing-05 0;
+
+	@include breakpoint(lg) {
+		font-size: 3.375rem;
+		line-height: 1.17;
+	}
+}
+
+.lead {
+	color: var(--cds-text-secondary);
+	font-size: 1.25rem;
+	line-height: 1.4;
+	margin-bottom: $spacing-07;
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: $spacing-03;
+
+	:global(.cds--btn) {
+		text-decoration: none;
+	}
+}
+
+.snippetTile {
+	margin-top: $spacing-07;
+
+	@include breakpoint(lg) {
+		margin-top: 0;
+	}
+}
+
+.eyebrow {
+	color: var(--cds-text-secondary);
+	font-size: 0.875rem;
+	margin-bottom: $spacing-04;
+}
+
+.section {
+	padding: $spacing-10 0 $spacing-07;
+}
+
+.sectionAlt {
+	background-color: var(--cds-layer-01);
+	padding: $spacing-09 0;
+}
+
+.heading {
+	font-size: 2rem;
+	font-weight: 300;
+	margin-bottom: $spacing-07;
+}
+
+.feature {
+	margin-bottom: $spacing-05;
+}
+
+.featureTile {
+	background-color: var(--cds-layer-01);
+	height: 100%;
+	min-height: 14rem;
+
+	h3 {
+		font-size: 1.25rem;
+		font-weight: 400;
+		margin: $spacing-05 0 $spacing-03;
+	}
+
+	p {
+		color: var(--cds-text-secondary);
+		margin: 0;
+	}
+
+	svg {
+		fill: var(--cds-icon-interactive);
+	}
+}
+
+.steps {
+	counter-reset: steps;
+	display: flex;
+	flex-wrap: wrap;
+	gap: $spacing-07;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+
+	li {
+		align-items: center;
+		display: flex;
+		font-size: 1.25rem;
+		gap: $spacing-04;
+	}
+}
+
+.stepNumber {
+	align-items: center;
+	background-color: var(--cds-button-primary);
+	color: var(--cds-text-on-color);
+	display: inline-flex;
+	font-size: 0.875rem;
+	height: 2rem;
+	justify-content: center;
+	width: 2rem;
+}
+
+.shot {
+	margin: 0 0 $spacing-07;
+
+	img {
+		border: 1px solid var(--cds-border-subtle);
+		display: block;
+		height: auto;
+		width: 100%;
+	}
+
+	figcaption {
+		color: var(--cds-text-secondary);
+		font-size: 0.875rem;
+		margin-top: $spacing-03;
+	}
+}
+
+.note {
+	color: var(--cds-text-secondary);
+	margin-top: $spacing-05;
+}
