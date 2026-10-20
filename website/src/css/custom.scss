@@ -1,0 +1,190 @@
+// Carbon Design System tokens and component styles for the Docusaurus site.
+//
+// Only the Carbon pieces that are actually used are imported, so Carbon's global reset and
+// body styles do not fight with Infima (Docusaurus' base CSS). Fonts come from @fontsource
+// (see src/fonts.ts), hence $css--font-face: false.
+
+@use '@carbon/styles/scss/config' with (
+	$css--font-face: false,
+	$css--reset: false,
+	$css--body: false,
+	$css--default-type: false
+);
+@use '@carbon/styles/scss/theme';
+@use '@carbon/styles/scss/themes';
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/layout';
+@use '@carbon/styles/scss/grid';
+@use '@carbon/styles/scss/components/button';
+@use '@carbon/styles/scss/components/copy-button';
+@use '@carbon/styles/scss/components/code-snippet';
+@use '@carbon/styles/scss/components/link';
+@use '@carbon/styles/scss/components/popover';
+@use '@carbon/styles/scss/components/tag';
+@use '@carbon/styles/scss/components/tile';
+@use '@carbon/styles/scss/components/tooltip';
+@use '@carbon/styles/scss/components/ui-shell';
+
+// ---------------------------------------------------------------------------
+// Carbon themes: White (light) and G100 (dark), switched by Docusaurus' data-theme attribute.
+// ---------------------------------------------------------------------------
+:root {
+	@include theme.theme(themes.$white);
+	@include layout.emit-layout-tokens;
+}
+
+[data-theme='dark'] {
+	@include theme.theme(themes.$g100);
+}
+
+// ---------------------------------------------------------------------------
+// Infima (Docusaurus) variables mapped onto Carbon tokens.
+// ---------------------------------------------------------------------------
+:root {
+	--ifm-font-family-base: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+	--ifm-font-family-monospace: 'IBM Plex Mono', Menlo, Courier, monospace;
+	--ifm-heading-font-weight: 400;
+	--ifm-font-weight-bold: 600;
+	--ifm-global-radius: 0;
+	--ifm-code-border-radius: 0;
+	--ifm-button-border-radius: 0;
+	--ifm-pre-border-radius: 0;
+	--ifm-navbar-height: 3rem;
+	--ifm-navbar-shadow: none;
+
+	--ifm-color-primary: #0f62fe;
+	--ifm-color-primary-dark: #0353e9;
+	--ifm-color-primary-darker: #002d9c;
+	--ifm-color-primary-darkest: #001d6c;
+	--ifm-color-primary-light: #4589ff;
+	--ifm-color-primary-lighter: #78a9ff;
+	--ifm-color-primary-lightest: #a6c8ff;
+
+	--ifm-background-color: var(--cds-background);
+	--ifm-background-surface-color: var(--cds-layer-01);
+	--ifm-font-color-base: var(--cds-text-primary);
+	--ifm-font-color-secondary: var(--cds-text-secondary);
+	--ifm-color-content: var(--cds-text-primary);
+	--ifm-color-content-secondary: var(--cds-text-secondary);
+	--ifm-link-color: var(--cds-link-primary);
+	--ifm-link-hover-color: var(--cds-link-primary-hover);
+	--ifm-hr-border-color: var(--cds-border-subtle);
+	--ifm-toc-border-color: var(--cds-border-subtle);
+	--ifm-table-border-color: var(--cds-border-subtle);
+	--ifm-table-stripe-background: var(--cds-layer-01);
+	--ifm-table-head-background: var(--cds-layer-accent-01);
+	--ifm-code-background: var(--cds-layer-01);
+	--ifm-menu-color: var(--cds-text-secondary);
+	--ifm-menu-color-active: var(--cds-link-primary);
+	--ifm-menu-color-background-active: var(--cds-layer-selected-01);
+	--ifm-menu-color-background-hover: var(--cds-layer-hover-01);
+	--docusaurus-highlighted-code-line-bg: rgb(15 98 254 / 12%);
+}
+
+[data-theme='dark'] {
+	--ifm-color-primary: #78a9ff;
+	--ifm-color-primary-dark: #4589ff;
+	--ifm-color-primary-darker: #0f62fe;
+	--ifm-color-primary-darkest: #0043ce;
+	--ifm-color-primary-light: #a6c8ff;
+	--ifm-color-primary-lighter: #c6dcff;
+	--ifm-color-primary-lightest: #edf5ff;
+	--docusaurus-highlighted-code-line-bg: rgb(120 169 255 / 20%);
+}
+
+body {
+	background-color: var(--cds-background);
+	color: var(--cds-text-primary);
+}
+
+h1,
+h2 {
+	font-weight: 300;
+}
+
+.admonition,
+.card,
+.theme-code-block,
+.table-of-contents__link--active {
+	border-radius: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Carbon UI shell inside Docusaurus.
+// ---------------------------------------------------------------------------
+.navbar {
+	// The Carbon header provides its own height, background and borders.
+	background: transparent;
+	box-shadow: none;
+	height: 3rem;
+	padding: 0;
+}
+
+.cds--header {
+	// Docusaurus' <nav> is already fixed to the top of the viewport.
+	position: relative;
+	width: 100%;
+}
+
+.cds--header a,
+.cds--side-nav a {
+	text-decoration: none;
+}
+
+.cds--side-nav {
+	// Only used for the mobile menu.
+	top: 3rem;
+}
+
+// Carbon's SideNav is `position: fixed`; keep it above Docusaurus content.
+.cds--side-nav--expanded {
+	z-index: 8000;
+}
+
+.vibe-footer {
+	background-color: var(--cds-layer-01);
+	color: var(--cds-text-secondary);
+	margin-top: $spacing-09;
+	padding: $spacing-09 0 $spacing-07;
+
+	h2 {
+		color: var(--cds-text-primary);
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin: 0 0 $spacing-05;
+	}
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	li {
+		margin-bottom: $spacing-03;
+	}
+
+	a {
+		color: var(--cds-text-secondary);
+		font-size: 0.875rem;
+		text-decoration: none;
+
+		&:hover {
+			color: var(--cds-text-primary);
+			text-decoration: underline;
+		}
+	}
+
+	&__columns {
+		display: grid;
+		gap: $spacing-07;
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+	}
+
+	&__bottom {
+		border-top: 1px solid var(--cds-border-subtle);
+		font-size: 0.75rem;
+		margin-top: $spacing-07;
+		padding-top: $spacing-05;
+	}
+}
