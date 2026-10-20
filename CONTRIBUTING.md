@@ -74,6 +74,14 @@ npm run lint -w agent-service-api
 3. Run the quality gates above.
 4. Open a pull request and fill out the template.
 
+## Website and blog
+
+The project site (landing page, docs and blog) lives in [`website/`](website) and is built with Docusaurus and the Carbon Design System. It is published to GitHub Pages by `.github/workflows/pages.yml` on every merge to `main`.
+
+- **Docs** are read directly from [`docs/`](docs). Edit the Markdown there. To publish a new page, add it to `include` in `website/docusaurus.config.ts` and to `website/sidebars.ts`.
+- **Blog posts** are Markdown files named `website/blog/YYYY-MM-DD-slug.md`. Use the `news` or `learning` tag and an author from `website/blog/authors.yml`, and add `<!-- truncate -->` after the intro paragraph.
+- **Preview locally** with `cd website && npm install && npm start`.
+
 ## Testing philosophy
 
 When changing behavior, prefer test-driven development:
