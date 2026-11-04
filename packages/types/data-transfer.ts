@@ -118,16 +118,18 @@ export const importResolutionSchema = z.object({
 	new_version: optionalStringSchema
 });
 
-export const importResolutionMapSchema = z.record(importResolutionSchema).superRefine((resolutions, ctx) => {
-	for (const [itemKey, resolution] of Object.entries(resolutions)) {
-		if (resolution.item_key !== itemKey) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: `Resolution key ${itemKey} must match item_key`
-			});
+export const importResolutionMapSchema = z
+	.record(z.string(), importResolutionSchema)
+	.superRefine((resolutions, ctx) => {
+		for (const [itemKey, resolution] of Object.entries(resolutions)) {
+			if (resolution.item_key !== itemKey) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: `Resolution key ${itemKey} must match item_key`
+				});
+			}
 		}
-	}
-});
+	});
 
 export const analyzeImportRequestSchema = z.object({
 	bundle: exportBundleSchema,
