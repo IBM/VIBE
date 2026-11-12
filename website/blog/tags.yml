@@ -12,3 +12,8 @@ cli:
   label: CLI
   permalink: /cli
   description: Posts about the vibe command line interface.
+
+testing:
+  label: Testing
+  permalink: /testing
+  description: Evaluating and testing AI agents.
