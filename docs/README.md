@@ -9,7 +9,7 @@ This folder contains additional documentation for IBM VIBE.
 - **Architecture**: diagrams and architectural decisions
 - **Planning**: backlogs and design notes
 
-Note: The Python `agent-service` docs may lag behind current behavior. The actively maintained runtime path is `backend` + `agent-service-api`.
+Note: The Python `agent-service` has been removed. The actively maintained runtime path is `backend` + `agent-service-api`.
 
 ### Index
 

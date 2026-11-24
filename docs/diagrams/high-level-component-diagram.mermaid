@@ -2,11 +2,11 @@ graph TB
     subgraph "AI Agent Testing Suite"
         Frontend[Frontend<br>Next.js + React]
         Backend[Backend<br>Express.js + TypeScript]
-        AgentService[Agent Service<br>FastAPI + CrewAI]
+        AgentServiceAPI[Agent Service API<br>Express.js + TypeScript]
         FutureAgents[Future Agent Services]
         
         Frontend -->|HTTP REST API| Backend
-        Backend -->|HTTP API| AgentService
+        AgentServiceAPI -->|Polls for jobs| Backend
         Backend -->|HTTP API| FutureAgents
         
         Database[(SQLite Database)]

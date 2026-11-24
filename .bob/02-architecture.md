@@ -2,7 +2,7 @@
 
 ## High-Level Architecture
 
-The IBM VIBE system consists of a Next.js frontend, an Express/SQLite backend, a TypeScript external API executor, and an older Python CrewAI service. The TypeScript path is the primary maintained execution path.
+The IBM VIBE system consists of a Next.js frontend, an Express/SQLite backend, and a TypeScript external API executor.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -20,10 +20,6 @@ The IBM VIBE system consists of a Next.js frontend, an Express/SQLite backend, a
 │                    │Database │                               │
 │                    └─────────┘                               │
 │                                                              │
-│  Optional: ┌──────────────────┐                             │
-│            │ Agent Service    │                             │
-│            │ (Python/CrewAI)  │                             │
-│            └──────────────────┘                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -151,22 +147,7 @@ agent-service-api/src/
 └── routes/                # Health check endpoints
 ```
 
-### 4. Agent Service (Python) (`agent-service/`)
-
-**Technology**: FastAPI, Python, CrewAI
-
-**Status**: Present in the repo but not the primary maintained execution path
-
-**Responsibilities**:
-
-- Execute CrewAI agent workflows
-- Support for various LLM providers
-- Detailed logging of intermediate steps
-- Metrics collection
-
-**Note**: The TypeScript path (backend + agent-service-api) is the primary maintained execution path.
-
-### 5. Shared Packages (`packages/`)
+### 4. Shared Packages (`packages/`)
 
 **@ibm-vibe/types**:
 
@@ -252,7 +233,6 @@ Meanwhile:
 localhost:3000  → Frontend (Next.js dev server)
 localhost:5100  → Backend (ts-node-dev)
 localhost:5003  → Agent Service API (ts-node-dev)
-localhost:5002  → Agent Service Python (optional)
 ```
 
 ### Production Considerations

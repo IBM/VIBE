@@ -7,7 +7,7 @@
     - `results`: final outputs and scoring (e.g., similarity)
     - `jobs`: queue entries referencing `test_id` (numeric), status, and result linkage
 - flow
-    - frontend starts execution → backend enqueues job → agent-service executes a single request → backend stores `results`
+    - frontend starts execution → backend enqueues job → agent-service (Python, now removed) executed a single request → backend stored `results`
 - limitations
     - single-turn only, no full transcript, limited intermediate visibility
 
@@ -54,8 +54,6 @@
 - agent-service-api
     - poll jobs; dispatch by presence of `conversation_id` vs `test_id`
     - execute conversations turn-by-turn; post session and transcript
-- agent-service (python)
-    - add conversation execution parity after polish; keep legacy executor for now
 
 ### frontend transition
 

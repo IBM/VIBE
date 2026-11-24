@@ -6,7 +6,7 @@ sequenceDiagram
     participant BE as Backend (Express)
     participant DB as SQLite DB
     participant ASAPI as Agent-service-api (poller)
-    participant AS as Agent-service (FastAPI / CrewAI)
+    participant EXT as External AI API
 
     User->>UI: Configure conversation + agent\nClick Execute
     UI->>BE: Create execution job (conversation_id)
@@ -25,8 +25,8 @@ sequenceDiagram
         BE-->>ASAPI: Job payload + conversation script
     end
 
-    ASAPI->>AS: Execute conversation turn-by-turn
-    AS-->>ASAPI: Replies + tool calls + metadata
+    ASAPI->>EXT: Execute conversation turn-by-turn
+    EXT-->>ASAPI: Replies + tool calls + metadata
 
     ASAPI->>BE: Post session + transcript
     BE->>DB: Persist session + session_messages

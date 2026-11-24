@@ -96,7 +96,6 @@ Add `--json` to any command for clean JSON stdout. Exit codes: `0` success, `1` 
 
 Optional:
 
-- Python `3.10+` only if you are working on the legacy CrewAI service
 - Ollama or another local LLM only if your selected agent path requires it
 
 ### Start the maintained TypeScript stack
@@ -144,14 +143,13 @@ Legacy test and suite flows still exist for compatibility, but new work should p
 
 The repository is an npm workspace monorepo:
 
-| Workspace           | Technology                  | Purpose                                                |
-| ------------------- | --------------------------- | ------------------------------------------------------ |
-| `frontend`          | Next.js, TypeScript, Carbon | Web UI for evaluation workflows                        |
-| `backend`           | Express, TypeScript, SQLite | API, persistence, job orchestration                    |
-| `agent-service-api` | Express, TypeScript         | Polls backend jobs and executes external API agents    |
-| `packages/vibe-cli` | TypeScript                  | CLI for scripting against a VIBE deployment            |
-| `packages/*`        | TypeScript                  | Shared contracts, config, and utilities                |
-| `agent-service`     | Python, FastAPI, CrewAI     | Legacy CrewAI path; currently not the maintained stack |
+| Workspace           | Technology                  | Purpose                                             |
+| ------------------- | --------------------------- | --------------------------------------------------- |
+| `frontend`          | Next.js, TypeScript, Carbon | Web UI for evaluation workflows                     |
+| `backend`           | Express, TypeScript, SQLite | API, persistence, job orchestration                 |
+| `agent-service-api` | Express, TypeScript         | Polls backend jobs and executes external API agents |
+| `packages/vibe-cli` | TypeScript                  | CLI for scripting against a VIBE deployment         |
+| `packages/*`        | TypeScript                  | Shared contracts, config, and utilities             |
 
 Key integration path:
 
@@ -159,7 +157,7 @@ Key integration path:
 Frontend -> Backend -> Job queue -> Agent Service API -> Backend -> Sessions/transcripts
 ```
 
-The Python `agent-service` is not started by `npm run dev`. Prefer `backend` + `agent-service-api` unless you are explicitly working on CrewAI integration.
+The Python `agent-service` was removed. The maintained stack is `backend` + `agent-service-api`.
 
 ## Development
 
