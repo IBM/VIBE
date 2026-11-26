@@ -12,7 +12,6 @@ This project is organized as a monorepo with the following components:
 ai-agent-testing-suite/
 ├── frontend/           # Next.js user interface
 ├── backend/            # Express.js API server
-├── agent-service/      # Python FastAPI service for CrewAI agents
 ├── agent-service-api/  # TypeScript Express communication layer
 └── docs/               # Documentation and diagrams
 ```
@@ -23,7 +22,7 @@ ai-agent-testing-suite/
 
 Mermaid source: [`docs/diagrams/high-level-component-diagram.mermaid`](docs/diagrams/high-level-component-diagram.mermaid)
 
-The system consists of four main components:
+The system consists of three main components:
 
 ### 1. Frontend (`frontend/`)
 
@@ -50,22 +49,7 @@ The system consists of four main components:
 - Agent service factory for handling different agent types
 - Support for external API integration
 
-### 3. Agent Service (`agent-service/`)
-
-**Technology Stack:** Python, FastAPI, CrewAI
-
-**Key Features:**
-
-- Agent execution using CrewAI framework
-- Support for various LLM providers (currently Ollama)
-- Detailed logging of intermediate steps
-- Metrics collection (token usage, model calls, etc.)
-- Configurable agent settings (role, goal, backstory, etc.)
-- Support for tools and delegation
-
-**Status note:** The Python `agent-service` is currently out of date and needs TLC. The primary maintained execution path is `backend` + `agent-service-api`.
-
-### 4. Agent Service API (`agent-service-api/`)
+### 3. Agent Service API (`agent-service-api/`)
 
 **Technology Stack:** TypeScript, Express.js
 
@@ -88,10 +72,8 @@ The system supports two main types of agents:
 
 ### 1. CrewAI Agents
 
-- Configured with role, goal, and backstory
-- Support for tools and delegation
-- LLM configuration (model, temperature, etc.)
-- Memory and code execution options
+- The `crewai` settings type is still accepted and stored by the backend
+- No service currently executes these jobs: the Python CrewAI service has been removed, and `agent-service-api` only runs `external_api` jobs
 
 ### 2. External API Agents
 
@@ -139,12 +121,6 @@ The system uses SQLite for data persistence with the following key entities (leg
 - **Purpose:** Execute external API conversations/tests
 - **Data:** Formatted requests, mapped responses, usage metadata
 
-### Backend ↔ Agent Service (Python)
-
-- **Protocol:** HTTP API (FastAPI)
-- **Purpose:** Direct CrewAI execution path (optional/legacy-maintained)
-- **Data:** Agent configurations, conversation/test inputs, execution outputs
-
 ### Backend ↔ Database
 
 - **Protocol:** SQLite (better-sqlite3)
@@ -163,7 +139,6 @@ The system uses SQLite for data persistence with the following key entities (leg
 
 - **Frontend**: Static site deployment (Vercel, Netlify)
 - **Backend**: Node.js server deployment
-- **Agent Service**: Python ASGI server deployment
 - **Database**: SQLite file-based storage
 - **Monitoring**: Log aggregation and performance monitoring
 
@@ -172,7 +147,6 @@ The system uses SQLite for data persistence with the following key entities (leg
 - Use sentence capitalization for strings (including titles)
 - Add new line at the end of files
 - Follow TypeScript/JavaScript best practices
-- Use Python PEP 8 for Python components
 
 ## Diagrams
 

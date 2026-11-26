@@ -10,7 +10,7 @@ The deployment system consists of:
 - **Helper scripts**: Stop, view logs, and check status of instances
 - **Environment files**: Configuration for each instance (ports, database paths, etc.)
 
-By default, `start-instance.sh` manages backend, agent-service-api, and frontend. The Python agent-service commands are present in the script but commented out.
+By default, `start-instance.sh` manages backend, agent-service-api, and frontend.
 
 ## Prerequisites
 
@@ -25,9 +25,6 @@ By default, `start-instance.sh` manages backend, agent-service-api, and frontend
     ```bash
     # Install root dependencies (links workspaces)
     npm install
-
-    # Agent Service (Python)
-    cd agent-service && pip install -r requirements.txt && cd ..
     ```
 
 ## Port Allocation
@@ -38,7 +35,7 @@ By default, `start-instance.sh` manages backend, agent-service-api, and frontend
 | instance2 | 5010    | 5011          | 5013              | 3010     | `./data/agent-testing-instance2.db` |
 | instance3 | 5020    | 5021          | 5023              | 3020     | `./data/agent-testing-instance3.db` |
 
-`Agent Service` ports are reserved for the optional Python service if you enable it in `start-instance.sh`.
+`Agent Service` ports are used by `start-instance.sh` to set `AGENT_SERVICE_URL` for the backend. No Python service runs on them.
 
 ## Quick Start
 
@@ -267,9 +264,8 @@ If you get database errors:
 Common issues:
 
 1. **Backend**: Missing `npm install` or wrong working directory
-2. **Agent Service**: Missing Python dependencies or wrong working directory
-3. **Agent Service API**: Missing `npm install` or wrong working directory
-4. **Frontend**: Missing `npm install` or wrong working directory
+2. **Agent Service API**: Missing `npm install` or wrong working directory
+3. **Frontend**: Missing `npm install` or wrong working directory
 
 ## Advanced Configuration
 

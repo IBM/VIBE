@@ -87,13 +87,6 @@ Collections of tests/conversations that can be executed together:
 - **Language**: TypeScript
 - **Role**: Job poller and external API executor
 
-### Agent Service (Python)
-
-- **Framework**: FastAPI
-- **Language**: Python
-- **Role**: CrewAI execution (currently out of date)
-- **Status**: Present in the repo but not the primary maintained execution path
-
 ### Shared Packages
 
 - **@ibm-vibe/types** - Shared TypeScript types
@@ -107,7 +100,6 @@ ai-agent-testing-suite/
 ├── frontend/              # Next.js UI
 ├── backend/               # Express API server
 ├── agent-service-api/     # Job poller & external API executor
-├── agent-service/         # Python FastAPI (CrewAI)
 ├── packages/              # Shared packages
 │   ├── types/            # Shared TypeScript types
 │   ├── config/           # Configuration management
@@ -144,7 +136,6 @@ ai-agent-testing-suite/
 - Run conversations/tests individually or in batches
 - Execute with different agent versions
 - Route `external_api` jobs through `agent-service-api`
-- Keep legacy CrewAI compatibility through the older Python service path
 - Use a backend job queue for asynchronous execution
 
 ### Results Analysis
@@ -166,9 +157,8 @@ The project is currently in a **legacy-to-conversation migration phase**:
 
 ## Port Configuration
 
-| Service                | Default Port | Role                                         |
-| ---------------------- | -----------: | -------------------------------------------- |
-| Frontend               |         3000 | UI for conversations, sessions, and analysis |
-| Backend                |         5100 | System API, storage, job orchestration       |
-| Agent Service API      |         5003 | External API executor and backend job poller |
-| Agent Service (Python) |         5002 | CrewAI execution service                     |
+| Service           | Default Port | Role                                         |
+| ----------------- | -----------: | -------------------------------------------- |
+| Frontend          |         3000 | UI for conversations, sessions, and analysis |
+| Backend           |         5100 | System API, storage, job orchestration       |
+| Agent Service API |         5003 | External API executor and backend job poller |
