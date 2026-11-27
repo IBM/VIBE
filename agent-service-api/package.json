@@ -19,6 +19,7 @@
   "type": "commonjs",
   "dependencies": {
     "@ibm-vibe/config": "*",
+    "@ibm-vibe/outbound-guard": "*",
     "@ibm-vibe/utils": "*",
     "axios": "^1.20.0",
     "cors": "^2.8.5",

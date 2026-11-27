@@ -6,7 +6,8 @@ import {
 	ConversationExecutionResponse,
 	IntermediateStep
 } from '@ibm-vibe/types';
-import { DEFAULT_TIMEOUT } from '../config';
+import { assertSafeOutboundUrl, guardedAxiosOptions } from '@ibm-vibe/outbound-guard';
+import { DEFAULT_TIMEOUT, OUTBOUND_CONFIG } from '../config';
 import { extractTokenUsage } from './token-extractor';
 import {
 	escapeForJsonTemplate as escapeTemplateValue,
@@ -275,6 +276,8 @@ export class ApiService {
 		headers?: Record<string, string>,
 		apiKey?: string
 	): Promise<any> {
+		assertSafeOutboundUrl(endpoint, OUTBOUND_CONFIG);
+
 		const requestHeaders = {
 			'Content-Type': 'application/json',
 			...headers,
@@ -283,7 +286,8 @@ export class ApiService {
 
 		const config: AxiosRequestConfig = {
 			headers: requestHeaders,
-			timeout: DEFAULT_TIMEOUT
+			timeout: DEFAULT_TIMEOUT,
+			...guardedAxiosOptions(OUTBOUND_CONFIG)
 		};
 
 		const httpMethod = method || 'POST';

@@ -7,6 +7,54 @@ import { hasPaginationParams, validatePaginationOrError } from '../utils/paginat
 import { asyncHandler } from '../lib/asyncHandler';
 import { logError } from '../lib/logger';
 import { parseIdParam } from '../lib/routeHelpers';
+import { assertSafeOutboundUrl, OutboundBlockedError } from '@ibm-vibe/outbound-guard';
+
+const parseHttpUrl = (value: string): URL | null => {
+	try {
+		const url = new URL(value);
+		return url.protocol === 'http:' || url.protocol === 'https:' ? url : null;
+	} catch {
+		return null;
+	}
+};
+
+const readBaseUrl = (config: unknown): unknown => {
+	let parsed = config;
+	if (typeof config === 'string') {
+		try {
+			parsed = JSON.parse(config);
+		} catch {
+			return undefined;
+		}
+	}
+	return parsed && typeof parsed === 'object' ? (parsed as { base_url?: unknown }).base_url : undefined;
+};
+
+/**
+ * Validates a config's base_url at save time. Malformed URLs and non-http(s) schemes are
+ * rejected. A policy-blocked address is saved with a warning, because the call-time guard
+ * is authoritative. DNS is never resolved here.
+ */
+const checkBaseUrlForSave = (config: unknown): { error?: string; warnings: string[] } => {
+	const baseUrl = readBaseUrl(config);
+	if (baseUrl === undefined || baseUrl === '') {
+		return { warnings: [] };
+	}
+	if (typeof baseUrl !== 'string' || !parseHttpUrl(baseUrl)) {
+		return { error: 'base_url must be a valid http or https URL', warnings: [] };
+	}
+	try {
+		assertSafeOutboundUrl(baseUrl);
+		return { warnings: [] };
+	} catch (error) {
+		if (error instanceof OutboundBlockedError) {
+			return {
+				warnings: ['base_url points to an address that outbound calls will refuse under the current policy']
+			};
+		}
+		throw error;
+	}
+};
 
 const router = express.Router();
 
@@ -82,6 +130,12 @@ router.post(
 					.json({ error: 'Missing required fields: name, provider, and config are required' });
 			}
 
+			const outboundCheck = checkBaseUrlForSave(config);
+			if (outboundCheck.error) {
+				return res.status(400).json({ error: outboundCheck.error });
+			}
+			const warnings = outboundCheck.warnings;
+
 			// Convert config to string if it's an object
 			const configStr = typeof config === 'string' ? config : JSON.stringify(config);
 
@@ -94,7 +148,7 @@ router.post(
 			};
 
 			const createdConfig = createLLMConfig(newConfig);
-			return res.status(201).json(createdConfig);
+			return res.status(201).json(warnings.length > 0 ? { ...createdConfig, warnings } : createdConfig);
 		} catch (error: any) {
 			logError('Error creating LLM config:', error);
 			return res.status(500).json({ error: error.message });
@@ -115,6 +169,11 @@ router.put(
 			}
 
 			const { name, provider, config, priority } = req.body;
+			const outboundCheck = checkBaseUrlForSave(config);
+			if (outboundCheck.error) {
+				return res.status(400).json({ error: outboundCheck.error });
+			}
+			const warnings = outboundCheck.warnings;
 
 			// Convert config to string if it's an object
 			let configStr = config;
@@ -135,7 +194,7 @@ router.put(
 				return res.status(404).json({ error: 'LLM config not found' });
 			}
 
-			return res.json(updatedConfig);
+			return res.json(warnings.length > 0 ? { ...updatedConfig, warnings } : updatedConfig);
 		} catch (error: any) {
 			logError('Error updating LLM config:', error);
 			return res.status(500).json({ error: error.message });
