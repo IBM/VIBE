@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { LLMConfig } from '@ibm-vibe/types';
+import { assertSafeOutboundUrl, guardedAxiosOptions } from '@ibm-vibe/outbound-guard';
 
 export interface LLMRequestOptions {
 	prompt: string;
@@ -117,16 +118,21 @@ export class LLMConfigService {
 		const model = configData.model || 'llama2';
 
 		try {
-			const response = await axios.post(`${baseUrl}/api/generate`, {
-				model,
-				prompt: options.prompt,
-				stream: false,
-				options: {
-					temperature: options.temperature || 0.7,
-					num_predict: options.max_tokens || 1000,
-					stop: options.stop || []
-				}
-			});
+			assertSafeOutboundUrl(baseUrl);
+			const response = await axios.post(
+				`${baseUrl}/api/generate`,
+				{
+					model,
+					prompt: options.prompt,
+					stream: false,
+					options: {
+						temperature: options.temperature || 0.7,
+						num_predict: options.max_tokens || 1000,
+						stop: options.stop || []
+					}
+				},
+				guardedAxiosOptions()
+			);
 
 			return {
 				text: response.data.response,
@@ -153,6 +159,7 @@ export class LLMConfigService {
 		const baseUrl = configData.base_url || 'https://api.openai.com/v1';
 
 		try {
+			assertSafeOutboundUrl(baseUrl);
 			const response = await axios.post(
 				`${baseUrl}/chat/completions`,
 				{
@@ -166,7 +173,8 @@ export class LLMConfigService {
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${apiKey}`
-					}
+					},
+					...guardedAxiosOptions()
 				}
 			);
 
@@ -195,6 +203,7 @@ export class LLMConfigService {
 		const baseUrl = configData.base_url || 'https://api.anthropic.com/v1';
 
 		try {
+			assertSafeOutboundUrl(baseUrl);
 			const response = await axios.post(
 				`${baseUrl}/messages`,
 				{
@@ -209,7 +218,8 @@ export class LLMConfigService {
 						'Content-Type': 'application/json',
 						'x-api-key': apiKey,
 						'anthropic-version': '2023-06-01'
-					}
+					},
+					...guardedAxiosOptions()
 				}
 			);
 
@@ -243,6 +253,7 @@ export class LLMConfigService {
 		const baseUrl = configData.base_url || 'https://us-south.ml.cloud.ibm.com';
 
 		try {
+			assertSafeOutboundUrl(baseUrl);
 			const tokenParams = new URLSearchParams();
 			tokenParams.append('grant_type', 'urn:ibm:params:oauth:grant-type:apikey');
 			tokenParams.append('apikey', apiKey);
@@ -274,7 +285,8 @@ export class LLMConfigService {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${accessToken}`,
 						Accept: 'application/json'
-					}
+					},
+					...guardedAxiosOptions()
 				}
 			);
 
@@ -312,6 +324,7 @@ export class LLMConfigService {
 		const baseUrl = configData.base_url || 'https://api.us-east.bob.ibm.com';
 
 		try {
+			assertSafeOutboundUrl(baseUrl);
 			const response = await axios.post(
 				`${baseUrl}/inference/v1/chat/completions`,
 				{
@@ -328,7 +341,8 @@ export class LLMConfigService {
 						'x-instance-id': instanceId,
 						'x-team-id': teamId,
 						'User-Agent': 'bob-ide/2.0.1'
-					}
+					},
+					...guardedAxiosOptions()
 				}
 			);
 

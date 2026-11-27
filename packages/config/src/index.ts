@@ -1,11 +1,23 @@
 import { z } from 'zod';
 
+const booleanFlag = (defaultValue: boolean) =>
+	z
+		.enum(['true', 'false'])
+		.default(defaultValue ? 'true' : 'false')
+		.transform((value) => value === 'true');
+
+const outboundEnvSchema = {
+	OUTBOUND_ALLOW_LOOPBACK: booleanFlag(true),
+	OUTBOUND_ALLOW_PRIVATE_NETWORKS: booleanFlag(false)
+};
+
 const backendEnvSchema = z.object({
 	PORT: z.coerce.number().default(5100),
 	HOST: z.string().default('localhost'),
 	AGENT_SERVICE_URL: z.string().default('http://localhost:5002'),
 	AGENT_SERVICE_TIMEOUT: z.coerce.number().nonnegative().default(0),
-	DB_PATH: z.string().default('./data/agent-testing.db')
+	DB_PATH: z.string().default('./data/agent-testing.db'),
+	...outboundEnvSchema
 });
 
 const agentServiceApiSchema = z.object({
@@ -18,7 +30,8 @@ const agentServiceApiSchema = z.object({
 	POLLER_BASE_INTERVAL_MS: z.coerce.number().positive().default(5000),
 	POLLER_MAX_INTERVAL_MS: z.coerce.number().positive().default(60000),
 	POLLER_BACKOFF_MULTIPLIER: z.coerce.number().positive().default(1.5),
-	POLLER_MAX_CONCURRENT_JOBS: z.coerce.number().int().positive().default(3)
+	POLLER_MAX_CONCURRENT_JOBS: z.coerce.number().int().positive().default(3),
+	...outboundEnvSchema
 });
 
 const frontendEnvSchema = z.object({
@@ -34,6 +47,7 @@ export const loadBackendConfig = (
 	server: { port: number; host: string };
 	agentService: { url: string; timeout: number };
 	database: { path: string };
+	outbound: { allowLoopback: boolean; allowPrivateNetworks: boolean };
 } => {
 	const parsed = backendEnvSchema.parse(env);
 	return {
@@ -47,6 +61,10 @@ export const loadBackendConfig = (
 		},
 		database: {
 			path: parsed.DB_PATH
+		},
+		outbound: {
+			allowLoopback: parsed.OUTBOUND_ALLOW_LOOPBACK,
+			allowPrivateNetworks: parsed.OUTBOUND_ALLOW_PRIVATE_NETWORKS
 		}
 	};
 };
@@ -63,6 +81,7 @@ export const loadAgentServiceApiConfig = (
 		backoffMultiplier: number;
 		maxConcurrentJobs: number;
 	};
+	outbound: { allowLoopback: boolean; allowPrivateNetworks: boolean };
 } => {
 	const parsed = agentServiceApiSchema.parse(env);
 	return {
@@ -83,6 +102,10 @@ export const loadAgentServiceApiConfig = (
 			maxIntervalMs: parsed.POLLER_MAX_INTERVAL_MS,
 			backoffMultiplier: parsed.POLLER_BACKOFF_MULTIPLIER,
 			maxConcurrentJobs: parsed.POLLER_MAX_CONCURRENT_JOBS
+		},
+		outbound: {
+			allowLoopback: parsed.OUTBOUND_ALLOW_LOOPBACK,
+			allowPrivateNetworks: parsed.OUTBOUND_ALLOW_PRIVATE_NETWORKS
 		}
 	};
 };

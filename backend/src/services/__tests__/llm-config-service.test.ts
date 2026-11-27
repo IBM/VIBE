@@ -152,7 +152,8 @@ describe('LLMConfigService', () => {
 						num_predict: 500,
 						stop: ['END']
 					}
-				})
+				}),
+				expect.objectContaining({ maxRedirects: 0, proxy: false })
 			);
 		});
 
@@ -178,7 +179,8 @@ describe('LLMConfigService', () => {
 						temperature: 0.7,
 						num_predict: 1000
 					})
-				})
+				}),
+				expect.objectContaining({ maxRedirects: 0, proxy: false })
 			);
 		});
 	});
@@ -215,12 +217,12 @@ describe('LLMConfigService', () => {
 					temperature: 0.5,
 					stop: undefined
 				},
-				{
+				expect.objectContaining({
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: 'Bearer test-key'
 					}
-				}
+				})
 			);
 		});
 
@@ -283,13 +285,13 @@ describe('LLMConfigService', () => {
 					temperature: 0.7,
 					stop_sequences: []
 				},
-				{
+				expect.objectContaining({
 					headers: {
 						'Content-Type': 'application/json',
 						'x-api-key': 'test-key',
 						'anthropic-version': '2023-06-01'
 					}
-				}
+				})
 			);
 		});
 
@@ -465,7 +467,7 @@ describe('LLMConfigService', () => {
 					temperature: 0.5,
 					stop: undefined
 				},
-				{
+				expect.objectContaining({
 					headers: {
 						'Content-Type': 'application/json',
 						'x-api-key': 'test-key',
@@ -473,7 +475,7 @@ describe('LLMConfigService', () => {
 						'x-team-id': 'test-team-id',
 						'User-Agent': 'bob-ide/2.0.1'
 					}
-				}
+				})
 			);
 		});
 

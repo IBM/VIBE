@@ -19,6 +19,7 @@
   "type": "commonjs",
   "dependencies": {
     "@ibm-vibe/config": "*",
+    "@ibm-vibe/outbound-guard": "*",
     "@ibm-vibe/types": "*",
     "@ibm-vibe/utils": "*",
     "@types/better-sqlite3": "^7.6.12",
